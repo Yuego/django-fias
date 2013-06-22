@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from django.conf.urls import patterns, url
 
-from django_fias.views import SuggestAddressView
+from fias.views import SuggestAddressView
 
 urlpatterns = patterns('',
                        url(r'^suggest', SuggestAddressView.as_view(), name='suggest'),

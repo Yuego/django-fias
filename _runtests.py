@@ -7,7 +7,7 @@ from django.core.management import call_command
 sys.path.insert(0, '.')
 
 settings.configure(
-    INSTALLED_APPS=('django_fias',),
+    INSTALLED_APPS=('fias',),
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3'
@@ -21,4 +21,4 @@ settings.configure(
 )
 
 if __name__ == "__main__":
-    call_command('test', 'django_fias')
+    call_command('test', 'fias')

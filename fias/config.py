@@ -11,4 +11,4 @@ FIAS_TABLES = getattr(settings, 'FIAS_TABLES', _FIAS_TABLES_DEFAULT)
 FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'fias')
 
 # Чтобы использовать для данных ФИАС другую базу данных,
-# добавьте роутер 'django_fias.routers.FIASRouter' в список `DATABASE_ROUTERS`
+# добавьте роутер 'fias.routers.FIASRouter' в список `DATABASE_ROUTERS`

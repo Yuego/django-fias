@@ -5,7 +5,7 @@ from django.utils.text import force_unicode
 
 from django_select2.views import Select2View, NO_ERR_RESP
 
-from django_fias.models import AddrObj, SocrBase
+from fias.models import AddrObj, SocrBase
 
 EMPTY_RESULT = NO_ERR_RESP, False, ()
 

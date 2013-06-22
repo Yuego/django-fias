@@ -15,8 +15,8 @@
 
         pip install django_fias
 
-2. Добавьте `django_fias` в ваш список `INSTALLED_APPS`.
-3. Добавьте `url(r'^django_fias/', include('django_fias.urls', namespace='fias')),` в ваш urlpatterns
+2. Добавьте `fias` в ваш список `INSTALLED_APPS`.
+3. Добавьте `url(r'^django_fias/', include('fias.urls', namespace='fias')),` в ваш urlpatterns
 4. Если вы желаете использовать отдельную БД под данные ФИАС, выполните следующее
 
 * Создайте БД
@@ -28,7 +28,7 @@
 
 * Добавьте в список `DATABASE_ROUTERS`::
 
-        django_fias.routers.FIASRouter
+        fias.routers.FIASRouter
 
 * Выполните::
 
@@ -47,8 +47,8 @@
 
 Вы можете самостоятельно ссылаться на таблицы БД фиас.
 
-Вы так же можете добавить в свои модели поле `django_fias.fields.address.AddressField`, которое предоставит вам удобный
+Вы так же можете добавить в свои модели поле `fias.fields.address.AddressField`, которое предоставит вам удобный
 поиск адреса по базе и прявязку Один-ко-Многим вашей модели к таблице AddrObj базы ФИАС.
 
-Либо вы можете унаследоваться от любой модели из `django_fias.models.address`, которые добавят несколько дополнительных
+Либо вы можете унаследоваться от любой модели из `fias.models.address`, которые добавят несколько дополнительных
 полей к вашим моделям и выполнят за вас кое-какую рутину.

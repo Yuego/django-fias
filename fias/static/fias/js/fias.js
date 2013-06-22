@@ -1,6 +1,6 @@
 
-if (!window['django_fias']) {
-    var django_fias = {
+if (!window['fias']) {
+    var fias = {
         onOpen: function(e) {
             var $input = $('.select2-input');
 

@@ -5,8 +5,10 @@ from django.db import models
 from django.utils.text import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
-from django_fias.models.addrobj import AddrObj
-from django_fias.fields import AddressField
+from fias.models.addrobj import AddrObj
+from fias.fields import AddressField
+
+__all__ = ['FIASAddress', 'FIASHouse', 'FIASFullAddress']
 
 
 class FIASAddress(models.Model):
@@ -26,7 +28,7 @@ class FIASAddress(models.Model):
     class Meta:
         abstract = True
 
-    address = AddressField(verbose_name=_('address'))
+    address = AddressField(AddrObj, verbose_name=_('address'))
 
     full_address = models.CharField(_('full address'), max_length=255, blank=True, editable=False)
     short_address = models.CharField(_('short address'), max_length=255, blank=True, editable=False)
@@ -66,6 +68,8 @@ class FIASAddress(models.Model):
 
             if self.address != old_obj.address:
                 self._update_address()
+        else:
+            self._update_address()
 
         super(FIASAddress, self).save(force_insert, force_update, using, update_fields)
 

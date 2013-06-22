@@ -8,9 +8,9 @@ from django_select2.widgets import HeavySelect2Widget
 def get_select2_js_libs():
     from django.conf import settings
     if settings.configured and settings.DEBUG:
-        return ('django_fias/js/select2/select2.js', )
+        return ('fias/js/select2/select2.js', )
     else:
-        return ('django_fias/js/select2/select2.min.js', )
+        return ('fias/js/select2/select2.min.js', )
 
 
 def get_select2_heavy_js_libs():
@@ -28,19 +28,19 @@ def get_js_libs():
 
     from django.conf import settings
     if settings.configured and settings.DEBUG:
-        return libs + ('django_fias/js/django_fias.js', )
+        return libs + ('fias/js/fias.js', )
     else:
         #TODO: сделать минификацию
-        return libs + ('django_fias/js/django_fias.js', )
+        return libs + ('fias/js/fias.js', )
 
 
 def get_select2_css_libs(light=False):
     from django.conf import settings
 
     if settings.configured and settings.DEBUG:
-        return ('django_fias/js/select2/select2.css', 'css/extra.css',)
+        return ('fias/js/select2/select2.css', 'css/extra.css',)
     else:
-        return ('django_fias/js/select2/select2.css',)
+        return ('fias/js/select2/select2.css',)
 
 
 class AddressSelect2(HeavySelect2Widget):
@@ -57,8 +57,8 @@ class AddressSelect2(HeavySelect2Widget):
     def render_inner_js_code(self, id_, name, value, attrs=None, choices=(), *args):
         js = super(AddressSelect2, self).render_inner_js_code(id_, name, value, attrs, choices, *args)
         js += ("$('#{0}')"
-               ".on('select2-open', django_fias.onOpen)"
-               ".on('select2-selecting', django_fias.onSelecting)"
+               ".on('select2-open', fias.onOpen)"
+               ".on('select2-selecting', fias.onSelecting)"
                "".format(id_))
         return js
 

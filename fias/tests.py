@@ -5,11 +5,11 @@ from unittest import TestCase
 
 from django.db.models import Model
 
-from django_fias.routers import FIASRouter
-from django_fias.config import FIAS_DATABASE_ALIAS
+from fias.routers import FIASRouter
+from fias.config import FIAS_DATABASE_ALIAS
 
 
-fias = __import__('django_fias.models')
+fias = __import__('fias.models')
 
 
 class TestModel(Model):
