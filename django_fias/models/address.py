@@ -5,8 +5,8 @@ from django.db import models
 from django.utils.text import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
-from .addrobj import AddrObj
-from fias.fields import AddressField
+from django_fias.models.addrobj import AddrObj
+from django_fias.fields import AddressField
 
 
 class FIASAddress(models.Model):
@@ -84,9 +84,3 @@ class FIASFullAddress(FIASAddress, FIASHouse):
 
     class Meta:
         abstract = True
-
-
-class Address(FIASFullAddress):
-
-    class Meta:
-        app_label = 'fias'

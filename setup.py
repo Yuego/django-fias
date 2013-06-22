@@ -3,15 +3,17 @@ from setuptools import setup, find_packages
 import sys
 sys.path.insert(0, '..')
 
-setup(
-    name='fias',
-    version='0.1',
-    author= 'Artem Vlasov',
-    author_email='root@proscript.ru',
-    url='',
-    download_url='',
+from django_fias.version import __version__
 
-    description='FIAS',
+setup(
+    name='django-django_fias',
+    version=__version__,
+    author='Artem Vlasov',
+    author_email='root@proscript.ru',
+    url='https://github.com/Yuego/django-django_fias',
+    download_url='https://github.com/Yuego/django-django_fias/archive/v{0}.tar.gz'.format(__version__),
+
+    description='FIAS Django integration',
     long_description=open('README.rst').read(),
 
     license='MIT license',

@@ -8,8 +8,8 @@ import os
 import rarfile
 import warnings
 
-from fias.models import *
-from fias.config import FIAS_TABLES
+from django_fias.models import *
+from django_fias.config import FIAS_TABLES
 
 
 class FiasFiles(object):

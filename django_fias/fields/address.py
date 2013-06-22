@@ -7,14 +7,14 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db.models.fields.related import ForeignKey, ManyToOneRel
 
-from fias import forms
-from fias.config import FIAS_DATABASE_ALIAS
+from django_fias import forms
+from django_fias.config import FIAS_DATABASE_ALIAS
 
 
 class AddressField(ForeignKey):
 
     def __init__(self, to_field=None, rel_class=ManyToOneRel, **kwargs):
-        super(AddressField, self).__init__('fias.AddrObj', to_field, rel_class, **kwargs)
+        super(AddressField, self).__init__('django_fias.AddrObj', to_field, rel_class, **kwargs)
 
     def formfield(self, **kwargs):
         db = kwargs.pop('using', None)
@@ -37,7 +37,7 @@ class AddressField(ForeignKey):
         if value is None:
             return
 
-        using = FIAS_DATABASE_ALIAS if 'fias.routers.FIASRouter' in getattr(settings, 'DATABASE_ROUTERS', []) else None
+        using = FIAS_DATABASE_ALIAS if 'django_fias.routers.FIASRouter' in getattr(settings, 'DATABASE_ROUTERS', []) else None
         qs = self.rel.to._default_manager.using(using).filter(
                 **{self.rel.field_name: value}
              )
@@ -45,3 +45,8 @@ class AddressField(ForeignKey):
         if not qs.exists():
             raise ValidationError(self.error_messages['invalid'] % {
                 'model': self.rel.to._meta.verbose_name, 'pk': value})
+
+    def south_field_triple(self):
+        from south.modelsinspector import introspector
+        args, kwargs = introspector(self)
+        return ('django_fias.fields.AddressField', args, kwargs)

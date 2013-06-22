@@ -9,7 +9,7 @@ __all__ = ['Version', 'Status']
 class Version(models.Model):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'
 
     ver = models.IntegerField(primary_key=True)
     date = models.DateField(db_index=True, blank=True, null=True)
@@ -22,7 +22,7 @@ class Version(models.Model):
 class Status(models.Model):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'
 
     table = models.CharField(primary_key=True, max_length=15)
     ver = models.ForeignKey(Version)

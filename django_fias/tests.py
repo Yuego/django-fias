@@ -5,11 +5,11 @@ from unittest import TestCase
 
 from django.db.models import Model
 
-from fias.routers import FIASRouter
-from fias.config import FIAS_DATABASE_ALIAS
+from django_fias.routers import FIASRouter
+from django_fias.config import FIAS_DATABASE_ALIAS
 
 
-fias = __import__('fias.models')
+fias = __import__('django_fias.models')
 
 
 class TestModel(Model):
@@ -47,8 +47,8 @@ class TestRouter(TestCase):
                 self.assertTrue(self.router.allow_relation(m1, m2))
 
         for m in self.rels:
-            self.assertTrue(self.router.allow_relation(TestModel, m))
-            self.assertFalse(self.router.allow_relation(m, TestModel))
+            self.assertFalse(self.router.allow_relation(TestModel, m))
+            self.assertTrue(self.router.allow_relation(m, TestModel))
 
         self.assertIsNone(self.router.allow_relation(TestModel, TestModel2))
         self.assertIsNone(self.router.allow_relation(TestModel2, TestModel))

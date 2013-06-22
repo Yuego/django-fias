@@ -5,7 +5,8 @@ from django.utils.text import force_unicode
 
 from django_select2.fields import HeavyModelSelect2ChoiceField
 
-from fias import widgets
+from django_fias import widgets
+
 
 class AddressSelect2Field(HeavyModelSelect2ChoiceField):
 

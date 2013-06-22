@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from django.db.utils import DEFAULT_DB_ALIAS
 
-from .config import FIAS_DATABASE_ALIAS
+from django_fias.config import FIAS_DATABASE_ALIAS
 
 
 class FIASRouter(object):
@@ -15,12 +15,6 @@ class FIASRouter(object):
     ALLOWED_REL = ['AddrObj']
     
     def db_for_read(self, model, **hints):
-
-        if 'instance' in hints:
-            if model._meta.object_name == 'Address' and hints['instance']._meta.object_name == 'Address':
-                #raise Exception([model, hints, hints['instance']._state.db])
-                pass
-
         if model._meta.object_name in self.MODELS:
             return FIAS_DATABASE_ALIAS
         return None
@@ -29,6 +23,10 @@ class FIASRouter(object):
         if model._meta.object_name in self.MODELS:
             return FIAS_DATABASE_ALIAS
         else:
+            """\
+            Странный хак, но без него
+            джанго не может правильно определить БД для записи\
+            """
             try:
                 if hints['instance']._meta.object_name == 'AddrObj':
                     return DEFAULT_DB_ALIAS

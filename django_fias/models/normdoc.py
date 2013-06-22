@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from django.db import models
 
-from fias.fields import UUIDField
+from django_fias.fields import UUIDField
 
 __all__ = ['NormDoc']
 
@@ -11,7 +11,7 @@ __all__ = ['NormDoc']
 class NormDoc(models.Model):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'
 
     normdocid = UUIDField(primary_key=True)
     docname = models.TextField(blank=True)

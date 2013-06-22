@@ -3,10 +3,10 @@ from __future__ import unicode_literals, absolute_import
 
 from django.db import models
 
-from fias.fields import UUIDField
-from .ifns import IFNS
-from .addrobj import AddrObj, AddrObjFuture
-from .normdoc import NormDoc
+from django_fias.fields import UUIDField
+from django_fias.models.ifns import IFNS
+from django_fias.models.addrobj import AddrObj, AddrObjFuture
+from django_fias.models.normdoc import NormDoc
 
 __all__ = ['House', 'HouseFuture']
 
@@ -38,13 +38,13 @@ class HouseBase(IFNS):
 class HouseFuture(HouseBase):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'
 
     aoguid = models.ForeignKey(AddrObjFuture)
 
 class House(HouseBase):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'
 
     aoguid = models.ForeignKey(AddrObj)

@@ -3,9 +3,9 @@ from __future__ import unicode_literals, absolute_import
 
 from django.db import models
 
-from fias.fields import UUIDField
-from .ifns import IFNS
-from .normdoc import NormDoc
+from django_fias.fields import UUIDField
+from django_fias.models.ifns import IFNS
+from django_fias.models.normdoc import NormDoc
 
 __all__ = ['AddrObj', 'AddrObjFuture']
 
@@ -65,10 +65,10 @@ class AddrObjBase(IFNS):
 class AddrObjFuture(AddrObjBase):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'
 
 
 class AddrObj(AddrObjBase):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'

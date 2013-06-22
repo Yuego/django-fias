@@ -1,6 +1,6 @@
 
-if (!window['fias']) {
-    var fias = {
+if (!window['django_fias']) {
+    var django_fias = {
         onOpen: function(e) {
             var $input = $('.select2-input');
 
@@ -9,7 +9,6 @@ if (!window['fias']) {
                 $input.val(txt);
                 $input.select();
             }
-
             $input.attr('tabindex', -1);
         },
 

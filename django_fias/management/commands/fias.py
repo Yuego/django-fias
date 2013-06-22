@@ -2,18 +2,17 @@
 from __future__ import unicode_literals, absolute_import
 
 import sys
-
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
 
-from fias.models import Status
-from fias.management.utils import FiasFiles, fill_database, update_database
+from django_fias.models import Status
+from django_fias.management.utils import FiasFiles, fill_database, update_database
 
 
 class Command(BaseCommand):
     help = 'Fill or update FIAS database'
-    usage_str = 'Usage: ./manage.py fias [--file <filename>|--remote-file] [--force-replace] [--update]'
+    usage_str = 'Usage: ./manage.py django_fias [--file <filename>|--remote-file] [--force-replace] [--update]'
 
     option_list = BaseCommand.option_list + (
         make_option('--file', action='store', dest='file', default=None,

@@ -10,7 +10,7 @@ __all__ = ['SocrBase']
 class SocrBase(models.Model):
 
     class Meta:
-        app_label = 'fias'
+        app_label = 'django_fias'
         index_together = (
             ('level', 'scname'),
         )

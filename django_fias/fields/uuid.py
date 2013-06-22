@@ -32,5 +32,4 @@ class UUIDField(models.CharField):
     def south_field_triple(self):
         from south.modelsinspector import introspector
         args, kwargs = introspector(self)
-
-        return ('fias.fields.UUIDField', args, kwargs)
+        return ('django_fias.fields.UUIDField', args, kwargs)
