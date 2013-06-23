@@ -20,7 +20,6 @@ class FIASRouter(object):
         return None
 
     def db_for_write(self, model, **hints):
-        print (model, hints)
         if model._meta.object_name in self.MODELS:
             return FIAS_DATABASE_ALIAS
         else:

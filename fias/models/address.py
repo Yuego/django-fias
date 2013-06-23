@@ -13,18 +13,6 @@ __all__ = ['FIASAddress', 'FIASHouse', 'FIASFullAddress']
 
 class FIASAddress(models.Model):
 
-    _LEVELS = {
-        1: 'region',
-        2: 'auto',
-        3: 'area',
-        4: 'city',
-        5: 'ctar',
-        6: 'place',
-        7: 'street',
-        90: 'ext',
-        91: 'sext',
-    }
-
     class Meta:
         abstract = True
 
@@ -41,10 +29,10 @@ class FIASAddress(models.Model):
             if obj.aolevel > 3:
                 short_addr.append(force_unicode(obj))
 
-            level = int(obj.aolevel)
-            attr = self._LEVELS[level]
-            if hasattr(self, attr):
-                setattr(self, attr, obj)
+            #level = int(obj.aolevel)
+            #attr = self._LEVELS[level]
+            #if hasattr(self, attr):
+            #    setattr(self, attr, obj)
 
             if obj.aolevel > 1:
                 try:
@@ -88,3 +76,14 @@ class FIASFullAddress(FIASAddress, FIASHouse):
 
     class Meta:
         abstract = True
+
+    def _get_full_address(self):
+        addr = self.full_address
+
+        if self.house:
+            addr = '%s, %s' % (addr, self.house)
+        if self.corps:
+            addr += self.corps
+
+        return addr
+
