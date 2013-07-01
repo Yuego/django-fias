@@ -17,7 +17,7 @@ setup(
     long_description=open('README.rst').read(),
 
     license='MIT license',
-    requires=[
+    install_requires=[
         'Django>=1.4',
         'django_select2',
         'pysimplesoap',
