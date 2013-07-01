@@ -25,6 +25,7 @@ setup(
         'six',
     ],
     packages=find_packages(),
+    include_package_data=True,
     classifiers=[
         'Development Status :: 1 - Alpha',
         'Intended Audience :: Developers',

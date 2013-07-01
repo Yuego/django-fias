@@ -1,0 +1,3 @@
+include *.rst
+recursive-include fias/static *
+recursive-include fias/locale *.mo
