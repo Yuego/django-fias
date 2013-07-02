@@ -5,10 +5,10 @@ from django.db import models
 
 from fias.fields import UUIDField
 from fias.models.ifns import IFNS
-from fias.models.addrobj import AddrObj, AddrObjFuture
+from fias.models.addrobj import AddrObj
 from fias.models.normdoc import NormDoc
 
-__all__ = ['House', 'HouseFuture']
+__all__ = ['House']
 
 
 class HouseBase(IFNS):
@@ -30,17 +30,10 @@ class HouseBase(IFNS):
     enddate = models.DateField()
 
     statstatus = models.PositiveSmallIntegerField()
-    normdoc = models.ForeignKey(NormDoc, blank=True, null=True)
+    normdoc = UUIDField(blank=True, null=True)
 
     counter = models.IntegerField()
 
-
-class HouseFuture(HouseBase):
-
-    class Meta:
-        app_label = 'fias'
-
-    aoguid = models.ForeignKey(AddrObjFuture)
 
 class House(HouseBase):
 

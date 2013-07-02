@@ -7,7 +7,7 @@ from fias.fields import UUIDField
 from fias.models.ifns import IFNS
 from fias.models.normdoc import NormDoc
 
-__all__ = ['AddrObj', 'AddrObjFuture']
+__all__ = ['AddrObj']
 
 
 class AddrObjBase(IFNS):
@@ -20,9 +20,9 @@ class AddrObjBase(IFNS):
         )
         ordering = ['aolevel', 'formalname']
 
-    aoguid = UUIDField(db_index=True, unique=True)
+    aoguid = UUIDField(primary_key=True)
     parentguid = UUIDField(blank=True, null=True, db_index=True)
-    aoid = UUIDField(primary_key=True)
+    aoid = UUIDField(db_index=True, unique=True)
     previd = UUIDField(blank=True, null=True)
     nextid = UUIDField(blank=True, null=True)
 
@@ -55,17 +55,11 @@ class AddrObjBase(IFNS):
     operstatus = models.PositiveSmallIntegerField()
     currstatus = models.PositiveSmallIntegerField()
 
-    normdoc = models.ForeignKey(NormDoc, blank=True, null=True)
+    normdoc = UUIDField(blank=True, null=True)
     livestatus = models.BooleanField()
 
     def __unicode__(self):
         return '{} {}'.format(self.shortname, self.formalname)
-
-
-class AddrObjFuture(AddrObjBase):
-
-    class Meta:
-        app_label = 'fias'
 
 
 class AddrObj(AddrObjBase):

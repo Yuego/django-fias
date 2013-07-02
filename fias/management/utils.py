@@ -4,7 +4,6 @@ from __future__ import unicode_literals, absolute_import
 from urllib import urlretrieve, urlcleanup
 from xml.parsers import expat
 import datetime
-import os
 import rarfile
 import warnings
 
@@ -21,9 +20,8 @@ class FiasFiles(object):
 
             self.fias_list = {}
 
-            self.archive = None
-            self.arch_ver = None
-            self.updates = {}
+            self.archives = {}
+            self._full_version = None
 
             self._latest = None
             self._arch = None
@@ -56,42 +54,58 @@ class FiasFiles(object):
 
         return self._latest
 
-    def _retrieve_full_archive(self):
-        self.arch_ver = self.latest
-        self.archive = urlretrieve(self.fias_list[self.arch_ver.ver]['FiasCompleteXmlUrl'])
+    def _get_full_archive(self):
+        if 'full' not in self.archives:
+            self._retrieve_full_archive()
+        return self.archives['full']
 
-    def _walk(self, f, version=None):
+    def _set_full_archive(self, value):
+        if value is not None:
+            self.archives['full'] = value
+            self._full_version = None
+
+    full_archive = property(fset=_set_full_archive, fget=_get_full_archive)
+
+    def _retrieve_full_archive(self):
+        if 'full' not in self.archives:
+            self._full_version = self.latest
+            self.archives['full'] = urlretrieve(self.fias_list[self._full_version.ver]['FiasCompleteXmlUrl'])
+
+    def _retrieve_update_archive(self, version):
+        if version.ver not in self.archives:
+            self.archives[version.ver] = urlretrieve(self.fias_list[version.ver]['FiasDeltaXmlUrl'])[0]
+
+    def _walk(self, ver=None):
+        if ver is not None:
+            self._retrieve_update_archive(ver)
+            f = self.archives[ver.ver]
+        else:
+            self._retrieve_full_archive()
+            f = self.archives['full']
+
         self._arch = rarfile.RarFile(f)
 
         for filename in self._arch.namelist():
             tablename = filename.split("_")[-3].lower()
             dump_date = datetime.datetime.strptime(filename.split("_")[-2], "%Y%m%d").date()
 
-            if version is None:
+            if ver is None:
                 try:
-                    version = Version.objects.filter(dumpdate=dump_date).latest('dumpdate')
+                    ver = Version.objects.filter(dumpdate=dump_date).latest('dumpdate')
                 except Version.DoesNotExist:
-                    version = Version.objects.filter(dumpdate__lte=dump_date).latest('dumpdate')
+                    ver = Version.objects.filter(dumpdate__lte=dump_date).latest('dumpdate')
 
-            yield (tablename, dump_date, version, filename)
+            yield (tablename, dump_date, ver, filename)
 
-    def walk_full(self, archive=None):
-        if archive is not None:
-                if os.path.exists(archive):
-                    self.archive = archive
-                else:
-                    raise IOError('File `{0}` does not exist!'.format(archive))
-        else:
-            self._retrieve_full_archive()
-
-        return self._walk(self.archive)
-
-    def walk_update(self, version):
-        if version.ver not in self.updates:
-            self.updates[version.ver] = urlretrieve(self.fias_list[version.ver]['FiasDeltaXmlUrl'])[0]
-        archfile = self.updates[version.ver]
-
-        return self._walk(archfile, version)
+    def get_tablelist(self, ver=None):
+        flist = {}
+        for (table, fdate, fver, filename) in self._walk(ver):
+            flist[table] = {
+                'date': fdate,
+                'ver': fver,
+                'file': filename
+            }
+        return flist.copy()
 
     def open(self, filename):
         return self._arch.open(filename)
@@ -102,12 +116,14 @@ class FiasFiles(object):
 
 class BulkCreate(object):
 
-    def __init__(self, model, pk):
+    def __init__(self, model, pk, upd_field=None):
         self.model = model
         self.pk = pk
+        self.upd_field = upd_field
 
         self.objects = []
         self.counter = 0
+        self.upd_counter = 0
 
     def _lower_keys(self, d):
         return dict((k.lower(), v) for k, v in d.iteritems())
@@ -124,10 +140,19 @@ class BulkCreate(object):
 
         if not self.model.objects.filter(**{self.pk: key}).exists():
             self.objects.append(self.model(**data))
-            del data
             self.counter += 1
+        elif self.upd_field is not None and self.upd_field in data:
+            old_obj = self.model.objects.get(**{self.pk: key})
+            if getattr(old_obj, self.upd_field) < data[self.upd_field]:
+                for k, v in data:
+                    setattr(old_obj, k, v)
+                old_obj.save()
+                self.upd_counter += 1
 
-        if self.counter and self.counter % 25000 == 0:
+            del old_obj
+        del data
+
+        if self.counter and self.counter % 10000 == 0:
             self._create()
             print 'Created {0} objects'.format(self.counter)
 
@@ -135,11 +160,15 @@ class BulkCreate(object):
         if self.objects:
             self._create()
 
+        if self.upd_counter:
+            print 'Updated {0} objects'.format(self.upd_counter)
+
     def __del__(self):
         del self.model
         del self.pk
         del self.objects
         del self.counter
+        del self.upd_counter
 
 
 _socrbase_bulk = BulkCreate(SocrBase, 'kod_t_st')
@@ -158,7 +187,7 @@ def _normdoc_row(name, attrib):
         _normdoc_bulk.push(attrib)
 
 
-_addr_obj_bulk = BulkCreate(AddrObj, 'aoid')
+_addr_obj_bulk = BulkCreate(AddrObj, 'aoguid', 'updatedate')
 
 
 def _addrobj_row(name, attrib):
@@ -170,15 +199,6 @@ def _addrobj_row(name, attrib):
         end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
         if end_date < datetime.date.today():
             return
-
-        if 'NORMDOC' in attrib:
-            docid = attrib.pop('NORMDOC')
-            try:
-                doc = NormDoc.objects.get(normdocid=docid)
-            except NormDoc.DoesNotExist:
-                print 'Doc', docid, 'does not exist. Skipping'
-            else:
-                attrib['NORMDOC'] = doc
 
         start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
         if start_date > datetime.date.today():
@@ -192,7 +212,7 @@ def _addrobj_row(name, attrib):
         _addr_obj_bulk.push(attrib)
 
 
-_house_bulk = BulkCreate(House, 'houseguid')
+_house_bulk = BulkCreate(House, 'houseguid', 'updatedate')
 
 
 def _house_row(name, attrib):
@@ -209,6 +229,8 @@ def _process_table(table, f, update=False):
     if table not in FIAS_TABLES:
         print 'Impossible... but... Skipping table `{0}`'.format(table)
         return
+
+    print 'Processing table `{0}`...'.format(table)
 
     p = expat.ParserCreate()
     bulk = None
@@ -249,22 +271,25 @@ def _process_table(table, f, update=False):
     del f
     del bulk
 
-    print 'Processing of table `{0}` is finished'.format(table)
+    print 'Processing table `{0}` is finished'.format(table)
 
 
 def fill_database(f):
     fias = FiasFiles()
-    for (table, fdate, fver, filename) in fias.walk_full(f):
-        if table in FIAS_TABLES:
+    fias.full_archive = f
+    tables = fias.get_tablelist()
+    for table in FIAS_TABLES:
+        table_info = tables.get(table, None)
+        if table_info is not None:
             try:
                 status = Status.objects.get(table=table)
             except Status.DoesNotExist:
-                f = fias.open(filename)
+                f = fias.open(table_info['file'])
 
                 _process_table(table, f)
 
 
-                status = Status(table=table, ver=fver)
+                status = Status(table=table, ver=table_info['ver'])
                 status.save()
             else:
                 print (('Table `{0}` has version `{1}`. '
@@ -274,15 +299,17 @@ def fill_database(f):
 
 def update_database():
     fias = FiasFiles()
-    for (table, fdate, fver, filename) in fias.walk_update(fias.latest):
-        if table in FIAS_TABLES:
+    tables = fias.get_tablelist(fias.latest)
+    for table in FIAS_TABLES:
+        table_info = tables.get(table, None)
+        if table_info is not None:
             try:
                 status = Status.objects.get(table=table)
             except Status.DoesNotExist:
                 warnings.warn('Can`t update table `{0}`. Status is unknown!'.format(table))
             else:
                 if status.ver.ver < fias.latest.ver:
-                    f = fias.open(filename)
+                    f = fias.open(table_info['file'])
 
                     _process_table(table, f, True)
 
