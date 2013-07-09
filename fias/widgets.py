@@ -66,4 +66,4 @@ class AddressSelect2(HeavySelect2Widget):
         if value is not None:
             text = self.field._txt_for_val(value)
             if text:
-                return u"$('#%s').txt(%s);" % (id_, convert_to_js_str(text))
+                return "$('#%s').txt(%s);" % (id_, convert_to_js_str(text))

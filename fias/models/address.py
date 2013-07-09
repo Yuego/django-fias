@@ -87,3 +87,13 @@ class FIASFullAddress(FIASAddress, FIASHouse):
 
         return addr
 
+    def _get_short_address(self):
+        addr = self.short_address
+
+        if self.house:
+            addr = '%s, %s' % (addr, self.house)
+        if self.corps:
+            addr += self.corps
+
+        return addr
+

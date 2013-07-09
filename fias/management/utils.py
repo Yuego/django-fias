@@ -154,14 +154,14 @@ class BulkCreate(object):
 
         if self.counter and self.counter % 10000 == 0:
             self._create()
-            print 'Created {0} objects'.format(self.counter)
+            print ('Created {0} objects'.format(self.counter))
 
     def finish(self):
         if self.objects:
             self._create()
 
         if self.upd_counter:
-            print 'Updated {0} objects'.format(self.upd_counter)
+            print ('Updated {0} objects'.format(self.upd_counter))
 
     def __del__(self):
         del self.model
@@ -202,8 +202,8 @@ def _addrobj_row(name, attrib):
 
         start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
         if start_date > datetime.date.today():
-            print 'Date in future - skipping...'
-            print attrib
+            print ('Date in future - skipping...')
+            print (attrib)
             return
 
         attrib['ENDDATE'] = end_date
@@ -223,14 +223,14 @@ def _house_row(name, attrib):
 
 def _process_table(table, f, update=False):
     if f is None:
-        print 'Omg! Where`s my file???'
+        print ('Omg! Where`s my file???')
         return
 
     if table not in FIAS_TABLES:
-        print 'Impossible... but... Skipping table `{0}`'.format(table)
+        print ('Impossible... but... Skipping table `{0}`'.format(table))
         return
 
-    print 'Processing table `{0}`...'.format(table)
+    print ('Processing table `{0}`...'.format(table))
 
     p = expat.ParserCreate()
     bulk = None
@@ -271,7 +271,7 @@ def _process_table(table, f, update=False):
     del f
     del bulk
 
-    print 'Processing table `{0}` is finished'.format(table)
+    print ('Processing table `{0}` is finished'.format(table))
 
 
 def fill_database(f):
