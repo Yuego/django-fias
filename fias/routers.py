@@ -41,7 +41,7 @@ class FIASRouter(object):
         """
 
         if (obj1._meta.app_label == 'fias' and obj2._meta.app_label == 'fias' and
-            obj1._meta.object_name in self.MODELS and obj2._meta.object_name in self.MODELS):
+                obj1._meta.object_name in self.MODELS and obj2._meta.object_name in self.MODELS):
             return True
         elif obj1._meta.app_label == 'fias' and obj1._meta.object_name in self.ALLOWED_REL:
             return True

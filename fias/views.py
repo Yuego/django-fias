@@ -123,9 +123,9 @@ class SuggestAddressView(Select2View):
                 return (
                     NO_ERR_RESP,
                     False,
-                    ((force_unicode(l.aoid), '{0}, {1}'.format(prefix, force_unicode(l)), {'level': l.aolevel}) for l in result)
+                    ((force_unicode(l.pk), '{0}, {1}'.format(prefix, force_unicode(l)), {'level': l.aolevel}) for l in result)
                 )
             else:
-                return NO_ERR_RESP, False, ((force_unicode(l.aoid), force_unicode(l), {'level': l.aolevel}) for l in result)
+                return NO_ERR_RESP, False, ((force_unicode(l.pk), force_unicode(l), {'level': l.aolevel}) for l in result)
 
         return NO_ERR_RESP, False, []
