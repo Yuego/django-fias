@@ -17,6 +17,8 @@ class AddressSelect2Field(HeavyModelSelect2ChoiceField):
         self.widget.field = self
 
     def _txt_for_val(self, value):
+        if not value:
+            return
         obj = self.queryset.get(pk=value)
         lst = [force_unicode(obj)]
 
