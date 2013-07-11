@@ -88,7 +88,7 @@ class FIASFullAddress(FIASAddress, FIASHouse):
         return addr
 
     def _get_short_address(self):
-        addr = self.short_address
+        addr = self.short_address if self.short_address else self.full_address
 
         if self.house:
             addr = '%s, %s' % (addr, self.house)
