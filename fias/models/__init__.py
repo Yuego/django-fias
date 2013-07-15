@@ -6,5 +6,4 @@ from .socrbase import *
 from .normdoc import *
 from .addrobj import *
 from .house import *
-
 from .address import *

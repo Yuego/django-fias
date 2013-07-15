@@ -7,20 +7,15 @@ from fias.config import FIAS_DATABASE_ALIAS
 
 
 class FIASRouter(object):
-    MODELS = ['SocrBase', 'NormDoc',
-              'AddrObj',
-              'House',
-              'Version', 'Status']
-
     ALLOWED_REL = ['AddrObj']
     
     def db_for_read(self, model, **hints):
-        if model._meta.app_label == 'fias' and model._meta.object_name in self.MODELS:
-                return FIAS_DATABASE_ALIAS
+        if model._meta.app_label == 'fias':
+            return FIAS_DATABASE_ALIAS
         return None
 
     def db_for_write(self, model, **hints):
-        if model._meta.app_label == 'fias' and model._meta.object_name in self.MODELS:
+        if model._meta.app_label == 'fias':
             return FIAS_DATABASE_ALIAS
         else:
             """\
@@ -40,8 +35,7 @@ class FIASRouter(object):
         но запретить ссылаться из бд ФИАС в другие БД
         """
 
-        if (obj1._meta.app_label == 'fias' and obj2._meta.app_label == 'fias' and
-                obj1._meta.object_name in self.MODELS and obj2._meta.object_name in self.MODELS):
+        if obj1._meta.app_label == 'fias' and obj2._meta.app_label == 'fias':
             return True
         elif obj1._meta.app_label == 'fias' and obj1._meta.object_name in self.ALLOWED_REL:
             return True
@@ -50,11 +44,11 @@ class FIASRouter(object):
     def allow_syncdb(self, db, model):
         """Разрешить синхронизацию моделей в базе ФИАС"""
         if db == FIAS_DATABASE_ALIAS:
-            if model._meta.app_label == 'fias' and model._meta.object_name in self.MODELS:
+            if model._meta.app_label == 'fias':
                 return True
             else:
                 return False
-        elif model._meta.app_label == 'fias' and model._meta.object_name in self.MODELS:
+        elif model._meta.app_label == 'fias':
             return False
 
         return None

@@ -10,21 +10,24 @@ from fias.config import FIAS_DATABASE_ALIAS
 
 
 fias = __import__('fias.models')
+fias_models = ['SocrBase', 'NormDoc', 'AddrObj', 'House', 'Version', 'Status']
 
 
 class TestModel(Model):
-    pass
+    class Meta:
+        app_label = 'nofias'
 
 
 class TestModel2(Model):
-    pass
+    class Meta:
+        app_label = 'nofias'
 
 
 class TestRouter(TestCase):
 
     def setUp(self):
         self.router = FIASRouter()
-        self.models = (getattr(fias.models, attr) for attr in FIASRouter.MODELS)
+        self.models = (getattr(fias.models, attr) for attr in fias_models)
         self.rels = (getattr(fias.models, attr) for attr in FIASRouter.ALLOWED_REL)
 
     def test_read_db(self):
