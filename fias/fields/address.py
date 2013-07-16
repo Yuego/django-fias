@@ -47,3 +47,41 @@ class AddressField(ForeignKey):
         from south.modelsinspector import introspector
         args, kwargs = introspector(self)
         return (six.binary_type('fias.fields.address.AddressField'), args, kwargs)
+
+
+class ChainedAreaField(ForeignKey):
+
+    def __init__(self, to, address_field=None, **kwargs):
+
+        if isinstance(to, six.string_types):
+            self.app_name, self.model_name = to.split('.')
+        else:
+            self.app_name = to._meta.app_label
+            self.model_name = to._meta.object_name
+
+        self.address_field = address_field
+
+        ForeignKey.__init__(self, to, **kwargs)
+
+    def formfield(self, **kwargs):
+        db = kwargs.pop('using', None)
+        if isinstance(self.rel.to, six.string_types):
+            raise ValueError("Cannot create form field for %r yet, because "
+                             "its related model %r has not been loaded yet" %
+                             (self.name, self.rel.to))
+        defaults = {
+            'form_class': forms.ChainedAreaField,
+            'queryset': self.rel.to._default_manager.using(db).none(),
+            'to_field_name': self.rel.field_name,
+            'app_name': self.app_name,
+            'model_name': self.model_name,
+            'address_field': self.address_field,
+        }
+        defaults.update(kwargs)
+
+        return super(ChainedAreaField, self).formfield(**defaults)
+
+    def south_field_triple(self):
+        from south.modelsinspector import introspector
+        args, kwargs = introspector(self)
+        return (six.binary_type('fias.fields.address.ChainedAreaField'), args, kwargs)

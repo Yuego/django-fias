@@ -1,6 +1,7 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+from django.forms.models import ModelChoiceField
 from django.utils.text import force_unicode
 
 from django_select2.fields import HeavyModelSelect2ChoiceField
@@ -34,3 +35,15 @@ class AddressSelect2Field(HeavyModelSelect2ChoiceField):
 
         make_list(obj)
         return ', '.join(lst[::-1])
+
+
+class ChainedAreaField(ModelChoiceField):
+
+    def __init__(self, app_name, model_name, address_field, *args, **kwargs):
+
+        defaults = {
+            'widget': widgets.AreaChainedSelect(app_name, model_name, address_field)
+        }
+        defaults.update(kwargs)
+
+        super(ChainedAreaField, self).__init__(*args, **defaults)

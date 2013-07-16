@@ -2,8 +2,9 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.utils.text import force_unicode
+from django.views.generic import View
 
-from django_select2.views import Select2View, NO_ERR_RESP
+from django_select2.views import JSONResponseMixin, Select2View, NO_ERR_RESP
 
 from fias.models import AddrObj, SocrBase
 
@@ -129,3 +130,47 @@ class SuggestAddressView(Select2View):
                 return NO_ERR_RESP, False, ((force_unicode(l.pk), force_unicode(l), {'level': l.aolevel}) for l in result)
 
         return NO_ERR_RESP, False, []
+
+
+class GetAreasListView(Select2View):
+
+    def get(self, request, *args, **kwargs):
+        if request.method == 'GET':
+            guid = request.GET.get('guid', None)
+            if guid is None:
+                return self.render_to_response(self._results_to_context(('missing guid', False, [], )))
+            if not guid:
+                return self.render_to_response(self._results_to_context((NO_ERR_RESP, False, [], )))
+
+        else:
+            return self.render_to_response(self._results_to_context(('not a get request', False, [], )))
+
+        try:
+            address = AddrObj.objects.get(pk=guid)
+        except AddrObj.DoesNotExist:
+            return self.render_to_response(self._results_to_context(('wrong guid', False, [], )))
+
+        city = self._get_city_obj(address)
+
+        if city is None:
+            return self.render_to_response(self._results_to_context((NO_ERR_RESP, False, [], )))
+
+        areas = AddrObj.objects.filter(parentguid=city.pk, shortname='р-н')
+
+        if areas:
+            return self.render_to_response(self._results_to_context((
+                NO_ERR_RESP,
+                False,
+                ((force_unicode(a.pk), force_unicode(a)) for a in areas), ))
+            )
+
+        return self.render_to_response(self._results_to_context((NO_ERR_RESP, False, [], )))
+
+    def _get_city_obj(self, obj):
+        if obj.shortname != 'г' and obj.aolevel > 1:
+            parent = AddrObj.objects.get(pk=obj.parentguid)
+            return self._get_city_obj(parent)
+        elif obj.shortname == 'г':
+            return obj
+        else:
+            return None
