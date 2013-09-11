@@ -1,6 +1,8 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+import six
+
 from django.db import models
 
 from fias.fields import UUIDField
@@ -57,6 +59,15 @@ class AddrObjBase(IFNS):
 
     normdoc = UUIDField(blank=True, null=True)
     livestatus = models.BooleanField()
+
+    def full_name(self, depth=None):
+        assert isinstance(depth, six.integer_types), 'Depth must be integer'
+
+        if not self.parentguid or depth <= 0:
+            return self.__unicode__()
+        else:
+            parent = AddrObj.objects.get(pk=self.parentguid)
+            return '{}, {}'.format(parent.full_name(depth-1), self)
 
     def __unicode__(self):
         return '{} {}'.format(self.shortname, self.formalname)

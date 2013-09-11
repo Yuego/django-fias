@@ -7,6 +7,8 @@ import datetime
 import rarfile
 import warnings
 
+from django.db.models import Min
+
 from fias.models import *
 from fias.config import FIAS_TABLES, FIAS_DELETED_TABLES
 
@@ -116,14 +118,30 @@ class FiasFiles(object):
 
 class BulkCreate(object):
 
-    def __init__(self, model, pk, upd_field=None):
+    def __init__(self, model, pk, upd_field=None, mode='update'):
+        self._mode = 'update'
+
         self.model = model
         self.pk = pk
         self.upd_field = upd_field
+        self.mode = mode
 
         self.objects = []
         self.counter = 0
         self.upd_counter = 0
+        
+    def _set_mode(self, value):
+        assert value in ('fill', 'update'), 'Wrong mode `{}`'.format(value)
+        self._mode = value
+
+    def _get_mode(self):
+        return self._mode
+
+    mode = property(fset=_set_mode, fget=_get_mode)
+
+    def reset_counters(self):
+        self.upd_counter = 0
+        self.counter = 0
 
     def _lower_keys(self, d):
         return dict((k.lower(), v) for k, v in d.iteritems())
@@ -137,13 +155,15 @@ class BulkCreate(object):
 
         key = data[self.pk]
 
-        if not self.model.objects.filter(**{self.pk: key}).exists():
+        if self.mode == 'fill' or not self.model.objects.filter(**{self.pk: key}).exists():
             self.objects.append(self.model(**data))
             self.counter += 1
         elif self.upd_field is not None and self.upd_field in data:
             old_obj = self.model.objects.get(**{self.pk: key})
+            data[self.upd_field] = datetime.datetime.strptime(data[self.upd_field], "%Y-%m-%d").date()
+
             if getattr(old_obj, self.upd_field) < data[self.upd_field]:
-                for k, v in data:
+                for k, v in data.items():
                     setattr(old_obj, k, v)
                 old_obj.save()
                 self.upd_counter += 1
@@ -215,7 +235,7 @@ def _house_row(name, attrib):
         return
 
 
-def _process_table(table, f, update=False):
+def _process_table(table, f, ver, update=False):
     if f is None:
         print ('Omg! Where`s my file???')
         return
@@ -224,7 +244,7 @@ def _process_table(table, f, update=False):
         print ('Impossible... but... Skipping table `{0}`'.format(table))
         return
 
-    print ('{} table `{}`...'.format('Updating' if update else 'Filling', table))
+    print ('{} table `{}` to ver. {}...'.format('Updating' if update else 'Filling', table, ver))
 
     p = expat.ParserCreate()
     bulk = None
@@ -260,6 +280,12 @@ def _process_table(table, f, update=False):
     if bulk is None:
         return
 
+    # Небольшая оптимизация заполнения пустых таблиц
+    if not update:
+        bulk.mode = 'fill'
+    else:
+        bulk.reset_counters()
+
     p.ParseFile(f)
     bulk.finish()
 
@@ -278,7 +304,7 @@ def fill_database(f):
             except Status.DoesNotExist:
                 f = fias.open(table_info['file'])
 
-                _process_table(table, f)
+                _process_table(table, f, table_info['ver'])
 
                 status = Status(table=table, ver=table_info['ver'])
                 status.save()
@@ -288,30 +314,53 @@ def fill_database(f):
                     table_info = tables.get('del_' + table, None)
                     if table_info is not None:
                         f = fias.open(table_info['file'])
-                        _process_table(table, f, update=True)
+                        _process_table(table, f, table_info['ver'], update=True)
             else:
                 print (('Table `{0}` has version `{1}`. '
                         'Please use --force for replace '
                         'all tables. Skipping...'.format(status.table, status.ver)))
 
 
-def update_database():
+def update_database(skip):
     fias = FiasFiles()
-    tables = fias.get_tablelist(fias.latest)
-    for table in FIAS_TABLES:
-        table_info = tables.get(table, None)
-        if table_info is not None:
+
+    min_status_ver = Status.objects.aggregate(Min('ver'))['ver__min']
+    if min_status_ver is not None:
+        for _version in Version.objects.filter(ver__gt=min_status_ver).order_by('ver'):
+
             try:
-                status = Status.objects.get(table=table)
-            except Status.DoesNotExist:
-                warnings.warn('Can`t update table `{0}`. Status is unknown!'.format(table))
-            else:
-                if status.ver.ver < fias.latest.ver:
-                    f = fias.open(table_info['file'])
-
-                    _process_table(table, f, True)
-
-                    status.ver = fias.latest
-                    status.save()
+                tables = fias.get_tablelist(_version)
+            except rarfile.NotRarFile:
+                if skip:
+                    print 'Битый архив версии {}. Пропускаем...'.format(_version)
+                    continue
                 else:
-                    print ('Table `{0}` is up to date. Version: {1}'.format(status.table, status.ver))
+                    raise
+
+            for table in FIAS_TABLES:
+                try:
+                    status = Status.objects.get(table=table)
+                except Status.DoesNotExist:
+                    warnings.warn('Can`t update table `{0}`. Status is unknown!'.format(table))
+                else:
+                    if status.ver.ver < _version.ver:
+                        table_info = tables.get(table, None)
+                        if table_info is not None:
+                            f = fias.open(table_info['file'])
+
+                            _process_table(table, f, table_info['ver'], update=True)
+
+                            status.ver = _version
+                            status.save()
+
+                            # Add deleted items
+                            if table in FIAS_DELETED_TABLES:
+                                table_info = tables.get('del_' + table, None)
+                                if table_info is not None:
+                                    f = fias.open(table_info['file'])
+                                    _process_table(table, f, '{} (deleted)'.format(table_info['ver']), update=True)
+
+                    else:
+                        print ('Table `{0}` is up to date. Version: {1}'.format(status.table, status.ver))
+    else:
+        print ('Not available. Please import the data before updating')
