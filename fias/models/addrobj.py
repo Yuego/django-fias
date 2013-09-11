@@ -63,7 +63,7 @@ class AddrObjBase(IFNS):
     def full_name(self, depth=None):
         assert isinstance(depth, six.integer_types), 'Depth must be integer'
 
-        if not self.parentguid or depth <= 0:
+        if not self.parentguid or self.aolevel <= 1 or depth <= 0:
             return self.__unicode__()
         else:
             parent = AddrObj.objects.get(pk=self.parentguid)

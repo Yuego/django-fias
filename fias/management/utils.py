@@ -124,7 +124,7 @@ class BulkCreate(object):
         self.model = model
         self.pk = pk
         self.upd_field = upd_field
-        self.mode = mode
+        self._set_mode(mode)
 
         self.objects = []
         self.counter = 0
@@ -284,9 +284,11 @@ def _process_table(table, f, ver, update=False):
     if not update:
         bulk.mode = 'fill'
     else:
+        bulk.mode = 'update'
         bulk.reset_counters()
-
+        
     p.ParseFile(f)
+    
     bulk.finish()
 
     print ('Processing table `{0}` is finished'.format(table))
@@ -310,14 +312,14 @@ def fill_database(f):
                 status.save()
 
                 # Add deleted items
-                if table in FIAS_DELETED_TABLES:
-                    table_info = tables.get('del_' + table, None)
-                    if table_info is not None:
-                        f = fias.open(table_info['file'])
-                        _process_table(table, f, table_info['ver'], update=True)
+                #if table in FIAS_DELETED_TABLES:
+                #    table_info = tables.get('del_' + table, None)
+                #    if table_info is not None:
+                #        f = fias.open(table_info['file'])
+                #        _process_table(table, f, '{} (deleted)'.format(table_info['ver']), update=True)
             else:
                 print (('Table `{0}` has version `{1}`. '
-                        'Please use --force for replace '
+                        'Please use --force-replace for replace '
                         'all tables. Skipping...'.format(status.table, status.ver)))
 
 
@@ -354,11 +356,11 @@ def update_database(skip):
                             status.save()
 
                             # Add deleted items
-                            if table in FIAS_DELETED_TABLES:
-                                table_info = tables.get('del_' + table, None)
-                                if table_info is not None:
-                                    f = fias.open(table_info['file'])
-                                    _process_table(table, f, '{} (deleted)'.format(table_info['ver']), update=True)
+                            #if table in FIAS_DELETED_TABLES:
+                            #    table_info = tables.get('del_' + table, None)
+                            #    if table_info is not None:
+                            #        f = fias.open(table_info['file'])
+                            #        _process_table(table, f, '{} (deleted)'.format(table_info['ver']), update=True)
 
                     else:
                         print ('Table `{0}` is up to date. Version: {1}'.format(status.table, status.ver))
