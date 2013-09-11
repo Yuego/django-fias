@@ -8,8 +8,9 @@ import rarfile
 import warnings
 
 from fias.models import *
-from fias.config import FIAS_TABLES
+from fias.config import FIAS_TABLES, FIAS_DELETED_TABLES
 
+_today = datetime.date.today()
 
 class FiasFiles(object):
     def __new__(cls):
@@ -26,24 +27,20 @@ class FiasFiles(object):
             self._latest = None
             self._arch = None
 
-            from pysimplesoap import client
-            client.TIMEOUT = None
-            fias = client.SoapClient(wsdl="http://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL", trace=False)
-            fias_list_raw = fias.GetAllDownloadFileInfo()
-            if fias_list_raw and 'GetAllDownloadFileInfoResult' in fias_list_raw:
-                for it in fias_list_raw['GetAllDownloadFileInfoResult']:
-                    one = it['DownloadFileInfo']
-                    try:
-                        ver = Version.objects.get(ver=one['VersionId'])
-                    except Version.DoesNotExist:
-                        ver = Version(**{
-                            'ver': one['VersionId'],
-                            'dumpdate': datetime.datetime.strptime(one['TextVersion'][-10:], "%d.%m.%Y").date(),
-                        })
-                        ver.save()
+            from suds.client import Client
+            client = Client(url="http://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL")
+            result = client.service.GetAllDownloadFileInfo()
+            for it in result.DownloadFileInfo:
+                try:
+                    ver = Version.objects.get(ver=it['VersionId'])
+                except Version.DoesNotExist:
+                    ver = Version(**{
+                        'ver': it['VersionId'],
+                        'dumpdate': datetime.datetime.strptime(it['TextVersion'][-10:], "%d.%m.%Y").date(),
+                    })
+                    ver.save()
 
-                    del one['VersionId']
-                    self.fias_list[ver.ver] = one
+                self.fias_list[ver.ver] = it
 
         return cls.instance
 
@@ -86,8 +83,10 @@ class FiasFiles(object):
         self._arch = rarfile.RarFile(f)
 
         for filename in self._arch.namelist():
-            tablename = filename.split("_")[-3].lower()
-            dump_date = datetime.datetime.strptime(filename.split("_")[-2], "%Y%m%d").date()
+            _prefix, _date = filename.lower().rsplit('_', 2)[0:2]
+
+            tablename = _prefix.replace('as_', '')
+            dump_date = datetime.datetime.strptime(_date, "%Y%m%d").date()
 
             if ver is None:
                 try:
@@ -105,6 +104,7 @@ class FiasFiles(object):
                 'ver': fver,
                 'file': filename
             }
+        #print flist
         return flist.copy()
 
     def open(self, filename):
@@ -130,7 +130,6 @@ class BulkCreate(object):
 
     def _create(self):
         self.model.objects.bulk_create(self.objects)
-        del self.objects
         self.objects = []
 
     def push(self, data):
@@ -149,7 +148,6 @@ class BulkCreate(object):
                 old_obj.save()
                 self.upd_counter += 1
 
-            del old_obj
         del data
 
         if self.counter and self.counter % 10000 == 0:
@@ -162,13 +160,6 @@ class BulkCreate(object):
 
         if self.upd_counter:
             print ('Updated {0} objects'.format(self.upd_counter))
-
-    def __del__(self):
-        del self.model
-        del self.pk
-        del self.objects
-        del self.counter
-        del self.upd_counter
 
 
 _socrbase_bulk = BulkCreate(SocrBase, 'kod_t_st')
@@ -192,16 +183,19 @@ _addr_obj_bulk = BulkCreate(AddrObj, 'aoguid', 'updatedate')
 
 def _addrobj_row(name, attrib):
     if name == 'Object':
-
-        if attrib.get('LIVESTATUS', '0') != '1':
+        # Пропускаем изменённые объекты
+        if attrib.has_key('NEXTID'):
             return
+
+        #if attrib.get('LIVESTATUS', '0') != '1':
+        #    return
 
         end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
-        if end_date < datetime.date.today():
-            return
+        #if end_date < _today:
+        #    return
 
         start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
-        if start_date > datetime.date.today():
+        if start_date > _today:
             print ('Date in future - skipping...')
             print (attrib)
             return
@@ -230,7 +224,7 @@ def _process_table(table, f, update=False):
         print ('Impossible... but... Skipping table `{0}`'.format(table))
         return
 
-    print ('Processing table `{0}`...'.format(table))
+    print ('{} table `{}`...'.format('Updating' if update else 'Filling', table))
 
     p = expat.ParserCreate()
     bulk = None
@@ -242,19 +236,19 @@ def _process_table(table, f, update=False):
         p.StartElementHandler = _socrbase_row
         bulk = _socrbase_bulk
 
-    elif table == 'normdoc':
+    elif table.endswith('normdoc'):
         if not update:
             NormDoc.objects.all().delete()
 
         p.StartElementHandler = _normdoc_row
         bulk = _normdoc_bulk
-    elif table == 'addrobj':
+    elif table.endswith('addrobj'):
         if not update:
             AddrObj.objects.all().delete()
 
         p.StartElementHandler = _addrobj_row
         bulk = _addr_obj_bulk
-    elif table == 'house':
+    elif table.endswith('house'):
         if not update:
             House.objects.all().delete()
 
@@ -262,14 +256,12 @@ def _process_table(table, f, update=False):
         bulk = _house_bulk
         #TODO: убрать как только будет реализовано до конца (см. выше)
         return
-    else:
+
+    if bulk is None:
         return
 
     p.ParseFile(f)
     bulk.finish()
-    del p
-    del f
-    del bulk
 
     print ('Processing table `{0}` is finished'.format(table))
 
@@ -288,9 +280,15 @@ def fill_database(f):
 
                 _process_table(table, f)
 
-
                 status = Status(table=table, ver=table_info['ver'])
                 status.save()
+
+                # Add deleted items
+                if table in FIAS_DELETED_TABLES:
+                    table_info = tables.get('del_' + table, None)
+                    if table_info is not None:
+                        f = fias.open(table_info['file'])
+                        _process_table(table, f, update=True)
             else:
                 print (('Table `{0}` has version `{1}`. '
                         'Please use --force for replace '
