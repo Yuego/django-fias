@@ -6,9 +6,11 @@ from django.utils.text import force_unicode
 from django.utils.translation import ugettext_lazy as _
 
 from fias.models.addrobj import AddrObj
-from fias.fields import AddressField
+from fias.fields import AddressField, ChainedAreaField
 
-__all__ = ['FIASAddress', 'FIASHouse', 'FIASFullAddress']
+__all__ = ['FIASAddress', 'FIASAddressWithArea',
+           'FIASHouse',
+           'FIASFullAddress', 'FIASFullAddressWithArea']
 
 
 class FIASAddress(models.Model):
@@ -16,7 +18,7 @@ class FIASAddress(models.Model):
     class Meta:
         abstract = True
 
-    address = AddressField(AddrObj, verbose_name=_('address'))
+    address = AddressField(AddrObj, verbose_name=_('address'), related_name='+')
 
     full_address = models.CharField(_('full address'), max_length=255, blank=True, editable=False)
     short_address = models.CharField(_('short address'), max_length=255, blank=True, editable=False)
@@ -62,6 +64,13 @@ class FIASAddress(models.Model):
         super(FIASAddress, self).save(force_insert, force_update, using, update_fields)
 
 
+class FIASAddressWithArea(FIASAddress):
+
+    class Meta:
+        abstract = True
+
+    area = ChainedAreaField(AddrObj, address_field='address', related_name='+')
+
 class FIASHouse(models.Model):
 
     class Meta:
@@ -97,3 +106,28 @@ class FIASFullAddress(FIASAddress, FIASHouse):
 
         return addr
 
+
+class FIASFullAddressWithArea(FIASAddressWithArea, FIASHouse):
+
+    class Meta:
+        abstract = True
+
+    def _get_full_address(self):
+        addr = self.full_address
+
+        if self.house:
+            addr = '%s, %s' % (addr, self.house)
+        if self.corps:
+            addr += self.corps
+
+        return addr
+
+    def _get_short_address(self):
+        addr = self.short_address if self.short_address else self.full_address
+
+        if self.house:
+            addr = '%s, %s' % (addr, self.house)
+        if self.corps:
+            addr += self.corps
+
+        return addr
