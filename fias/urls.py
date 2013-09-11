@@ -3,9 +3,9 @@ from __future__ import unicode_literals, absolute_import
 
 from django.conf.urls import patterns, url
 
-from fias.views import SuggestAddressView, GetAreasListView
+from fias.views import SuggestAddressViewStepByStep, GetAreasListView
 
 urlpatterns = patterns('',
-                       url(r'^suggest', SuggestAddressView.as_view(), name='suggest'),
+                       url(r'^suggest_sbs', SuggestAddressViewStepByStep.as_view(), name='suggest_step_by_step'),
                        url(r'^get_areas_list', GetAreasListView.as_view(), name='get_areas_list'),
 )

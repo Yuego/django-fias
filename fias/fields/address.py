@@ -25,7 +25,7 @@ class AddressField(ForeignKey):
         }
         defaults.update(kwargs)
 
-        return forms.AddressSelect2Field(data_view='fias:suggest', **defaults)
+        return forms.AddressSelect2Field(data_view='fias:suggest_step_by_step', **defaults)
 
     def validate(self, value, model_instance):
         if self.rel.parent_link:

@@ -1,6 +1,7 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+from django.db.models import Q
 from django.utils.text import force_unicode
 from django.views.generic import View
 
@@ -11,7 +12,7 @@ from fias.models import AddrObj, SocrBase
 EMPTY_RESULT = NO_ERR_RESP, False, ()
 
 
-class SuggestAddressView(Select2View):
+class SuggestAddressViewStepByStep(Select2View):
 
     def get_results(self, request, term, page, context):
         filter_params = None
@@ -58,7 +59,7 @@ class SuggestAddressView(Select2View):
             socr_term, obj_term = last.split(' ', 1)
             socr_term = socr_term.rstrip('.')
 
-            sqs = SocrBase.objects.filter(scname__istartswith=socr_term).distinct()
+            sqs = SocrBase.objects.filter(scname__icontains=socr_term).distinct()
 
             if level > 0:
                 sqs = sqs.filter(level__gt=result_parts[-1].aolevel)
@@ -87,13 +88,13 @@ class SuggestAddressView(Select2View):
 
             if filter_params:
                 if obj_term:
-                    filter_params.update(formalname__istartswith=obj_term)
+                    filter_params.update(formalname__icontains=obj_term)
                 if level > 0:
                     filter_params.update(parentguid=result_parts[-1].aoguid, aolevel__gt=result_parts[-1].aolevel)
 
         # Это только сокращение?
         elif last_len < 10:
-            sqs = SocrBase.objects.filter(scname__istartswith=last)
+            sqs = SocrBase.objects.filter(scname__icontains=last)
 
             if level > 0:
                 sqs = sqs.filter(level__gt=result_parts[-1].aolevel)
@@ -103,7 +104,7 @@ class SuggestAddressView(Select2View):
                 result = ((None, s.scname) for s in sqs)
             else:
                 filter_params = dict(
-                    formalname__istartswith=last
+                    formalname__icontains=last
                 )
 
                 if level > 0:
@@ -118,7 +119,7 @@ class SuggestAddressView(Select2View):
             return NO_ERR_RESP, False, result
 
         if filter_params is not None:
-            result = AddrObj.objects.order_by('aolevel').filter(**filter_params)[:30]
+            result = AddrObj.objects.order_by('aolevel').filter(**filter_params)[:10]
 
             if prefix:
                 return (
@@ -127,7 +128,7 @@ class SuggestAddressView(Select2View):
                     ((force_unicode(l.pk), '{0}, {1}'.format(prefix, force_unicode(l)), {'level': l.aolevel}) for l in result)
                 )
             else:
-                return NO_ERR_RESP, False, ((force_unicode(l.pk), force_unicode(l), {'level': l.aolevel}) for l in result)
+                return NO_ERR_RESP, False, ((force_unicode(l.pk), force_unicode(l.full_name(5)), {'level': l.aolevel}) for l in result)
 
         return NO_ERR_RESP, False, []
 
