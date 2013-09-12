@@ -5,7 +5,7 @@ import six
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.db.models.fields.related import ForeignKey, ManyToOneRel
+from django.db.models.fields.related import ForeignKey
 
 from fias import forms
 from fias.config import FIAS_DATABASE_ALIAS
