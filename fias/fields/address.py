@@ -13,6 +13,9 @@ from fias.config import FIAS_DATABASE_ALIAS
 
 class AddressField(ForeignKey):
 
+    def __init__(self, to='fias.AddrObj', **kwargs):
+        ForeignKey.__init__(self, to, **kwargs)
+
     def formfield(self, **kwargs):
         db = kwargs.pop('using', None)
         if isinstance(self.rel.to, six.string_types):

@@ -18,7 +18,7 @@ class FIASAddress(models.Model):
     class Meta:
         abstract = True
 
-    address = AddressField(AddrObj, verbose_name=_('address'), related_name='+')
+    address = AddressField(verbose_name=_('address'), related_name='+')
 
     full_address = models.CharField(_('full address'), max_length=255, blank=True, editable=False)
     short_address = models.CharField(_('short address'), max_length=255, blank=True, editable=False)
