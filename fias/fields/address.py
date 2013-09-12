@@ -63,6 +63,8 @@ class ChainedAreaField(ForeignKey):
             self.model_name = to._meta.object_name
 
         self.address_field = address_field
+        kwargs.setdefault('blank', True)
+        kwargs.setdefault('null', True)
 
         ForeignKey.__init__(self, to, **kwargs)
 
