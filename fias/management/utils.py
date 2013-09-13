@@ -14,6 +14,7 @@ from fias.config import FIAS_TABLES, FIAS_DELETED_TABLES
 
 _today = datetime.date.today()
 
+
 class FiasFiles(object):
     def __new__(cls):
         if not hasattr(cls, 'instance'):
@@ -231,8 +232,80 @@ _house_bulk = BulkCreate(House, 'houseguid', 'updatedate')
 
 def _house_row(name, attrib):
     if name == 'House':
-        #TODO: реализовать
-        return
+        if attrib.has_key('NEXTID'):
+            return
+
+        end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
+
+        start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
+        if start_date > _today:
+            print ('Date in future - skipping...')
+            print (attrib)
+            return
+
+        attrib['ENDDATE'] = end_date
+        attrib['STARTDATE'] = start_date
+
+        try:
+            attrib['AOGUID'] = AddrObj.objects.get(pk=attrib['AOGUID'])
+        except AddrObj.DoesNotExist:
+            print ('AddrObj with GUID `{}` not found. Skipping house...'.format(attrib['AOGUID']))
+            print (attrib)
+            return
+
+        _house_bulk.push(attrib)
+
+
+_houseint_bulk = BulkCreate(HouseInt, 'intguid', 'updatedate')
+
+
+def _houseint_row(name, attrib):
+    if name == 'HouseInterval':
+        end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
+
+        start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
+        if start_date > _today:
+            print ('Date in future - skipping...')
+            print (attrib)
+            return
+
+        attrib['ENDDATE'] = end_date
+        attrib['STARTDATE'] = start_date
+
+        try:
+            attrib['AOGUID'] = AddrObj.objects.get(pk=attrib['AOGUID'])
+        except AddrObj.DoesNotExist:
+            print ('AddrObj with GUID `{}` not found. Skipping landmark...'.format(attrib['AOGUID']))
+            print (attrib)
+            return
+
+        _landmark_bulk.push(attrib)
+
+
+_landmark_bulk = BulkCreate(LandMark, 'landguid', 'updatedate')
+
+
+def _landmark_row(name, attrib):
+    if name == 'Landmark':
+        end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
+
+        start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
+        if start_date > _today:
+            print ('Date in future - skipping...')
+            print (attrib)
+            return
+
+        attrib['ENDDATE'] = end_date
+        attrib['STARTDATE'] = start_date
+
+        try:
+            attrib['AOGUID'] = AddrObj.objects.get(pk=attrib['AOGUID'])
+        except AddrObj.DoesNotExist:
+            print ('AddrObj with GUID `{}` not found. Skipping landmark...'.format(attrib['AOGUID']))
+            print (attrib)
+            return
+
+        _landmark_bulk.push(attrib)
 
 
 def _process_table(table, f, ver, update=False):
@@ -256,26 +329,38 @@ def _process_table(table, f, ver, update=False):
         p.StartElementHandler = _socrbase_row
         bulk = _socrbase_bulk
 
-    elif table.endswith('normdoc'):
+    elif table == 'normdoc':
         if not update:
             NormDoc.objects.all().delete()
 
         p.StartElementHandler = _normdoc_row
         bulk = _normdoc_bulk
-    elif table.endswith('addrobj'):
+    elif table == 'addrobj':
         if not update:
             AddrObj.objects.all().delete()
 
         p.StartElementHandler = _addrobj_row
         bulk = _addr_obj_bulk
-    elif table.endswith('house'):
+    elif table == 'house':
         if not update:
             House.objects.all().delete()
 
         p.StartElementHandler = _house_row
         bulk = _house_bulk
-        #TODO: убрать как только будет реализовано до конца (см. выше)
-        return
+
+    elif table == 'houseint':
+        if not update:
+            HouseInt.objects.all().delete()
+
+        p.StartElementHandler = _houseint_row
+        bulk = _houseint_bulk
+
+    elif table == 'landmark':
+        if not update:
+            LandMark.objects.all().delete()
+
+        p.StartElementHandler = _landmark_row
+        bulk = _landmark_bulk
 
     if bulk is None:
         return
@@ -292,6 +377,8 @@ def _process_table(table, f, ver, update=False):
     bulk.finish()
 
     print ('Processing table `{0}` is finished'.format(table))
+
+#TODO: использовать CLUSTER для PostgreSQL??? Или ну его?
 
 
 def fill_database(f):
@@ -310,13 +397,6 @@ def fill_database(f):
 
                 status = Status(table=table, ver=table_info['ver'])
                 status.save()
-
-                # Add deleted items
-                #if table in FIAS_DELETED_TABLES:
-                #    table_info = tables.get('del_' + table, None)
-                #    if table_info is not None:
-                #        f = fias.open(table_info['file'])
-                #        _process_table(table, f, '{} (deleted)'.format(table_info['ver']), update=True)
             else:
                 print (('Table `{0}` has version `{1}`. '
                         'Please use --force-replace for replace '
@@ -354,14 +434,6 @@ def update_database(skip):
 
                             status.ver = _version
                             status.save()
-
-                            # Add deleted items
-                            #if table in FIAS_DELETED_TABLES:
-                            #    table_info = tables.get('del_' + table, None)
-                            #    if table_info is not None:
-                            #        f = fias.open(table_info['file'])
-                            #        _process_table(table, f, '{} (deleted)'.format(table_info['ver']), update=True)
-
                     else:
                         print ('Table `{0}` is up to date. Version: {1}'.format(status.table, status.ver))
     else:

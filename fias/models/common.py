@@ -2,11 +2,12 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.db import models
+from fias.fields import UUIDField
 
-__all__ = ['IFNS']
+__all__ = ['Common']
 
 
-class IFNS(models.Model):
+class Common(models.Model):
 
     class Meta:
         abstract = True
@@ -20,3 +21,6 @@ class IFNS(models.Model):
     oktmo = models.IntegerField(blank=True, null=True)
 
     updatedate = models.DateField()
+    startdate = models.DateField()
+    enddate = models.DateField()
+    normdoc = UUIDField(blank=True, null=True)

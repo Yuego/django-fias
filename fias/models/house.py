@@ -4,18 +4,18 @@ from __future__ import unicode_literals, absolute_import
 from django.db import models
 
 from fias.fields import UUIDField
-from fias.models.ifns import IFNS
+from fias.models.common import Common
 from fias.models.addrobj import AddrObj
-from fias.models.normdoc import NormDoc
 
-__all__ = ['House']
+__all__ = ['House', 'HouseInt']
 
 
-class HouseBase(IFNS):
+class House(Common):
 
     class Meta:
-        abstract = True
+        app_label = 'fias'
 
+    aoguid = models.ForeignKey(AddrObj)
     postalcode = models.PositiveIntegerField(blank=True, null=True)
 
     housenum = models.CharField(max_length=20, blank=True, null=True)
@@ -23,11 +23,8 @@ class HouseBase(IFNS):
     buildnum = models.CharField(max_length=10, blank=True, null=True)
     strucnum = models.CharField(max_length=10, blank=True, null=True)
     strstatus = models.PositiveSmallIntegerField()
-    houseguid = UUIDField()
-    houseid = UUIDField(primary_key=True)
-
-    startdate = models.DateField()
-    enddate = models.DateField()
+    houseguid = UUIDField(primary_key=True)
+    houseid = UUIDField()
 
     statstatus = models.PositiveSmallIntegerField()
     normdoc = UUIDField(blank=True, null=True)
@@ -35,9 +32,19 @@ class HouseBase(IFNS):
     counter = models.IntegerField()
 
 
-class House(HouseBase):
+class HouseInt(Common):
 
     class Meta:
         app_label = 'fias'
 
+    houseintid = UUIDField()
+    intguid = UUIDField(primary_key=True)
     aoguid = models.ForeignKey(AddrObj)
+
+    intstart = models.PositiveIntegerField()
+    intend = models.PositiveIntegerField()
+
+    intstatus = models.PositiveIntegerField()
+
+    counter = models.PositiveIntegerField()
+

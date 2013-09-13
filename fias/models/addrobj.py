@@ -6,16 +6,15 @@ import six
 from django.db import models
 
 from fias.fields import UUIDField
-from fias.models.ifns import IFNS
-from fias.models.normdoc import NormDoc
+from fias.models.common import Common
 
 __all__ = ['AddrObj']
 
 
-class AddrObjBase(IFNS):
+class AddrObj(Common):
 
     class Meta:
-        abstract = True
+        app_label = 'fias'
         index_together = (
             ('aolevel', 'shortname'),
             ('shortname', 'formalname'),
@@ -27,9 +26,6 @@ class AddrObjBase(IFNS):
     aoid = UUIDField(db_index=True, unique=True)
     previd = UUIDField(blank=True, null=True)
     nextid = UUIDField(blank=True, null=True)
-
-    startdate = models.DateField()
-    enddate = models.DateField()
 
     formalname = models.CharField(max_length=120, db_index=True)
     offname = models.CharField(max_length=120, blank=True, null=True)
@@ -57,7 +53,6 @@ class AddrObjBase(IFNS):
     operstatus = models.PositiveSmallIntegerField()
     currstatus = models.PositiveSmallIntegerField()
 
-    normdoc = UUIDField(blank=True, null=True)
     livestatus = models.BooleanField()
 
     def full_name(self, depth=None):
@@ -71,9 +66,3 @@ class AddrObjBase(IFNS):
 
     def __unicode__(self):
         return '{} {}'.format(self.shortname, self.formalname)
-
-
-class AddrObj(AddrObjBase):
-
-    class Meta:
-        app_label = 'fias'
