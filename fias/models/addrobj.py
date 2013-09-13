@@ -31,7 +31,6 @@ class AddrObj(Common):
     offname = models.CharField(max_length=120, blank=True, null=True)
     shortname = models.CharField(max_length=10, db_index=True)
     aolevel = models.PositiveSmallIntegerField(db_index=True)
-    postalcode = models.PositiveIntegerField(blank=True, null=True)
 
     #KLADE
     regioncode = models.CharField(max_length=2)

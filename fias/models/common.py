@@ -20,6 +20,8 @@ class Common(models.Model):
     okato = models.BigIntegerField(blank=True, null=True)
     oktmo = models.IntegerField(blank=True, null=True)
 
+    postalcode = models.PositiveIntegerField(blank=True, null=True)
+
     updatedate = models.DateField()
     startdate = models.DateField()
     enddate = models.DateField()

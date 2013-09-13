@@ -16,7 +16,6 @@ class House(Common):
         app_label = 'fias'
 
     aoguid = models.ForeignKey(AddrObj)
-    postalcode = models.PositiveIntegerField(blank=True, null=True)
 
     housenum = models.CharField(max_length=20, blank=True, null=True)
     eststatus = models.BooleanField()

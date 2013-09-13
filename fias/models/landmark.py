@@ -20,5 +20,3 @@ class LandMark(Common):
     aoguid = models.ForeignKey(AddrObj)
 
     location = models.TextField()
-
-    postalcode = models.PositiveIntegerField(blank=True, null=True)
