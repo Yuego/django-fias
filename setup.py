@@ -23,6 +23,7 @@ setup(
         'suds>=0.4',
         'rarfile',
         'six',
+        'lxml',
     ],
     packages=find_packages(),
     include_package_data=True,
