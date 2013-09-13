@@ -18,7 +18,7 @@
 
 2. Добавьте `fias` и `django_select2` в ваш список `INSTALLED_APPS`.
 3. Добавьте `url(r'^django_fias/', include('fias.urls', namespace='fias')),` в ваш urlpatterns
-4. Любым доступным способом подключите к админке приложения, в котором будете исползовать поле FiasAddress свежую версию jQuery::
+4. Любым доступным способом подключите к админке приложения, в котором будете использовать поле FiasAddress свежую версию jQuery::
 
     # например так:
     class ItemAdmin(admin.ModelAdmin):
