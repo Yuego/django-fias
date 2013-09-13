@@ -227,7 +227,6 @@ def _addrobj_row(elem):
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (elem.attrib)
             return
 
         _addr_obj_bulk.push(elem)
@@ -241,13 +240,11 @@ def _house_row(elem):
         end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
         if end_date < _today:
             print ('Неактуальная запись. Пропускаем...')
-            print (elem.attrib)
             return
 
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (elem.attrib)
             return
 
         related_attrs = dict()
@@ -255,7 +252,6 @@ def _house_row(elem):
             related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
             print ('AddrObj with GUID `{}` not found. Skipping house...'.format(elem.attrib['AOGUID']))
-            print (elem.attrib)
             return
 
         _house_bulk.push(elem, related_attrs=related_attrs)
@@ -269,13 +265,11 @@ def _houseint_row(elem):
         end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
         if end_date < _today:
             print ('Неактуальная запись. Пропускаем...')
-            print (elem.attrib)
             return
 
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (elem.attrib)
             return
 
         related_attrs = dict()
@@ -283,7 +277,6 @@ def _houseint_row(elem):
             related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
             print ('AddrObj with GUID `{}` not found. Skipping interval...'.format(elem.attrib['AOGUID']))
-            print (elem.attrib)
             return
 
         _houseint_bulk.push(elem, related_attrs=related_attrs)
@@ -298,13 +291,11 @@ def _landmark_row(elem):
         end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
         if end_date < _today:
             print ('Неактуальная запись. Пропускаем...')
-            print (elem.attrib)
             return
 
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (elem.attrib)
             return
 
         related_attrs = dict()
@@ -312,7 +303,6 @@ def _landmark_row(elem):
             related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
             print ('AddrObj with GUID `{}` not found. Skipping landmark...'.format(elem.attrib['AOGUID']))
-            print (elem.attrib)
             return
 
         _landmark_bulk.push(elem, related_attrs=related_attrs)
