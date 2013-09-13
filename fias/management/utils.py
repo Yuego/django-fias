@@ -2,17 +2,28 @@
 from __future__ import unicode_literals, absolute_import
 
 from urllib import urlretrieve, urlcleanup
-from xml.parsers import expat
+from lxml import etree
 import datetime
 import rarfile
 import warnings
 
+from django import db
+from django.conf import settings
 from django.db.models import Min
 
 from fias.models import *
 from fias.config import FIAS_TABLES, FIAS_DELETED_TABLES
 
 _today = datetime.date.today()
+
+
+def _fast_iter(context, func):
+    for event, elem in context:
+        func(elem)
+        elem.clear()
+        while elem.getprevious() is not None:
+            del elem.getparent()[0]
+    del context
 
 
 class FiasFiles(object):
@@ -150,9 +161,14 @@ class BulkCreate(object):
     def _create(self):
         self.model.objects.bulk_create(self.objects)
         self.objects = []
+        if settings.DEBUG:
+            db.reset_queries()
 
-    def push(self, data):
-        data = self._lower_keys(data)
+    def push(self, raw_data, related_attrs=None):
+        data = self._lower_keys(raw_data.attrib)
+
+        if isinstance(related_attrs, dict):
+            data.update(related_attrs)
 
         key = data[self.pk]
 
@@ -186,126 +202,120 @@ class BulkCreate(object):
 _socrbase_bulk = BulkCreate(SocrBase, 'kod_t_st')
 
 
-def _socrbase_row(name, attrib):
-    if name == 'AddressObjectType':
-        _socrbase_bulk.push(attrib)
+def _socrbase_row(elem):
+    if elem.tag == 'AddressObjectType':
+        _socrbase_bulk.push(elem)
 
 
 _normdoc_bulk = BulkCreate(NormDoc, 'normdocid')
 
 
-def _normdoc_row(name, attrib):
-    if name == 'NormativeDocument':
-        _normdoc_bulk.push(attrib)
+def _normdoc_row(elem):
+    if elem.tag == 'NormativeDocument':
+        _normdoc_bulk.push(elem)
 
 
 _addr_obj_bulk = BulkCreate(AddrObj, 'aoguid', 'updatedate')
 
 
-def _addrobj_row(name, attrib):
-    if name == 'Object':
+def _addrobj_row(elem):
+    if elem.tag == 'Object':
         # Пропускаем изменённые объекты
-        if attrib.has_key('NEXTID'):
+        if elem.has_key('NEXTID'):
             return
 
-        #if attrib.get('LIVESTATUS', '0') != '1':
-        #    return
-
-        end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
-        #if end_date < _today:
-        #    return
-
-        start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
+        start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (attrib)
+            print (elem.attrib)
             return
 
-        attrib['ENDDATE'] = end_date
-        attrib['STARTDATE'] = start_date
-
-        _addr_obj_bulk.push(attrib)
+        _addr_obj_bulk.push(elem)
 
 
 _house_bulk = BulkCreate(House, 'houseguid', 'updatedate')
 
 
-def _house_row(name, attrib):
-    if name == 'House':
-        if attrib.has_key('NEXTID'):
+def _house_row(elem):
+    if elem.tag == 'House':
+        end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
+        if end_date < _today:
+            print ('Неактуальная запись. Пропускаем...')
+            print (elem.attrib)
             return
 
-        end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
-
-        start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
+        start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (attrib)
+            print (elem.attrib)
             return
 
-        attrib['ENDDATE'] = end_date
-        attrib['STARTDATE'] = start_date
-
+        related_attrs = dict()
         try:
-            attrib['AOGUID'] = AddrObj.objects.get(pk=attrib['AOGUID'])
+            related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
-            print ('AddrObj with GUID `{}` not found. Skipping house...'.format(attrib['AOGUID']))
-            print (attrib)
+            print ('AddrObj with GUID `{}` not found. Skipping house...'.format(elem.attrib['AOGUID']))
+            print (elem.attrib)
             return
 
-        _house_bulk.push(attrib)
+        _house_bulk.push(elem, related_attrs=related_attrs)
 
 
 _houseint_bulk = BulkCreate(HouseInt, 'intguid', 'updatedate')
 
 
-def _houseint_row(name, attrib):
-    if name == 'HouseInterval':
-        end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
+def _houseint_row(elem):
+    if elem.tag == 'HouseInterval':
+        end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
+        if end_date < _today:
+            print ('Неактуальная запись. Пропускаем...')
+            print (elem.attrib)
+            return
 
-        start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
+        start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (attrib)
+            print (elem.attrib)
             return
 
-        attrib['ENDDATE'] = end_date
-        attrib['STARTDATE'] = start_date
-
+        related_attrs = dict()
         try:
-            attrib['AOGUID'] = AddrObj.objects.get(pk=attrib['AOGUID'])
+            related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
-            print ('AddrObj with GUID `{}` not found. Skipping landmark...'.format(attrib['AOGUID']))
-            print (attrib)
+            print ('AddrObj with GUID `{}` not found. Skipping interval...'.format(elem.attrib['AOGUID']))
+            print (elem.attrib)
             return
 
-        _landmark_bulk.push(attrib)
+        _houseint_bulk.push(elem, related_attrs=related_attrs)
 
 
 _landmark_bulk = BulkCreate(LandMark, 'landguid', 'updatedate')
 
 
-def _landmark_row(name, attrib):
-    if name == 'Landmark':
-        end_date = datetime.datetime.strptime(attrib.pop('ENDDATE'), "%Y-%m-%d").date()
+def _landmark_row(elem):
+    if elem.tag == 'Landmark':
 
-        start_date = datetime.datetime.strptime(attrib.pop('STARTDATE'), "%Y-%m-%d").date()
+        end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
+        if end_date < _today:
+            print ('Неактуальная запись. Пропускаем...')
+            print (elem.attrib)
+            return
+
+        start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
         if start_date > _today:
             print ('Date in future - skipping...')
-            print (attrib)
+            print (elem.attrib)
             return
 
-        attrib['ENDDATE'] = end_date
-        attrib['STARTDATE'] = start_date
-
+        related_attrs = dict()
         try:
-            attrib['AOGUID'] = AddrObj.objects.get(pk=attrib['AOGUID'])
+            related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
-            print ('AddrObj with GUID `{}` not found. Skipping landmark...'.format(attrib['AOGUID']))
-            print (attrib)
+            print ('AddrObj with GUID `{}` not found. Skipping landmark...'.format(elem.attrib['AOGUID']))
+            print (elem.attrib)
             return
 
-        _landmark_bulk.push(attrib)
+        _landmark_bulk.push(elem, related_attrs=related_attrs)
 
 
 def _process_table(table, f, ver, update=False):
@@ -319,47 +329,47 @@ def _process_table(table, f, ver, update=False):
 
     print ('{} table `{}` to ver. {}...'.format('Updating' if update else 'Filling', table, ver))
 
-    p = expat.ParserCreate()
+    serializeElementHandler = None
     bulk = None
 
     if table == 'socrbase':
         if not update:
             SocrBase.objects.all().delete()
 
-        p.StartElementHandler = _socrbase_row
+        serializeElementHandler = _socrbase_row
         bulk = _socrbase_bulk
 
     elif table == 'normdoc':
         if not update:
             NormDoc.objects.all().delete()
 
-        p.StartElementHandler = _normdoc_row
+        serializeElementHandler = _normdoc_row
         bulk = _normdoc_bulk
     elif table == 'addrobj':
         if not update:
             AddrObj.objects.all().delete()
 
-        p.StartElementHandler = _addrobj_row
+        serializeElementHandler = _addrobj_row
         bulk = _addr_obj_bulk
     elif table == 'house':
         if not update:
             House.objects.all().delete()
 
-        p.StartElementHandler = _house_row
+        serializeElementHandler = _house_row
         bulk = _house_bulk
 
     elif table == 'houseint':
         if not update:
             HouseInt.objects.all().delete()
 
-        p.StartElementHandler = _houseint_row
+        serializeElementHandler = _houseint_row
         bulk = _houseint_bulk
 
     elif table == 'landmark':
         if not update:
             LandMark.objects.all().delete()
 
-        p.StartElementHandler = _landmark_row
+        serializeElementHandler = _landmark_row
         bulk = _landmark_bulk
 
     if bulk is None:
@@ -372,7 +382,9 @@ def _process_table(table, f, ver, update=False):
         bulk.mode = 'update'
         bulk.reset_counters()
         
-    p.ParseFile(f)
+    context = etree.iterparse(f, events=('end',))
+
+    _fast_iter(context, lambda elem: serializeElementHandler(elem))
     
     bulk.finish()
 
