@@ -11,6 +11,10 @@ __all__ = ['LandMark']
 
 
 class LandMark(Common):
+
+    class Meta:
+        app_label = 'fias'
+
     landid = UUIDField()
     landguid = UUIDField(primary_key=True)
     aoguid = models.ForeignKey(AddrObj)
