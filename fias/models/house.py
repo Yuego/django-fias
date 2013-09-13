@@ -27,7 +27,6 @@ class House(Common):
     houseid = UUIDField()
 
     statstatus = models.PositiveSmallIntegerField()
-    normdoc = UUIDField(blank=True, null=True)
 
     counter = models.IntegerField()
 
