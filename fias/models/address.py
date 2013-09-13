@@ -31,11 +31,6 @@ class FIASAddress(models.Model):
             if obj.aolevel > 3:
                 short_addr.append(force_unicode(obj))
 
-            #level = int(obj.aolevel)
-            #attr = self._LEVELS[level]
-            #if hasattr(self, attr):
-            #    setattr(self, attr, obj)
-
             if obj.aolevel > 1:
                 try:
                     parent = AddrObj.objects.get(aoguid=obj.parentguid)
@@ -71,6 +66,7 @@ class FIASAddressWithArea(FIASAddress):
 
     area = ChainedAreaField(AddrObj, address_field='address', related_name='+')
 
+
 class FIASHouse(models.Model):
 
     class Meta:
@@ -81,10 +77,7 @@ class FIASHouse(models.Model):
     apartment = models.PositiveSmallIntegerField(_('apartment'), max_length=3, null=True, blank=True)
 
 
-class FIASFullAddress(FIASAddress, FIASHouse):
-
-    class Meta:
-        abstract = True
+class GetAddressMixin(object):
 
     def _get_full_address(self):
         addr = self.full_address
@@ -107,27 +100,13 @@ class FIASFullAddress(FIASAddress, FIASHouse):
         return addr
 
 
-class FIASFullAddressWithArea(FIASAddressWithArea, FIASHouse):
+class FIASFullAddress(FIASAddress, FIASHouse, GetAddressMixin):
 
     class Meta:
         abstract = True
 
-    def _get_full_address(self):
-        addr = self.full_address
 
-        if self.house:
-            addr = '%s, %s' % (addr, self.house)
-        if self.corps:
-            addr += self.corps
+class FIASFullAddressWithArea(FIASAddressWithArea, FIASHouse, GetAddressMixin):
 
-        return addr
-
-    def _get_short_address(self):
-        addr = self.short_address if self.short_address else self.full_address
-
-        if self.house:
-            addr = '%s, %s' % (addr, self.house)
-        if self.corps:
-            addr += self.corps
-
-        return addr
+    class Meta:
+        abstract = True
