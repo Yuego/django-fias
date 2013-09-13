@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 
 from fias.fields import AddressField
-from fias.models import FIASAddress, FIASAddressWithArea
+from fias.models import FIASAddress, FIASAddressWithArea, FIASHouse
 
 class Item(models.Model):
     
@@ -16,4 +16,8 @@ class CachedAddress(FIASAddress):
 
 
 class CachedAddressWithArea(FIASAddressWithArea):
+    pass
+
+
+class CachedAddressWithHouse(FIASAddress, FIASHouse):
     pass
