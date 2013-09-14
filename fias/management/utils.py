@@ -380,6 +380,12 @@ def _process_table(table, f, ver, update=False):
 
     print ('Processing table `{0}` is finished'.format(table))
 
+
+#TODO: продумать алгоритм и реализовать
+def _check_deleted_items(table, f, ver):
+    pass
+
+
 #TODO: использовать CLUSTER для PostgreSQL??? Или ну его?
 
 
@@ -399,6 +405,13 @@ def fill_database(f):
 
                 status = Status(table=table, ver=table_info['ver'])
                 status.save()
+
+                # Check deleted items
+                if table in FIAS_DELETED_TABLES:
+                    table_info = tables.get('del_' + table, None)
+                    if table_info is not None:
+                        f = fias.open(table_info['file'])
+                        _check_deleted_items(table, f, table_info['ver'])
             else:
                 print (('Table `{0}` has version `{1}`. '
                         'Please use --force-replace for replace '
@@ -436,6 +449,13 @@ def update_database(skip):
 
                             status.ver = _version
                             status.save()
+
+                            # Check deleted items
+                            if table in FIAS_DELETED_TABLES:
+                                table_info = tables.get('del_' + table, None)
+                                if table_info is not None:
+                                    f = fias.open(table_info['file'])
+                                    _check_deleted_items(table, f, table_info['ver'])
                     else:
                         print ('Table `{0}` is up to date. Version: {1}'.format(status.table, status.ver))
     else:
