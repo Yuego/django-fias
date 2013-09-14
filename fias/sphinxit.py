@@ -15,4 +15,8 @@ class SphinxItConfig(BaseSearchConfig):
     WITH_STATUS = False
     WITH_META = False
 
-search = Search(indexes=['addrobj'], config=SphinxItConfig)
+
+def _get_search():
+    return Search(indexes=['addrobj'], config=SphinxItConfig)
+
+search = _get_search

@@ -139,7 +139,7 @@ class SuggestBySphinx(Select2View):
     def get_results(self, request, term, page, context):
         from fias.sphinxit import search
 
-        query = search.match(term + '*').limit(0, 20)
+        query = search().match(term + '*').order_by('aolevel', 'asc').limit(0, 20)
         result = query.ask()
 
         items = result['result']['items']
