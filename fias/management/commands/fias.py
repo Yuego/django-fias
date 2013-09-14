@@ -7,7 +7,7 @@ from optparse import make_option
 from django.core.management.base import BaseCommand
 
 from fias.models import Status
-from fias.management.utils import fill_database, update_database
+from fias.management.utils.database import fill_database, update_database
 
 
 class Command(BaseCommand):
