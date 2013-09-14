@@ -14,8 +14,8 @@ FIAS_DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'fias')
 
 FIAS_SEARCHERS = {
-    'sequence': 'suggest_step_by_step',
-    'sphinx': 'suggest_by_sphinx',
+    'sequence': 'step_by_step',
+    'sphinx': 'by_sphinx',
 }
 
 _s = getattr(settings, 'FIAS_SEARCH_ENGINE', 'sphinx')
@@ -28,7 +28,7 @@ if FIAS_SEARCH_ENGINE == 'sphinx':
     except ImportError:
         raise ImproperlyConfigured('sphinxit module required for `sphinx` search engine!')
 
-FIAS_SUGGEST_VIEW = 'fias:{}'.format(FIAS_SEARCHERS[FIAS_SEARCH_ENGINE])
+FIAS_SUGGEST_VIEW = 'fias:suggest_{}'.format(FIAS_SEARCHERS[FIAS_SEARCH_ENGINE])
 
 # Чтобы использовать для данных ФИАС другую базу данных,
 # добавьте роутер 'fias.routers.FIASRouter' в список `DATABASE_ROUTERS`

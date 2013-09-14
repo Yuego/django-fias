@@ -1,4 +1,5 @@
-﻿WITH RECURSIVE PATH (docid, aoguid, aolevel, scname, fullname) AS (
+﻿
+WITH RECURSIVE PATH (docid, aoguid, aolevel, scname, fullname) AS (
   SELECT NEXTVAL('fias_addrobj_id_seq') AS docid, ao.aoguid, ao.aolevel,
     (SELECT sn.socrname FROM fias_socrbase AS sn WHERE sn.scname=ao.shortname AND sn.level=ao.aolevel)::TEXT AS scname,
     ao.shortname || ' ' || formalname AS fullname
