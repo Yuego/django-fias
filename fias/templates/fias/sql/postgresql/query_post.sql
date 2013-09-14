@@ -1,0 +1,1 @@
+DROP SEQUENCE IF EXISTS fias_addrobj_id_seq;
