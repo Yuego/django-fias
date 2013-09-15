@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.fields.related import ForeignKey
 
 from fias import forms
-from fias.config import FIAS_DATABASE_ALIAS
+from fias.config import FIAS_DATABASE_ALIAS, FIAS_SUGGEST_VIEW
 
 
 class AddressField(ForeignKey):
@@ -28,7 +28,7 @@ class AddressField(ForeignKey):
         }
         defaults.update(kwargs)
 
-        return forms.AddressSelect2Field(data_view='fias:suggest_step_by_step', **defaults)
+        return forms.AddressSelect2Field(data_view=FIAS_SUGGEST_VIEW, **defaults)
 
     def validate(self, value, model_instance):
         if self.rel.parent_link:

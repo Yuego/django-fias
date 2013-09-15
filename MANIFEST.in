@@ -1,4 +1,5 @@
 include *.rst
 recursive-include fias/static *
 recursive-include fias/locale *.mo
+recursive-include fias/templates *
 recursive-exclude test_project *

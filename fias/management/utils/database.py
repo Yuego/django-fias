@@ -221,7 +221,7 @@ _addr_obj_bulk = BulkCreate(AddrObj, 'aoguid', 'updatedate')
 def _addrobj_row(elem):
     if elem.tag == 'Object':
         # Пропускаем изменённые объекты
-        if elem.attrib.has_key('NEXTID'):
+        if 'NEXTID' in elem.attrib:
             return
 
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()

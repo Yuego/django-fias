@@ -7,6 +7,7 @@ from django.views.generic import View
 
 from django_select2.views import JSONResponseMixin, Select2View, NO_ERR_RESP
 
+from fias import config
 from fias.models import AddrObj, SocrBase
 
 EMPTY_RESULT = NO_ERR_RESP, False, ()
@@ -130,8 +131,27 @@ class SuggestAddressViewStepByStep(Select2View):
             else:
                 return NO_ERR_RESP, False, ((force_unicode(l.pk), force_unicode(l.full_name(5)), {'level': l.aolevel}) for l in result)
 
-        return NO_ERR_RESP, False, []
+        return EMPTY_RESULT
 
+
+class SuggestBySphinx(Select2View):
+
+    def get_results(self, request, term, page, context):
+        from fias.sphinxit import search
+
+        query = search().match(term + '*').order_by('aolevel', 'asc').limit(0, 20)
+        result = query.ask()
+
+        items = result['result']['items']
+
+        if len(items):
+            return (
+                NO_ERR_RESP,
+                False,
+                ((l['aoguid'], l['fullname'], {'level': l['aolevel']}) for l in items)
+            )
+
+        return EMPTY_RESULT
 
 class GetAreasListView(Select2View):
 
