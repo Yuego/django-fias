@@ -73,13 +73,13 @@ AddressField поддерживает 2 метода поиска адреса: 
 
 Если у вы уже используете `sphinx` в проекте, то вам нужен только конфиг индекса. Выполните::
 
-    python manage.py fias_sphinx --path=PATH
+    python manage.py fias_sphinx --path=PATH > sphinx.conf
 
 где `PATH` - путь до каталога с индексами sphinx.
 
 Иначе выполните::
 
-    python manage.py fias_sphinx --path=PATH --full
+    python manage.py fias_sphinx --path=PATH --full > sphinx.conf
 
 чтобы получить полный конфиг sphinx.
 
