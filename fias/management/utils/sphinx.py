@@ -8,7 +8,7 @@ from django.template import Context
 from django.template.base import TemplateDoesNotExist
 from django.template.loader import select_template
 
-from fias.config import FIAS_DATABASE_ALIAS
+from fias.config import FIAS_DATABASE_ALIAS, FIAS_SPHINX_ADDROBJ_INDEX
 
 
 def _get_database_engine():
@@ -51,9 +51,11 @@ def render_sphinx_source():
         'db_user': settings.DATABASES[FIAS_DATABASE_ALIAS]['USER'],
         'db_password': settings.DATABASES[FIAS_DATABASE_ALIAS]['PASSWORD'],
 
-        'db_query_pre': _get_sql_template('query_pre').render(Context({})).replace("\n", ''),
-        'db_query_post': _get_sql_template('query_post').render(Context({})).replace("\n", ''),
-        'db_query': _get_sql_template('query').render(Context({})).replace("\n", ''),
+        'db_query_pre': _get_sql_template('query_pre').render(Context({})).replace("\n", '').strip(),
+        'db_query_post': _get_sql_template('query_post').render(Context({})).replace("\n", '').strip(),
+        'db_query': _get_sql_template('query').render(Context({})).replace("\n", '').strip(),
+
+        'index_name': FIAS_SPHINX_ADDROBJ_INDEX,
     }
 
     return _get_sphinx_template('source').render(Context(ctx))
@@ -61,7 +63,9 @@ def render_sphinx_source():
 
 def render_sphinx_index(path):
     ctx = {
-        'sphinx_index_path': path
+        'sphinx_index_path': path,
+
+        'index_name': FIAS_SPHINX_ADDROBJ_INDEX,
     }
 
     return _get_sphinx_template('index').render(Context(ctx))
@@ -72,8 +76,5 @@ def render_sphinx_config(path, full=True):
     index = render_sphinx_index(path)
 
     config = _get_sphinx_template('sphinx').render(Context({})) if full else ''
-
-    print source[402]
-    exit()
 
     return source, index, config

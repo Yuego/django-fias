@@ -53,6 +53,56 @@
 
         python manage.py collectstatic
 
+Настройка полнотекстового поиска
+================================
+AddressField поддерживает 2 метода поиска адреса: последовательный (sequence) и полнотекстовый (sphinx)
+
+По-умолчанию используется последовательный метод, т. к. не требует дополнительных настроек.
+Для активации полнотекстового поиска необходимо выполнить несколько дополнительных шагов:
+
+1. Добавьте в ваш `settings.py` параметр::
+
+    FIAS_SEARCH_ENGINE='sphinx'
+
+2. Установите
+* `sphinxit <https://github.com/semirook/sphinxit>`_
+* `Sphinx Search Engine <http://sphinxsearch.com>`_
+
+3. Сгенерируйте конфигурацию `sphinx`:
+
+Если у вы уже используете `sphinx` в проекте, то вам нужен только конфиг индекса. Выполните::
+
+    python manage.py fias_sphinx --path=PATH
+
+где `PATH` - путь до каталога с индексами sphinx.
+
+Иначе выполните::
+
+    python manage.py fias_sphinx --path=PATH --full
+
+чтобы получить полный конфиг sphinx.
+
+Замените конфиг sphinx полученными настройками (для Gentoo это файл /etc/sphinx/sphinx.conf)
+
+4. Псоле того, как данные **импортированы** и обновлены выполните::
+
+    indexer -c /etc/sphinx/sphinx.conf --all
+
+5. Запустите sphinx::
+
+    /etc/init.d/searchd start
+
+
+Выбор импортируемых таблиц
+==========================
+
+Таблицы NORMDOC, SOCRBASE и ADDROBJ импортируются всегда. Таблицы LANDMARK, HOUSEINT и HOUSE можно не импортировать.
+
+Добавьте в ваш `settings.py` список названий таблиц, которые вы хотели бы импортировать::
+
+    FIAS_TABLES = ('landmark', 'houseint', 'house')
+
+
 Импорт данных
 ==============
 
@@ -155,5 +205,5 @@ TODO
 Благодарности
 ====================
 
-[Коммит от EagerBeager](https://github.com/EagerBeager/django-fias/commit/ed375c2e1cafdc04f0c9612091eb040ef8f9f4fe)
+`Коммит от EagerBeager <https://github.com/EagerBeager/django-fias/commit/ed375c2e1cafdc04f0c9612091eb040ef8f9f4fe>`_
 Благодаря этому коммиту до меня наконец дошло, почему импорт отжирал память.
