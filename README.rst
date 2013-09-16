@@ -71,7 +71,8 @@ AddressField поддерживает 2 метода поиска адреса: 
 2. Установите:
 
 * `sphinxit <https://github.com/semirook/sphinxit>`_
-* `Sphinx Search Engine <http://sphinxsearch.com>`_
+* `Sphinx Search Engine <http://sphinxsearch.com>`_::
+
 
 3. Сгенерируйте конфигурацию `sphinx`:
 
@@ -87,7 +88,7 @@ AddressField поддерживает 2 метода поиска адреса: 
 
 чтобы получить полный конфиг sphinx.
 
-Замените конфиг sphinx полученными настройками (для **Gentoo** это файл `/etc/sphinx/sphinx.conf`, для Ubuntu: `/etc/sphinxsearch/sphinx.conf`)
+Замените конфиг sphinx полученными настройками (для **Gentoo** это файл `/etc/sphinx/sphinx.conf`, для **Ubuntu**: `/etc/sphinxsearch/sphinx.conf`)
 
 4. Псоле того, как данные **импортированы** и обновлены выполните::
 
@@ -201,7 +202,6 @@ ORM Django при наличии связанных таблиц удалит д
 TODO
 ==============
 
-* Нормальный поиск. То, что есть сейчас хоть и работает, но если не знаешь точного адреса, найти очень сложно.
 * Проверять списки удалённых объектов и все связанные с AddrObj модели мигрировать на правильные записи
 
 Известные проблемы
