@@ -3,8 +3,10 @@ from __future__ import unicode_literals, absolute_import
 
 import six
 
+from django.conf import settings
 from django.db import models
 
+from fias.config import FIAS_DATABASE_ALIAS
 from fias.fields import UUIDField
 from fias.models.common import Common
 
@@ -65,3 +67,8 @@ class AddrObj(Common):
 
     def __unicode__(self):
         return '{} {}'.format(self.shortname, self.formalname)
+
+
+if 'mysql' in settings.DATABASES[FIAS_DATABASE_ALIAS]['ENGINE']:
+    from fias.models.sphinx import AddrObjIndex
+    __all__ = ['AddrObj', 'AddrObjIndex']

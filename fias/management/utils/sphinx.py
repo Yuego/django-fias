@@ -51,9 +51,9 @@ def render_sphinx_source():
         'db_user': settings.DATABASES[FIAS_DATABASE_ALIAS]['USER'],
         'db_password': settings.DATABASES[FIAS_DATABASE_ALIAS]['PASSWORD'],
 
-        'db_query_pre': _get_sql_template('query_pre').render(Context({})).replace("\n", '').strip(),
-        'db_query_post': _get_sql_template('query_post').render(Context({})).replace("\n", '').strip(),
-        'db_query': _get_sql_template('query').render(Context({})).replace("\n", '').strip(),
+        'db_query_pre': _get_sql_template('query_pre').render(Context({})).replace("\n", "\\\n").strip(),
+        'db_query_post': _get_sql_template('query_post').render(Context({})).replace("\n", "\\\n").strip(),
+        'db_query': _get_sql_template('query').render(Context({})).replace("\n", "\\\n").strip(),
 
         'index_name': FIAS_SPHINX_ADDROBJ_INDEX,
     }
