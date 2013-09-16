@@ -71,7 +71,7 @@ AddressField поддерживает 2 метода поиска адреса: 
 2. Установите:
 
 * `sphinxit <https://github.com/semirook/sphinxit>`_
-* `Sphinx Search Engine <http://sphinxsearch.com>`_::
+* `Sphinx Search Engine <http://sphinxsearch.com>`_ Для Debian, Ubuntu, RHEL, Windows есть `пакеты <http://sphinxsearch.com/downloads/release/>`_
 
 
 3. Сгенерируйте конфигурацию `sphinx`:
