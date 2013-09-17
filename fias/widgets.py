@@ -11,10 +11,16 @@ from django_select2.widgets import HeavySelect2Widget
 
 def get_select2_js_libs():
     from django.conf import settings
+
     if settings.configured and settings.DEBUG:
-        return ('fias/js/select2/select2.js', )
+        _libs = ('fias/js/select2/select2.js',)
     else:
-        return ('fias/js/select2/select2.min.js', )
+        _libs = ('fias/js/select2/select2.min.js',)
+
+    if settings.LANGUAGE_CODE in ('ru', 'ua'):
+        _libs += ('fias/js/select2/select2_locale_{}.js'.format(settings.LANGUAGE_CODE),)
+
+    return _libs
 
 
 def get_select2_heavy_js_libs():
