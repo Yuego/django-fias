@@ -78,6 +78,7 @@ class AddressSelect2(HeavySelect2Widget):
             if text:
                 return "$('#%s').txt(%s);" % (id_, convert_to_js_str(text))
 
+
 class AreaChainedSelect(widgets.Select):
 
     def __init__(self, app_name, model_name, address_field, *args, **kwargs):
