@@ -78,7 +78,8 @@ class AddrObj(Common):
     def __unicode__(self):
         return self.get_natural_name()
 
-
+    def full_address(self):
+	return self.full_name(5)
 
 
 if 'mysql' in settings.DATABASES[FIAS_DATABASE_ALIAS]['ENGINE']:
