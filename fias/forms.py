@@ -21,20 +21,7 @@ class AddressSelect2Field(HeavyModelSelect2ChoiceField):
         if not value:
             return
         obj = self.queryset.get(pk=value)
-        lst = [force_unicode(obj)]
-
-        def make_list(o):
-            if o.aolevel > 1:
-                try:
-                    parent = self.queryset.get(aoguid=o.parentguid)
-                except self.queryset.model.DoesNotExist:
-                    return
-                else:
-                    lst.append(force_unicode(parent))
-                    make_list(parent)
-
-        make_list(obj)
-        return ', '.join(lst[::-1])
+        return obj.full_name(5, True)
 
 
 class ChainedAreaField(ModelChoiceField):

@@ -56,17 +56,29 @@ class AddrObj(Common):
 
     livestatus = models.BooleanField()
 
-    def full_name(self, depth=None):
+    def full_name(self, depth=None, formal=False):
         assert isinstance(depth, six.integer_types), 'Depth must be integer'
 
         if not self.parentguid or self.aolevel <= 1 or depth <= 0:
-            return self.__unicode__()
+            if formal:
+               return self.get_formal_name()
+            return self.get_natural_name()
         else:
             parent = AddrObj.objects.get(pk=self.parentguid)
-            return '{}, {}'.format(parent.full_name(depth-1), self)
+            return '{}, {}'.format(parent.full_name(depth-1, formal), self)
+
+    def get_natural_name(self):
+        if self.aolevel == 1:
+            return '{} {}'.format(self.formalname, self.shortname)
+        return self.get_formal_name()
+
+    def get_formal_name(self):
+        return '{} {}'.format(self.shortname, self.formalname)
 
     def __unicode__(self):
-        return '{} {}'.format(self.shortname, self.formalname)
+        return self.get_natural_name()
+
+
 
 
 if 'mysql' in settings.DATABASES[FIAS_DATABASE_ALIAS]['ENGINE']:

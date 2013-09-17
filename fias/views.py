@@ -45,7 +45,6 @@ class SuggestAddressViewStepByStep(Select2View):
                 elif len(part_qs) > 1:
                     raise Exception('Много вариантов???')
                 else:
-                    raise Exception('Empty')
                     return EMPTY_RESULT
 
         """
@@ -111,7 +110,7 @@ class SuggestAddressViewStepByStep(Select2View):
                 if level > 0:
                     filter_params.update(parentguid=result_parts[-1].aoguid, aolevel__gt=result_parts[-1].aolevel)
 
-        prefix = ', '.join((force_unicode(r) for r in result_parts)) if result_parts else ''
+        prefix = ', '.join((r.get_formal_name() for r in result_parts)) if result_parts else ''
 
         if result:
             if prefix:
@@ -126,10 +125,10 @@ class SuggestAddressViewStepByStep(Select2View):
                 return (
                     NO_ERR_RESP,
                     False,
-                    ((force_unicode(l.pk), '{0}, {1}'.format(prefix, force_unicode(l)), {'level': l.aolevel}) for l in result)
+                    ((force_unicode(l.pk), '{0}, {1}'.format(prefix, l), {'level': l.aolevel}) for l in result)
                 )
             else:
-                return NO_ERR_RESP, False, ((force_unicode(l.pk), force_unicode(l.full_name(5)), {'level': l.aolevel}) for l in result)
+                return NO_ERR_RESP, False, ((force_unicode(l.pk), l.full_name(5, True), {'level': l.aolevel}) for l in result)
 
         return EMPTY_RESULT
 
