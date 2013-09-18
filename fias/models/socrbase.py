@@ -21,3 +21,6 @@ class SocrBase(models.Model):
     socrname = models.CharField(max_length=50, default=" ")
     kod_t_st = models.PositiveIntegerField(primary_key=True)
 
+    def __unicode__(self):
+        return self.socrname
+
