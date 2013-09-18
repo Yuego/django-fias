@@ -13,6 +13,9 @@ FIAS_DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 
 FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'fias')
 
+if FIAS_DATABASE_ALIAS not in settings.DATABASES:
+    raise ImproperlyConfigured('FIAS: database alias `{}` was not found in DATABASES'.format(FIAS_DATABASE_ALIAS))
+
 FIAS_SEARCHERS = {
     'sequence': 'step_by_step',
     'sphinx': 'by_sphinx',
