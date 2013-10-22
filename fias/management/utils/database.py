@@ -143,7 +143,7 @@ class BulkCreate(object):
         self.upd_counter = 0
         
     def _set_mode(self, value):
-        assert value in ('fill', 'update'), 'Wrong mode `{}`'.format(value)
+        assert value in ('fill', 'update'), 'Wrong mode `{0}`'.format(value)
         self._mode = value
 
     def _get_mode(self):
@@ -251,7 +251,7 @@ def _house_row(elem):
         try:
             related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
-            print ('AddrObj with GUID `{}` not found. Skipping house...'.format(elem.attrib['AOGUID']))
+            print ('AddrObj with GUID `{0}` not found. Skipping house...'.format(elem.attrib['AOGUID']))
             return
 
         _house_bulk.push(elem, related_attrs=related_attrs)
@@ -276,7 +276,7 @@ def _houseint_row(elem):
         try:
             related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
-            print ('AddrObj with GUID `{}` not found. Skipping interval...'.format(elem.attrib['AOGUID']))
+            print ('AddrObj with GUID `{0}` not found. Skipping interval...'.format(elem.attrib['AOGUID']))
             return
 
         _houseint_bulk.push(elem, related_attrs=related_attrs)
@@ -302,7 +302,7 @@ def _landmark_row(elem):
         try:
             related_attrs['aoguid'] = AddrObj.objects.get(pk=elem.attrib['AOGUID'])
         except AddrObj.DoesNotExist:
-            print ('AddrObj with GUID `{}` not found. Skipping landmark...'.format(elem.attrib['AOGUID']))
+            print ('AddrObj with GUID `{0}` not found. Skipping landmark...'.format(elem.attrib['AOGUID']))
             return
 
         _landmark_bulk.push(elem, related_attrs=related_attrs)
@@ -317,7 +317,7 @@ def _process_table(table, f, ver, update=False):
         print ('Impossible... but... Skipping table `{0}`'.format(table))
         return
 
-    print ('{} table `{}` to ver. {}...'.format('Updating' if update else 'Filling', table, ver))
+    print ('{0} table `{1}` to ver. {2}...'.format('Updating' if update else 'Filling', table, ver))
 
     serializeElementHandler = None
     bulk = None
@@ -429,7 +429,7 @@ def update_database(skip):
                 tables = fias.get_tablelist(_version)
             except rarfile.NotRarFile:
                 if skip:
-                    print 'Битый архив версии {}. Пропускаем...'.format(_version)
+                    print 'Битый архив версии {0}. Пропускаем...'.format(_version)
                     continue
                 else:
                     raise

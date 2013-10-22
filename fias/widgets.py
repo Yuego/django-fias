@@ -18,7 +18,7 @@ def get_select2_js_libs():
         _libs = ('fias/js/select2/select2.min.js',)
 
     if settings.LANGUAGE_CODE in ('ru', 'ua'):
-        _libs += ('fias/js/select2/select2_locale_{}.js'.format(settings.LANGUAGE_CODE),)
+        _libs += ('fias/js/select2/select2_locale_{0}.js'.format(settings.LANGUAGE_CODE),)
 
     return _libs
 

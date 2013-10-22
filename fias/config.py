@@ -14,7 +14,7 @@ FIAS_DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'fias')
 
 if FIAS_DATABASE_ALIAS not in settings.DATABASES:
-    raise ImproperlyConfigured('FIAS: database alias `{}` was not found in DATABASES'.format(FIAS_DATABASE_ALIAS))
+    raise ImproperlyConfigured('FIAS: database alias `{0}` was not found in DATABASES'.format(FIAS_DATABASE_ALIAS))
 
 FIAS_SEARCHERS = {
     'sequence': 'step_by_step',
@@ -35,7 +35,7 @@ if FIAS_SEARCH_ENGINE == 'sphinx':
 
     FIAS_SPHINX_ADDROBJ_INDEX = FIAS_DATABASE_ALIAS + '_' + FIAS_SPHINX_ADDROBJ_INDEX_NAME
 
-FIAS_SUGGEST_VIEW = 'fias:suggest_{}'.format(FIAS_SEARCHERS[FIAS_SEARCH_ENGINE])
+FIAS_SUGGEST_VIEW = 'fias:suggest_{0}'.format(FIAS_SEARCHERS[FIAS_SEARCH_ENGINE])
 
 # Чтобы использовать для данных ФИАС другую базу данных,
 # добавьте роутер 'fias.routers.FIASRouter' в список `DATABASE_ROUTERS`

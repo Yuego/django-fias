@@ -23,9 +23,9 @@ def _get_database_engine():
 
 
 try:
-    select_template(['fias/sql/{}/query.sql'.format(_get_database_engine())])
+    select_template(['fias/sql/{0}/query.sql'.format(_get_database_engine())])
 except TemplateDoesNotExist:
-    raise ImproperlyConfigured('FIAS: database backend `{}` '
+    raise ImproperlyConfigured('FIAS: database backend `{0}` '
                                'is not supported with `sphinx` search engine!'.format(connection.vendor))
 
 
@@ -34,11 +34,11 @@ def _get_template(name):
 
 
 def _get_sql_template(name):
-    return _get_template('sql/{}/{}.sql'.format(_get_database_engine(), name))
+    return _get_template('sql/{0}/{1}.sql'.format(_get_database_engine(), name))
 
 
 def _get_sphinx_template(name):
-    return _get_template('sphinx/{}.conf'.format(name))
+    return _get_template('sphinx/{0}.conf'.format(name))
 
 
 def render_sphinx_source():
