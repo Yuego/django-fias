@@ -65,15 +65,15 @@ class AddrObj(Common):
             return self.get_natural_name()
         else:
             parent = AddrObj.objects.get(pk=self.parentguid)
-            return '{}, {}'.format(parent.full_name(depth-1, formal), self)
+            return '{0}, {1}'.format(parent.full_name(depth-1, formal), self)
 
     def get_natural_name(self):
         if self.aolevel == 1:
-            return '{} {}'.format(self.formalname, self.shortname)
+            return '{0} {1}'.format(self.formalname, self.shortname)
         return self.get_formal_name()
 
     def get_formal_name(self):
-        return '{} {}'.format(self.shortname, self.formalname)
+        return '{0} {1}'.format(self.shortname, self.formalname)
 
     def __unicode__(self):
         return self.get_natural_name()

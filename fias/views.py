@@ -43,7 +43,7 @@ class SuggestAddressViewStepByStep(Select2View):
                     level += 1
                     result_parts.append(part_qs[0])
                 elif len(part_qs) > 1:
-                    raise Exception('Много вариантов???')
+                    raise Exception('Lots of options???')
                 else:
                     return EMPTY_RESULT
 
