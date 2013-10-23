@@ -239,7 +239,7 @@ def _house_row(elem):
     if elem.tag == 'House':
         end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
         if end_date < _today:
-            print ('Неактуальная запись. Пропускаем...')
+            print ('Out of date entry. Skipping...')
             return
 
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
@@ -264,7 +264,7 @@ def _houseint_row(elem):
     if elem.tag == 'HouseInterval':
         end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
         if end_date < _today:
-            print ('Неактуальная запись. Пропускаем...')
+            print ('Out of date entry. Skipping...')
             return
 
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
@@ -290,7 +290,7 @@ def _landmark_row(elem):
 
         end_date = datetime.datetime.strptime(elem.attrib['ENDDATE'], "%Y-%m-%d").date()
         if end_date < _today:
-            print ('Неактуальная запись. Пропускаем...')
+            print ('Out of date entry. Skipping...')
             return
 
         start_date = datetime.datetime.strptime(elem.attrib['STARTDATE'], "%Y-%m-%d").date()
@@ -429,7 +429,7 @@ def update_database(skip):
                 tables = fias.get_tablelist(_version)
             except rarfile.NotRarFile:
                 if skip:
-                    print 'Битый архив версии {0}. Пропускаем...'.format(_version)
+                    print 'Broken archive version {0}. Skipping...'.format(_version)
                     continue
                 else:
                     raise

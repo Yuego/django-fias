@@ -26,7 +26,7 @@ class Command(BaseCommand):
         make_option('--update', action='store_true', dest='update', default=False,
             help='Fetch `ver` and load into db'),
         make_option('--skip', action='store_true', dest='skip', default=False,
-            help='Пропускать битые дельта-архивы при обновлении'),
+            help='Skip the bad delta files when upgrading'),
     )
 
     def handle(self, *args, **options):
