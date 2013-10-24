@@ -2,7 +2,6 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.forms.models import ModelChoiceField
-from django.utils.text import force_unicode
 
 from django_select2.fields import HeavyModelSelect2ChoiceField
 

@@ -5,6 +5,7 @@ import six
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
 
 from fias import forms
@@ -25,10 +26,12 @@ class AddressField(ForeignKey):
         defaults = {
             'queryset': self.rel.to._default_manager.using(db),
             'to_field_name': self.rel.field_name,
+            'form_class': forms.AddressSelect2Field,
+            'data_view': FIAS_SUGGEST_VIEW,
         }
         defaults.update(kwargs)
 
-        return forms.AddressSelect2Field(data_view=FIAS_SUGGEST_VIEW, **defaults)
+        return Field.formfield(self, **defaults)
 
     def validate(self, value, model_instance):
         if self.rel.parent_link:

@@ -8,3 +8,6 @@ Thumbs.db
 .rope*
 PYSMELLTAGS
 reports
+
+test_project/static/*
+test_project/db.*
