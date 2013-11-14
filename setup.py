@@ -24,6 +24,7 @@ setup(
         'rarfile',
         'six',
         'lxml',
+        'south>=0.8'
     ],
     packages=find_packages(),
     include_package_data=True,
