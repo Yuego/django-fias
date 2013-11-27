@@ -44,7 +44,7 @@ class FIASRouter(object):
     def allow_syncdb(self, db, model):
         """Разрешить синхронизацию моделей в базе ФИАС"""
         if db == FIAS_DATABASE_ALIAS:
-            if model._meta.app_label == 'fias':
+            if model._meta.app_label in ('fias', 'south'):
                 return True
             else:
                 return False
