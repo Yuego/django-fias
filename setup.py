@@ -20,7 +20,7 @@ setup(
     install_requires=[
         'Django>=1.4',
         'django_select2',
-        'suds>=0.4',
+        'sudsds>=0.4',
         'rarfile',
         'six',
         'lxml',
