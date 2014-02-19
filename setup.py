@@ -19,12 +19,12 @@ setup(
     license='MIT license',
     install_requires=[
         'Django>=1.4',
-        'django_select2',
+        'django_select2>=4.2.2',
         'sudsds>=0.4',
         'rarfile',
         'six',
         'lxml',
-        'south>=0.8'
+        'south>=0.8.4'
     ],
     packages=find_packages(),
     include_package_data=True,

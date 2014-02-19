@@ -1,56 +1,30 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms import widgets
 from django.utils.safestring import mark_safe
+from django.utils.translation import get_language
 
 from django_select2.util import convert_to_js_str
-from django_select2.widgets import HeavySelect2Widget
-
-
-def get_select2_js_libs():
-    from django.conf import settings
-
-    if settings.configured and settings.DEBUG:
-        _libs = ('fias/js/select2/select2.js',)
-    else:
-        _libs = ('fias/js/select2/select2.min.js',)
-
-    if settings.LANGUAGE_CODE in ('ru', 'ua'):
-        _libs += ('fias/js/select2/select2_locale_{0}.js'.format(settings.LANGUAGE_CODE),)
-
-    return _libs
-
-
-def get_select2_heavy_js_libs():
-    libs = get_select2_js_libs()
-
-    from django.conf import settings
-    if settings.configured and settings.DEBUG:
-        return libs + ('js/heavy_data.js', )
-    else:
-        return libs + ('js/heavy_data.min.js', )
+from django_select2.widgets import get_select2_css_libs, get_select2_heavy_js_libs, HeavySelect2Widget
 
 
 def get_js_libs():
     libs = get_select2_heavy_js_libs()
 
-    from django.conf import settings
     if settings.configured and settings.DEBUG:
-        return libs + ('fias/js/fias.js', )
+        libs += ('fias/js/fias.js', )
     else:
         #TODO: сделать минификацию
-        return libs + ('fias/js/fias.js', )
+        libs += ('fias/js/fias.js', )
 
+    lang = get_language()
+    if lang in ('ru', 'uk'):
+        libs += ('fias/js/locale/select2_locale_{0}.js'.format(lang),)
 
-def get_select2_css_libs(light=False):
-    from django.conf import settings
-
-    if settings.configured and settings.DEBUG:
-        return ('fias/js/select2/select2.css', 'css/extra.css',)
-    else:
-        return ('fias/js/select2/select2.css',)
+    return libs
 
 
 class AddressSelect2(HeavySelect2Widget):
