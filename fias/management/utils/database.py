@@ -429,7 +429,7 @@ def update_database(skip):
                 tables = fias.get_tablelist(_version)
             except rarfile.NotRarFile:
                 if skip:
-                    print 'Broken archive version {0}. Skipping...'.format(_version)
+                    print ('Broken archive version {0}. Skipping...'.format(_version))
                     continue
                 else:
                     raise
