@@ -1,0 +1,8 @@
+#coding: utf-8
+from __future__ import unicode_literals, absolute_import
+
+
+class Archive(object):
+
+    def open(self, filename):
+        return filename
