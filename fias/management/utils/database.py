@@ -41,7 +41,7 @@ class FiasFiles(object):
             self._latest = None
             self._arch = None
 
-            from sudsds.client import Client
+            from suds.client import Client
             client = Client(url="http://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL")
             result = client.service.GetAllDownloadFileInfo()
             for it in result.DownloadFileInfo:
