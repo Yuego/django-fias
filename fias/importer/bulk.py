@@ -64,6 +64,14 @@ class BulkCreate(object):
                 old_obj.save()
                 self.upd_counter += 1
 
+            """
+            При обновлении выполняется очень много SELECT-запросов,
+            которые тоже неслабо отъедают память.
+            Так что лучше почаще чистить лог.
+            """
+            if settings.DEBUG:
+                db.reset_queries()
+
         del data
 
         if self.counter and self.counter % 10000 == 0:
