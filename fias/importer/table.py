@@ -60,6 +60,3 @@ class Table(object):
 
     def open(self):
         return self._archive.open(self._filename)
-
-    def load(self, truncate=False, update=True):
-        pass

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 from django.db.models import Min
 from fias.config import FIAS_TABLES, FIAS_DELETED_TABLES
+from fias.importer.loader import loader
 from fias.importer.log import log
 from fias.importer.table import Table
 from fias.models import Status, Version
@@ -70,7 +71,8 @@ class Archive(object):
             try:
                 status = Status.objects.get(table=table_name)
             except Status.DoesNotExist:
-                table.load()
+                ldr = loader(table)
+                ldr.load(truncate=truncate, update=False)
 
                 status = Status(table=table.full_name, ver=self._version)
                 status.save()
@@ -112,7 +114,8 @@ class DeltaArchive(Archive):
                         log.warning('Can`t update table `{0}`. Status is unknown!'.format(table))
                     else:
                         if self._version.ver < version.ver:
-                            table.load(update=True)
+                            ldr = loader(table)
+                            ldr.load(truncate=False, update=True)
 
                             status.ver = version
                             status.save()

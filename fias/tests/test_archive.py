@@ -7,14 +7,14 @@ from fias.importer.table import Table
 from fias.importer.version import update_versions
 from unittest import TestCase
 
-_test_archive = 'fias/tests/data/fias.rar'
+from .mock.archive import test_archive
 
 
 class TestLocalArchive(TestCase):
 
     def setUp(self):
         update_versions(update_all=True)
-        self._archive = Archive(path=_test_archive)
+        self._archive = Archive(path=test_archive)
 
     def test_archive_returns_table_list(self):
         tables = self._archive.tables
