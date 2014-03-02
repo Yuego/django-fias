@@ -34,7 +34,9 @@ class Archive(object):
     def _retrieve(self, version=None, path=None):
         self._path = path
         if self._path is None:
-            self._path = urlretrieve(getattr(version, self.field_name))[0]
+            path = getattr(version, self.field_name)
+            log.info('Downloading file: {0}'.format(path))
+            self._path = urlretrieve(path)[0]
 
         try:
             self._archive = rarfile.RarFile(self._path)

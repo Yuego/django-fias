@@ -15,4 +15,5 @@ test_project/db.*
 .tox
 *.egg-info
 build/
+dist/
 .coverage

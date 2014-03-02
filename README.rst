@@ -13,12 +13,12 @@
 Установка
 ============
 
-1. Установите `django_fias`::
+1. Установите `django-fias`::
 
-        pip install django_fias
+        pip install django-fias
 
 2. Добавьте `fias` и `django_select2` в ваш список `INSTALLED_APPS`.
-3. Добавьте `url(r'^django_fias/', include('fias.urls', namespace='fias')),` в ваш urlpatterns
+3. Добавьте `url(r'^fias/', include('fias.urls', namespace='fias')),` в ваш urlpatterns
 4. Любым доступным способом подключите к админке приложения, в котором будете использовать поле FiasAddress свежую версию jQuery::
 
     # например так:
@@ -46,7 +46,7 @@
         python manage.py migrate --database=fias
         # без South
         python manage.py syncdb --database=fias
-гдв `fias` - имя БД ФИАС
+где `fias` - имя БД ФИАС
 
 5. Выполните::
 
@@ -58,6 +58,18 @@
 6. Выполните::
 
         python manage.py collectstatic
+
+Обновление до версии 0.3
+========================
+
+Обязательно наличие South.
+Выполните::
+
+        # Если данные ФИАС хранятся в основной БД
+        python manage.py migrate
+        # Если данные ФИАС хранятся в другой БД
+        python manage.py migrate --database=fias
+где `fias` - имя БД ФИАС
 
 Настройка полнотекстового поиска
 ================================
