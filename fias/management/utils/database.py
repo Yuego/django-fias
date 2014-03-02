@@ -80,7 +80,7 @@ class FiasFiles(object):
     def _retrieve_full_archive(self):
         if 'full' not in self.archives:
             self._full_version = self.latest
-            self.archives['full'] = urlretrieve(self.fias_list[self._full_version.ver]['FiasCompleteXmlUrl'])
+            self.archives['full'] = urlretrieve(self.fias_list[self._full_version.ver]['FiasCompleteXmlUrl'])[0]
 
     def _retrieve_update_archive(self, version):
         if version.ver not in self.archives:
