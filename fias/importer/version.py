@@ -7,7 +7,7 @@ from fias.models import Version
 from suds.client import Client
 
 
-def update_versions(update_all=False):
+def fetch_version_info(update_all=False):
     client = Client(url="http://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL")
     result = client.service.GetAllDownloadFileInfo()
 

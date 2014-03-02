@@ -1,6 +1,6 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
-from django.db.models import Min
+
 from fias.config import FIAS_TABLES, FIAS_DELETED_TABLES
 from fias.importer.loader import loader
 from fias.importer.log import log
@@ -10,13 +10,17 @@ import rarfile
 from urllib import urlretrieve
 
 
+class BadArchiveError(Exception):
+    pass
+
+
 class Archive(object):
     field_name = 'complete_xml_url'
 
     def __init__(self, version=None, path=None):
-        assert version is not None or path is not None, 'Необходимо указать версию или путь к скачанному архиву'
+        assert version is not None or path is not None, 'You must specify version or path to archive'
         if version is not None:
-            assert isinstance(version, Version), '`{0}` - это не объект типа {1}'.format(repr(version), type(Version))
+            assert isinstance(version, Version), '`{0}` is not {1}'.format(repr(version), type(Version))
 
         self._version = None
         self._tables = None
@@ -27,7 +31,11 @@ class Archive(object):
     def _retrieve(self, version=None, path=None):
         if path is None:
             path = urlretrieve(getattr(version, self.field_name))[0]
-        self._archive = rarfile.RarFile(path)
+        try:
+            self._archive = rarfile.RarFile(path)
+        except (rarfile.NotRarFile, rarfile.BadRarFile) as e:
+            raise BadArchiveError('Archive: `{0}`, ver: `{1}` corrupted'
+                                  ' or is not rar-archive'.format(path, version or 'unknown'))
 
         if self._version is None:
             self._version = self._get_version()
@@ -71,7 +79,7 @@ class Archive(object):
             try:
                 status = Status.objects.get(table=table_name)
             except Status.DoesNotExist:
-                ldr = loader(table)
+                ldr = loader(table, self._version)
                 ldr.load(truncate=truncate, update=False)
 
                 status = Status(table=table.full_name, ver=self._version)
@@ -97,31 +105,25 @@ class DeltaArchive(Archive):
     field_name = 'delta_xml_url'
 
     def load(self, truncate=False):
-        min_version = Status.objects.aggregate(Min('ver'))['ver__min']
-        if min_version is not None:
-            for version in Version.objects.filter(ver__gt=min_version).order_by('ver'):
+        for table_name in FIAS_TABLES:
+            try:
+                table = self.tables[table_name]
+            except KeyError:
+                log.debug('Table `{0}` not found in archive'.format(table_name))
+                continue
 
-                for table_name in FIAS_TABLES:
-                    try:
-                        table = self.tables[table_name]
-                    except KeyError:
-                        log.debug('Table `{0}` not found in archive'.format(table_name))
-                        continue
+            try:
+                status = Status.objects.get(table=table)
+            except Status.DoesNotExist:
+                log.warning('Can`t update table `{0}`. Status is unknown!'.format(table))
+            else:
+                if self._version.ver > status.ver.ver:
+                    ldr = loader(table, self._version)
+                    ldr.load(truncate=False, update=True)
 
-                    try:
-                        status = Status.objects.get(table=table)
-                    except Status.DoesNotExist:
-                        log.warning('Can`t update table `{0}`. Status is unknown!'.format(table))
-                    else:
-                        if self._version.ver < version.ver:
-                            ldr = loader(table)
-                            ldr.load(truncate=False, update=True)
+                    status.ver = self._version
+                    status.save()
 
-                            status.ver = version
-                            status.save()
-
-                            self._process_deleted_table(table_name)
-                        else:
-                            log.info('Table `{0}` is up to date. Version: {1}'.format(table_name, status.ver))
-        else:
-            log.error('Not available. Please import the data before updating')
+                    self._process_deleted_table(table_name)
+                else:
+                    log.info('Table `{0}` is up to date. Version: {1}'.format(table_name, status.ver))

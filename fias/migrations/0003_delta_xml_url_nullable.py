@@ -8,23 +8,18 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Version.complete_xml_url'
-        db.add_column(u'fias_version', 'complete_xml_url',
-                      self.gf('django.db.models.fields.CharField')(default='http://example.com/file.rar', max_length=255),
-                      keep_default=False)
 
-        # Adding field 'Version.delta_xml_url'
-        db.add_column(u'fias_version', 'delta_xml_url',
-                      self.gf('django.db.models.fields.CharField')(default='http://example.com/file.rar', max_length=255),
-                      keep_default=False)
+        # Changing field 'Version.delta_xml_url'
+        db.alter_column(u'fias_version', 'delta_xml_url', self.gf('django.db.models.fields.CharField')(max_length=255, null=True))
 
     def backwards(self, orm):
-        # Deleting field 'Version.complete_xml_url'
-        db.delete_column(u'fias_version', 'complete_xml_url')
 
-        # Deleting field 'Version.delta_xml_url'
-        db.delete_column(u'fias_version', 'delta_xml_url')
-
+        # User chose to not deal with backwards NULL issues for 'Version.delta_xml_url'
+        raise RuntimeError("Cannot reverse this migration. 'Version.delta_xml_url' and its values cannot be restored.")
+        
+        # The following code is provided here to aid in writing a correct migration
+        # Changing field 'Version.delta_xml_url'
+        db.alter_column(u'fias_version', 'delta_xml_url', self.gf('django.db.models.fields.CharField')(max_length=255))
 
     models = {
         u'fias.addrobj': {
@@ -166,7 +161,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Version'},
             'complete_xml_url': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'date': ('django.db.models.fields.DateField', [], {'db_index': 'True', 'null': 'True', 'blank': 'True'}),
-            'delta_xml_url': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            'delta_xml_url': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
             'dumpdate': ('django.db.models.fields.DateField', [], {'db_index': 'True'}),
             'ver': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'})
         }

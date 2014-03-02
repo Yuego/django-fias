@@ -12,7 +12,7 @@ class Log(object):
     ERROR = 3
 
     def __init__(self):
-        self.level = Log.WARNING
+        self.level = Log.INFO
 
         self._status = ''
 

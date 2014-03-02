@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 import datetime
+from django.db import connection, connections, router
 from fias.importer.log import log
 from lxml import etree
 
@@ -30,6 +31,17 @@ class LoaderBase(object):
     def _init(self):
         raise NotImplementedError()
 
+    def _truncate(self):
+        db_table = self._model._meta.db_table
+        cursor = connections[router.db_for_write(self._model)].cursor()
+
+        if connection.vendor == 'postgresql':
+            cursor.execute('TRUNCATE TABLE {0} RESTART IDENTITY CASCADE'.format(db_table))
+        elif connection.vendor == 'mysql':
+            cursor.execute('TRUNCATE TABLE `{0}`'.format(db_table))
+        else:
+            cursor.execute('DELETE FROM {0}'.format(db_table))
+
     @staticmethod
     def _str_to_date(s):
         return datetime.datetime.strptime(s, "%Y-%m-%d").date()
@@ -43,13 +55,13 @@ class LoaderBase(object):
                                                          self._version.ver))
 
         if truncate:
-            self._model.objects.all().delete()
+            self._truncate()
 
-        if not update:
-            self._bulk.mode = 'fill'
-        else:
+        if update:
             self._bulk.mode = 'update'
             self._bulk.reset_counters()
+        else:
+            self._bulk.mode = 'fill'
 
         context = etree.iterparse(self._table.open())
         _fast_iter(context=context, func=self.process_row)
