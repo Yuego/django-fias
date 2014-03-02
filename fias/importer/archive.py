@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 from fias.config import FIAS_TABLES, FIAS_DELETED_TABLES
+
 from fias.importer.loader import loader
 from fias.importer.log import log
 from fias.importer.table import Table
@@ -134,7 +135,7 @@ class DeltaArchive(Archive):
                 if skip:
                     log.error(msg)
                 else:
-                    raise
+                    raise BadArchiveError(msg)
             else:
                 status.ver = self._version
                 status.save()
