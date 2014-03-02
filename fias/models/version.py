@@ -15,6 +15,9 @@ class Version(models.Model):
     date = models.DateField(db_index=True, blank=True, null=True)
     dumpdate = models.DateField(db_index=True)
 
+    complete_xml_url = models.CharField(max_length=255)
+    delta_xml_url = models.CharField(max_length=255, blank=True, null=True)
+
     def __unicode__(self):
         return '{0} from {1}'.format(self.ver, self.dumpdate)
 

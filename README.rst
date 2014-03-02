@@ -42,12 +42,17 @@
 
 * Выполните::
 
+        # для South
+        python manage.py migrate --database=fias
+        # без South
         python manage.py syncdb --database=fias
-
 гдв `fias` - имя БД ФИАС
 
 5. Выполните::
 
+        # для South
+        python manage.py migrate
+        # без South
         python manage.py syncdb
 
 6. Выполните::

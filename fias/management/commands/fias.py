@@ -6,8 +6,10 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand
 
+from fias.importer.commands import load_complete_xml, load_delta_xml
+from fias.importer.version import fetch_version_info
 from fias.models import Status
-from fias.management.utils.database import fill_database, update_database
+
 
 
 class Command(BaseCommand):
@@ -36,24 +38,27 @@ class Command(BaseCommand):
         update = options.pop('update')
         skip = options.pop('skip')
 
-        _file = options.pop('file') if not remote else None
+        path = options.pop('file') if not remote else None
 
-        if _file is None and not remote and not update:
+        if path is None and not remote and not update:
             self.error(self.usage_str)
 
-        if (_file or remote) and Status.objects.count() > 0 and not really:
+        if (path or remote) and Status.objects.count() > 0 and not really:
             self.error('One of the tables contains data. Truncate all FIAS tables manually '
                        'or enter key --really-replace, to clear the table by means of Django ORM')
 
-        if force:
-            Status.objects.all().delete()
+        truncate = False
+        fetch_version_info(update_all=True)
 
-        if _file or remote:
-            fill_database(_file)
+        if path or remote:
+            if force:
+                truncate = True
+                Status.objects.all().delete()
+            load_complete_xml(path=path, truncate=truncate)
 
         if update:
             print ('Database updating...')
-            update_database(skip)
+            load_delta_xml(skip=skip)
 
     def error(self, message, code=1):
         print(message)
