@@ -20,9 +20,8 @@ def _fast_iter(context, func):
 
 class LoaderBase(object):
 
-    def __init__(self, table, version):
+    def __init__(self, table):
         self._table = table
-        self._version = version
         self._today = today
         self._bulk = None
         self._model = None
@@ -50,10 +49,6 @@ class LoaderBase(object):
         raise NotImplementedError()
 
     def load(self, truncate=False, update=False):
-        log.info('{0} table `{1}` to ver. {2}...'.format('Updating' if update else 'Filling',
-                                                         self._table.full_name,
-                                                         self._version.ver))
-
         if truncate:
             self._truncate()
 

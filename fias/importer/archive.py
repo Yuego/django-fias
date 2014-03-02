@@ -6,6 +6,7 @@ from fias.importer.loader import loader
 from fias.importer.log import log
 from fias.importer.table import Table
 from fias.models import Status, Version
+from lxml.etree import XMLSyntaxError
 import rarfile
 from urllib import urlretrieve
 
@@ -22,17 +23,20 @@ class Archive(object):
         if version is not None:
             assert isinstance(version, Version), '`{0}` is not {1}'.format(repr(version), type(Version))
 
-        self._version = None
+        self._version = version
         self._tables = None
+        self._path = path
         self._archive = None
         self._date = None
         self._retrieve(version, path)
 
     def _retrieve(self, version=None, path=None):
-        if path is None:
-            path = urlretrieve(getattr(version, self.field_name))[0]
+        self._path = path
+        if self._path is None:
+            self._path = urlretrieve(getattr(version, self.field_name))[0]
+
         try:
-            self._archive = rarfile.RarFile(path)
+            self._archive = rarfile.RarFile(self._path)
         except (rarfile.NotRarFile, rarfile.BadRarFile) as e:
             raise BadArchiveError('Archive: `{0}`, ver: `{1}` corrupted'
                                   ' or is not rar-archive'.format(path, version or 'unknown'))
@@ -68,7 +72,7 @@ class Archive(object):
     def open(self, filename):
         return self._archive.open(filename)
 
-    def load(self, truncate=False):
+    def load(self, truncate=False, skip=False):
         for table_name in FIAS_TABLES:
             try:
                 table = self.tables[table_name]
@@ -79,7 +83,10 @@ class Archive(object):
             try:
                 status = Status.objects.get(table=table_name)
             except Status.DoesNotExist:
-                ldr = loader(table, self._version)
+
+                log.info('Filling table `{0}` to ver. {1}...'.format(table.full_name, self._version.ver))
+
+                ldr = loader(table)
                 ldr.load(truncate=truncate, update=False)
 
                 status = Status(table=table.full_name, ver=self._version)
@@ -104,26 +111,32 @@ class Archive(object):
 class DeltaArchive(Archive):
     field_name = 'delta_xml_url'
 
-    def load(self, truncate=False):
-        for table_name in FIAS_TABLES:
+    def load(self, truncate=False, skip=False):
+        to_update = [s.table for s in Status.objects.filter(ver__ver__lt=self._version.ver)]
+        for table_name in set(to_update) & set(FIAS_TABLES):
             try:
                 table = self.tables[table_name]
             except KeyError:
                 log.debug('Table `{0}` not found in archive'.format(table_name))
                 continue
 
+            status = Status.objects.get(table=table.full_name)
+
+            log.info('Updating table `{0}` from {1} to {2}...'.format(table.full_name,
+                                                                      status.ver.ver,
+                                                                      self._version.ver))
+
+            ldr = loader(table)
             try:
-                status = Status.objects.get(table=table)
-            except Status.DoesNotExist:
-                log.warning('Can`t update table `{0}`. Status is unknown!'.format(table))
-            else:
-                if self._version.ver > status.ver.ver:
-                    ldr = loader(table, self._version)
-                    ldr.load(truncate=False, update=True)
-
-                    status.ver = self._version
-                    status.save()
-
-                    self._process_deleted_table(table_name)
+                ldr.load(truncate=False, update=True)
+            except XMLSyntaxError as e:
+                msg = 'XML file for table `{0}` is broken. Data not loaded!'.format(table.full_name)
+                if skip:
+                    log.error(msg)
                 else:
-                    log.info('Table `{0}` is up to date. Version: {1}'.format(table_name, status.ver))
+                    raise
+            else:
+                status.ver = self._version
+                status.save()
+
+            self._process_deleted_table(table_name)

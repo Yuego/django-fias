@@ -10,7 +10,6 @@ from unittest import TestCase
 
 from .mock.archive import Archive
 from .mock.table import get_table_name
-from .mock.version import Version
 
 
 class TestLoaderSelector(TestCase):
@@ -19,7 +18,7 @@ class TestLoaderSelector(TestCase):
         return Table(Archive(), get_table_name(name))
 
     def _get_loader(self, name):
-        return loader(self._get_table(name), Version(1))
+        return loader(self._get_table(name))
 
     def test_addrobj_loader_exist(self):
         ldr = self._get_loader('addrobj')
@@ -58,7 +57,7 @@ class TestTableLoading(TestCase):
         return Table(Archive(), get_table_name(name))
 
     def _get_loader(self, name):
-        return loader(self._get_table(name), Version(1))
+        return loader(self._get_table(name))
 
     def _load(self, name, truncate=False):
         ldr = self._get_loader(name)

@@ -60,3 +60,6 @@ class Table(object):
 
     def open(self):
         return self._archive.open(self._filename)
+
+    def __repr__(self):
+        return '<Table `{0}`>'.format(self.full_name)
