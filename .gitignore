@@ -11,3 +11,8 @@ reports
 
 test_project/static/*
 test_project/db.*
+
+.tox
+*.egg-info
+build/
+.coverage
