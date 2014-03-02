@@ -13,12 +13,12 @@
 Установка
 ============
 
-1. Установите `django_fias`::
+1. Установите `django-fias`::
 
-        pip install django_fias
+        pip install django-fias
 
 2. Добавьте `fias` и `django_select2` в ваш список `INSTALLED_APPS`.
-3. Добавьте `url(r'^django_fias/', include('fias.urls', namespace='fias')),` в ваш urlpatterns
+3. Добавьте `url(r'^fias/', include('fias.urls', namespace='fias')),` в ваш urlpatterns
 4. Любым доступным способом подключите к админке приложения, в котором будете использовать поле FiasAddress свежую версию jQuery::
 
     # например так:
