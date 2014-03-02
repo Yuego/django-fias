@@ -46,7 +46,7 @@
         python manage.py migrate --database=fias
         # без South
         python manage.py syncdb --database=fias
-гдв `fias` - имя БД ФИАС
+где `fias` - имя БД ФИАС
 
 5. Выполните::
 
@@ -58,6 +58,18 @@
 6. Выполните::
 
         python manage.py collectstatic
+
+Обновление до версии 0.3
+========================
+
+Обязательно наличие South.
+Выполните::
+
+        # Если данные ФИАС хранятся в основной БД
+        python manage.py migrate
+        # Если данные ФИАС хранятся в другой БД
+        python manage.py migrate --database=fias
+где `fias` - имя БД ФИАС
 
 Настройка полнотекстового поиска
 ================================
