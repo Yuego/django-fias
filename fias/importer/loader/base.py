@@ -7,7 +7,7 @@ from fias.importer.log import log
 from lxml import etree
 
 today = datetime.date.today()
-
+_bom_header = b'\xef\xbb\xbf'
 
 def _fast_iter(context, func):
     for event, elem in context:
@@ -58,7 +58,16 @@ class LoaderBase(object):
         else:
             self._bulk.mode = 'fill'
 
-        context = etree.iterparse(self._table.open())
+        # workaround for XMLSyntaxError: Document is empty, line 1, column 1
+        xml = self._table.open()
+        bom = xml.read(3)
+        if bom != _bom_header:
+            xml = self._table.open()
+        else:
+            log.info('Fixed wrong BOM header')
+
+        context = etree.iterparse(xml)
+
         _fast_iter(context=context, func=self.process_row)
 
         self._bulk.finish()
