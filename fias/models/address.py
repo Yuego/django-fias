@@ -21,7 +21,7 @@ class FIASAddress(models.Model):
     address = AddressField(verbose_name=_('address'), related_name='+')
 
     full_address = models.CharField(_('full address'), max_length=255, blank=True, editable=False)
-    short_address = models.CharField(_('short address'), max_length=255, blank=True, editable=False)
+    short_address = models.CharField(_('street address'), max_length=255, blank=True, editable=False)
 
     def _update_address(self):
         full_addr = [force_unicode(self.address)]
@@ -29,7 +29,7 @@ class FIASAddress(models.Model):
 
         def make_addr(obj):
             if obj.aolevel > 3:
-                short_addr.append(force_unicode(obj))
+                short_addr.append(obj)
 
             if obj.aolevel > 1:
                 try:
@@ -43,7 +43,7 @@ class FIASAddress(models.Model):
         make_addr(self.address)
 
         self.full_address = ', '.join(full_addr[::-1])
-        self.short_address = ', '.join(short_addr[::-1])
+        self.short_address = ', '.join(force_unicode(obj) for obj in short_addr[::-1] if obj.aolevel > 4)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
