@@ -80,8 +80,3 @@ class AddrObj(Common):
 
     def full_address(self):
         return self.full_name(5)
-
-
-if 'mysql' in settings.DATABASES[FIAS_DATABASE_ALIAS]['ENGINE']:
-    from fias.models.sphinx import AddrObjIndex
-    __all__ = ['AddrObj', 'AddrObjIndex']
