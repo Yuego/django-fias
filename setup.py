@@ -11,7 +11,7 @@ setup(
     author='Artem Vlasov',
     author_email='root@proscript.ru',
     url='https://github.com/Yuego/django-fias',
-    download_url='https://github.com/Yuego/django-fias/archive/v{0}.tar.gz'.format(__version__),
+    download_url='https://github.com/Yuego/django-fias/archive/{0}.tar.gz'.format(__version__),
 
     description='FIAS Django integration',
     long_description=open('README.rst').read(),
