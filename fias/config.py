@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from fias.weights import weights
 
 _DEFAULT = ('landmark', 'houseint', 'house')
 
@@ -36,6 +37,12 @@ if FIAS_SEARCH_ENGINE == 'sphinx':
     FIAS_SPHINX_ADDROBJ_INDEX = FIAS_DATABASE_ALIAS + '_' + FIAS_SPHINX_ADDROBJ_INDEX_NAME
 
 FIAS_SUGGEST_VIEW = 'fias:suggest_{0}'.format(FIAS_SEARCHERS[FIAS_SEARCH_ENGINE])
+
+user_weights = getattr(settings, 'FIAS_SB_WEIGHTS', {})
+if not isinstance(user_weights, dict):
+    raise ImproperlyConfigured('FIAS_SB_WEIGHTS should be a dict type')
+
+weights.update(user_weights)
 
 # Чтобы использовать для данных ФИАС другую базу данных,
 # добавьте роутер 'fias.routers.FIASRouter' в список `DATABASE_ROUTERS`

@@ -138,7 +138,12 @@ class SuggestBySphinx(Select2View):
     def get_results(self, request, term, page, context):
         from fias.sphinxit import search
 
-        query = search().match(term + '*').order_by('aolevel', 'asc').limit(0, 20)
+        query = search().match(term + '*').options(field_weights={'formalname': 100,
+                                                                  'fullname': 80}).limit(0, 50)
+
+        #Hack to bypass bug in sphixit. https://github.com/semirook/sphinxit/issues/16
+        query._nodes.OrderBy.orderings = [u'item_weight DESC', u'weight() DESC']
+
         result = query.ask()
 
         items = result['result']['items']

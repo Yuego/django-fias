@@ -1,1 +1,1 @@
-truncate table fias_addrobjindex;
+TRUNCATE TABLE fias_addrobjindex;

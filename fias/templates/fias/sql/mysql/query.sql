@@ -1,1 +1,1 @@
-select * from fias_addrobjindex;
+SELECT * FROM fias_addrobjindex;

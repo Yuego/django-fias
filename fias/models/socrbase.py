@@ -21,6 +21,8 @@ class SocrBase(models.Model):
     socrname = models.CharField(max_length=50, default=" ")
     kod_t_st = models.PositiveIntegerField(primary_key=True)
 
+    item_weight = models.PositiveSmallIntegerField(default=64)
+
     def __unicode__(self):
         return self.socrname
 
