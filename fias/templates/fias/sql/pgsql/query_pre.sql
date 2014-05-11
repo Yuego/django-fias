@@ -1,1 +1,1 @@
-CREATE TEMPORARY SEQUENCE fias_addrobj_id_seq;
+CREATE TEMPORARY SEQUENCE fias_addrobj_docid_seq;

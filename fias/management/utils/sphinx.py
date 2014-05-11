@@ -9,7 +9,7 @@ from django.template.base import TemplateDoesNotExist
 from django.template.loader import select_template
 
 from fias.config import FIAS_DATABASE_ALIAS, FIAS_SPHINX_ADDROBJ_INDEX
-
+import re
 
 def _get_database_engine():
     _engine = settings.DATABASES[FIAS_DATABASE_ALIAS]['ENGINE']
@@ -51,12 +51,15 @@ def render_sphinx_source():
         'db_user': settings.DATABASES[FIAS_DATABASE_ALIAS]['USER'],
         'db_password': settings.DATABASES[FIAS_DATABASE_ALIAS]['PASSWORD'],
 
-        'db_query_pre': _get_sql_template('query_pre').render(Context({})).replace("\n", "\\\n").strip(),
-        'db_query_post': _get_sql_template('query_post').render(Context({})).replace("\n", "\\\n").strip(),
-        'db_query': _get_sql_template('query').render(Context({})).replace("\n", "\\\n").strip(),
-
         'index_name': FIAS_SPHINX_ADDROBJ_INDEX,
     }
+
+    re_nl = re.compile(r'(?<!;)\n', re.U)
+    re_strip_el = re.compile(r'^\n', re.MULTILINE)
+    for query_type in ['_pre', '_post', '']:
+        query_name = 'query' + query_type
+        query = _get_sql_template(query_name).render(Context({}))
+        ctx['db_' + query_name] = re_nl.sub(r'\\\n', re_strip_el.sub('', query)).strip()
 
     return _get_sphinx_template('source').render(Context(ctx))
 
