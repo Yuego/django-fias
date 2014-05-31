@@ -1,13 +1,10 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from django.db.models import Q
-from django.utils.text import force_unicode
-from django.views.generic import View
+from django.utils.text import force_text
 
-from django_select2.views import JSONResponseMixin, Select2View, NO_ERR_RESP
+from django_select2.views import Select2View, NO_ERR_RESP
 
-from fias import config
 from fias.models import AddrObj, SocrBase
 
 EMPTY_RESULT = NO_ERR_RESP, False, ()
@@ -29,7 +26,6 @@ class SuggestAddressViewStepByStep(Select2View):
             Проверяем иерархию для всех объектов перед последней запятой
         """
         if parts_len > 1:
-
 
             for part in parts[:-1]:
                 socr_term, obj_term = part.strip().split(' ', 1)
@@ -125,10 +121,14 @@ class SuggestAddressViewStepByStep(Select2View):
                 return (
                     NO_ERR_RESP,
                     False,
-                    ((force_unicode(l.pk), '{0}, {1}'.format(prefix, l), {'level': l.aolevel}) for l in result)
+                    ((force_text(l.pk), '{0}, {1}'.format(prefix, l), {'level': l.aolevel}) for l in result)
                 )
             else:
-                return NO_ERR_RESP, False, ((force_unicode(l.pk), l.full_name(5, True), {'level': l.aolevel}) for l in result)
+                return (
+                    NO_ERR_RESP,
+                    False,
+                    ((force_text(l.pk), l.full_name(5, True), {'level': l.aolevel}) for l in result)
+                )
 
         return EMPTY_RESULT
 
@@ -156,6 +156,7 @@ class SuggestBySphinx(Select2View):
             )
 
         return EMPTY_RESULT
+
 
 class GetAreasListView(Select2View):
 
@@ -186,7 +187,7 @@ class GetAreasListView(Select2View):
             return self.render_to_response(self._results_to_context((
                 NO_ERR_RESP,
                 False,
-                ((force_unicode(a.pk), force_unicode(a)) for a in areas), ))
+                ((force_text(a.pk), force_text(a)) for a in areas), ))
             )
 
         return self.render_to_response(self._results_to_context((NO_ERR_RESP, False, [], )))
