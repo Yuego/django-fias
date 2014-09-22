@@ -18,7 +18,7 @@ class Common(models.Model):
     terrifnsul = models.PositiveIntegerField(blank=True, null=True)
 
     okato = models.BigIntegerField(blank=True, null=True)
-    oktmo = models.IntegerField(blank=True, null=True)
+    oktmo = models.BigIntegerField(blank=True, null=True)
 
     postalcode = models.PositiveIntegerField(blank=True, null=True)
 
