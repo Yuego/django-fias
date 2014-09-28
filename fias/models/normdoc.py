@@ -17,5 +17,5 @@ class NormDoc(models.Model):
     docname = models.TextField(blank=True)
     docdate = models.DateField(blank=True, null=True)
     docnum = models.CharField(max_length=20, blank=True, null=True)
-    doctype = models.IntegerField()
-    docimgid = models.IntegerField(blank=True, null=True)
+    doctype = models.PositiveIntegerField()
+    docimgid = models.PositiveIntegerField(blank=True, null=True)
