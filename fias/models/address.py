@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.db import models
-from django.utils.text import force_unicode
+from django.utils.text import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from fias.models.addrobj import AddrObj
@@ -24,7 +24,7 @@ class FIASAddress(models.Model):
     short_address = models.CharField(_('street address'), max_length=255, blank=True, editable=False)
 
     def _update_address(self):
-        full_addr = [force_unicode(self.address)]
+        full_addr = [force_text(self.address)]
         short_addr = []
 
         def make_addr(obj):
@@ -37,13 +37,13 @@ class FIASAddress(models.Model):
                 except AddrObj.DoesNotExist:
                     return
                 else:
-                    full_addr.append(force_unicode(parent))
+                    full_addr.append(force_text(parent))
                     make_addr(parent)
 
         make_addr(self.address)
 
         self.full_address = ', '.join(full_addr[::-1])
-        self.short_address = ', '.join(force_unicode(obj) for obj in short_addr[::-1] if obj.aolevel > 4)
+        self.short_address = ', '.join(force_text(obj) for obj in short_addr[::-1] if obj.aolevel > 4)
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
