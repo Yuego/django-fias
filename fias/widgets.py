@@ -28,6 +28,7 @@ def get_js_libs():
 
 
 class AddressSelect2(HeavySelect2Widget):
+    is_hidden = False
 
     class Media:
         extend = False
