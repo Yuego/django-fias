@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 import six
-
+from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
 from django.db import models
 
@@ -10,9 +10,10 @@ from fias.config import FIAS_DATABASE_ALIAS
 from fias.fields import UUIDField
 from fias.models.common import Common
 
+
 __all__ = ['AddrObj']
 
-
+@python_2_unicode_compatible
 class AddrObj(Common):
 
     class Meta:
@@ -75,7 +76,7 @@ class AddrObj(Common):
     def get_formal_name(self):
         return '{0} {1}'.format(self.shortname, self.formalname)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_natural_name()
 
     def full_address(self):
