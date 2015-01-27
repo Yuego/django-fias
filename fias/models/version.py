@@ -21,6 +21,9 @@ class Version(models.Model):
     def __unicode__(self):
         return '{0} from {1}'.format(self.ver, self.dumpdate)
 
+    def __str__(self):
+        return '{0} from {1}'.format(self.ver, self.dumpdate)
+
 
 class Status(models.Model):
 
@@ -31,4 +34,7 @@ class Status(models.Model):
     ver = models.ForeignKey(Version)
 
     def __unicode__(self):
+        return self.table
+
+    def __str__(self):
         return self.table

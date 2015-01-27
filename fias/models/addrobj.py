@@ -78,5 +78,8 @@ class AddrObj(Common):
     def __unicode__(self):
         return self.get_natural_name()
 
+    def __str__(self):
+        return self.get_natural_name()
+
     def full_address(self):
         return self.full_name(5)

@@ -26,3 +26,5 @@ class SocrBase(models.Model):
     def __unicode__(self):
         return self.socrname
 
+    def __str__(self):
+        return self.socrname
