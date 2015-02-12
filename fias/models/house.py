@@ -18,7 +18,7 @@ class House(Common):
     aoguid = models.ForeignKey(AddrObj)
 
     housenum = models.CharField(max_length=20, blank=True, null=True)
-    eststatus = models.BooleanField()
+    eststatus = models.BooleanField(default=False)
     buildnum = models.CharField(max_length=10, blank=True, null=True)
     strucnum = models.CharField(max_length=10, blank=True, null=True)
     strstatus = models.PositiveSmallIntegerField()
