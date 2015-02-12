@@ -50,12 +50,12 @@ class AddrObj(Common):
     code = models.CharField(max_length=17, blank=True, null=True)
     plaincode = models.CharField(max_length=15, blank=True, null=True)
 
-    actstatus = models.BooleanField()
+    actstatus = models.BooleanField(default=False)
     centstatus = models.PositiveSmallIntegerField()
     operstatus = models.PositiveSmallIntegerField()
     currstatus = models.PositiveSmallIntegerField()
 
-    livestatus = models.BooleanField()
+    livestatus = models.BooleanField(default=False)
 
     def full_name(self, depth=None, formal=False):
         assert isinstance(depth, six.integer_types), 'Depth must be integer'
