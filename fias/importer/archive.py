@@ -9,7 +9,10 @@ from fias.importer.table import Table
 from fias.models import Status, Version
 from lxml.etree import XMLSyntaxError
 import rarfile
-from urllib import urlretrieve
+try:
+    from urllib import urlretrieve
+except ImportError:
+    from urllib.request import urlretrieve
 
 
 class BadArchiveError(Exception):
