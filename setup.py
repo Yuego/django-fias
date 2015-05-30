@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from setuptools import setup, find_packages
+import codecs
 import sys
 sys.path.insert(0, '..')
 PY3 = sys.version_info[0] == 3
@@ -27,7 +28,7 @@ setup(
     download_url='https://github.com/Yuego/django-fias/archive/{0}.tar.gz'.format(__version__),
 
     description='FIAS Django integration',
-    long_description=open('README.rst').read(),
+    long_description=codecs.open('README.rst', encoding='utf8').read(),
 
     license='MIT license',
     install_requires=[
