@@ -5,10 +5,14 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.forms import widgets
 from django.utils.safestring import mark_safe
-from django.utils.translation import get_language
+from django.utils.translation import get_language, force_text
 
-from django_select2.util import convert_to_js_str
 from django_select2.widgets import get_select2_css_libs, get_select2_heavy_js_libs, HeavySelect2Widget
+
+
+def convert_to_js_str(val):
+    val = force_text(val).replace('\'', '\\\'')
+    return u"'%s'" % val
 
 
 def get_js_libs():
