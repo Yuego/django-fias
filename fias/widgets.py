@@ -43,8 +43,8 @@ class AddressSelect2(HeavySelect2Widget):
         'width': '50%',
     }
 
-    def render_inner_js_code(self, id_, name, value, attrs=None, choices=(), *args):
-        js = super(AddressSelect2, self).render_inner_js_code(id_, name, value, attrs, choices, *args)
+    def render_inner_js_code(self, id_, *args):
+        js = super(AddressSelect2, self).render_inner_js_code(id_, *args)
         js += ("$('#{0}')"
                ".on('select2-open', fias.onOpen)"
                ".on('select2-selecting', fias.onSelecting)"
