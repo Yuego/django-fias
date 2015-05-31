@@ -1,9 +1,12 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from fias.weights import weights
+
+DJ_VERSION = django.VERSION[0] + 10*django.VERSION[1]
 
 _DEFAULT = ('landmark', 'houseint', 'house')
 

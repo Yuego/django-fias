@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from django.db.utils import DEFAULT_DB_ALIAS
 
-from fias.config import FIAS_DATABASE_ALIAS
+from fias.config import DJ_VERSION, FIAS_DATABASE_ALIAS
 
 
 class FIASRouter(object):
@@ -41,7 +41,7 @@ class FIASRouter(object):
             return True
         return None
 
-    def allow_syncdb(self, db, model):
+    def allow_migrate(self, db, model):
         """Разрешить синхронизацию моделей в базе ФИАС"""
         if db == FIAS_DATABASE_ALIAS:
             if model._meta.app_label in ('fias', 'south'):
@@ -52,3 +52,8 @@ class FIASRouter(object):
             return False
 
         return None
+
+
+# Backwards compatibility
+if DJ_VERSION < 18:
+    FIASRouter.allow_syncdb = FIASRouter.allow_migrate
