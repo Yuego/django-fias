@@ -72,9 +72,9 @@ class FIASHouse(models.Model):
     class Meta:
         abstract = True
 
-    house = models.PositiveSmallIntegerField(_('house number'), max_length=3, null=True, blank=True)
+    house = models.PositiveSmallIntegerField(_('house number'), null=True, blank=True)
     corps = models.CharField(_('corps'), max_length=2, blank=True, default='')
-    apartment = models.PositiveSmallIntegerField(_('apartment'), max_length=3, null=True, blank=True)
+    apartment = models.PositiveSmallIntegerField(_('apartment'), null=True, blank=True)
 
 
 class GetAddressMixin(object):
