@@ -10,12 +10,10 @@ from fias.version import __version__
 extra_requirements = []
 if PY3:
     extra_requirements = [
-        'django_select2-Py3>=1.0.0',
         'suds-jurko>=0.6',
     ]
 else:
     extra_requirements = [
-        'django_select2>=4.2.2',
         'suds>=0.4',
     ]
 
@@ -33,6 +31,7 @@ setup(
     license='MIT license',
     install_requires=[
         'Django>=1.4',
+        'django_select2',
         'django-extensions>=1.0.0',
         'rarfile',
         'six',
