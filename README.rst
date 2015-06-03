@@ -10,6 +10,15 @@
 * Связанное поле модели для выбора района внутри выбранного в AddressField города (районы никак не привязаны к улицам, соответственно, их нужно выбирать отдельно, если это требуется)
 * Несколько абстрактных моделей, немного упрощающих жизнь
 
+
+Совместимость
+=============
+
+Django 1.5+
+Для работы с django <1.8 необходимо доустановить django_extensions
+Для работы с django <1.7 необходимо доустановить south версии 1.0 или выше
+
+
 Установка
 ============
 
@@ -42,7 +51,7 @@
 
 * Выполните::
 
-        # для South
+        # для South или Django >= 1.7
         python manage.py migrate --database=fias
         # без South
         python manage.py syncdb --database=fias
@@ -50,7 +59,7 @@
 
 5. Выполните::
 
-        # для South
+        # для South или Django >= 1.7
         python manage.py migrate
         # без South
         python manage.py syncdb
@@ -58,42 +67,6 @@
 6. Выполните::
 
         python manage.py collectstatic
-
-Обновление до версии 0.3
-========================
-
-Обязательно наличие South.
-Выполните::
-
-        # Если данные ФИАС хранятся в основной БД
-        python manage.py migrate
-        # Если данные ФИАС хранятся в другой БД
-        python manage.py migrate --database=fias
-где `fias` - имя БД ФИАС
-
-
-Обновление до версии 0.4
-========================
-
-Обязательно наличие South.
-
-Если данные ФИАС хранятся в MySQL, выполните::
-
-        # Если данные ФИАС хранятся в основной БД
-        python manage.py migrate fias 0004 --fake
-        python manage.py migrate fias
-        # Если данные ФИАС хранятся в другой БД
-        python manage.py migrate fias 0004 --fake --database=fias
-        python manage.py migrate fias --database=fias
-
-Иначе выполните::
-
-        # Если данные ФИАС хранятся в основной БД
-        python manage.py migrate
-        # Если данные ФИАС хранятся в другой БД
-        python manage.py migrate --database=fias
-        
-Затем следует сгенерировать новый конфиг для Sphinx, как описано ниже, и переиндексировать базу.
 
 Настройка полнотекстового поиска
 ================================
