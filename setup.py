@@ -37,7 +37,7 @@ setup(
         'lxml',
         'unrar',
     ] + extra_requirements,
-    packages=find_packages(exclude=('fias.tests', 'fias.tests.*')),
+    packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,
     classifiers=[
         'Development Status :: 4 - Beta',
