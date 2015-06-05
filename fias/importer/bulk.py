@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import
 import datetime
 from django.conf import settings
 from django import db
+from fias.fields import UUIDField
 from fias.importer.log import log
 
 
@@ -11,6 +12,7 @@ class BulkCreate(object):
 
     def __init__(self, model, pk, upd_field=None, mode='update'):
         self._mode = 'update'
+        self._uuid_fns = None
 
         self.model = model
         self.pk = pk
@@ -20,6 +22,13 @@ class BulkCreate(object):
         self.objects = []
         self.counter = 0
         self.upd_counter = 0
+
+    @property
+    def uuid_field_names(self):
+        if self._uuid_fns is None:
+            self._uuid_fns = [field.name for field in self.model._meta.fields if isinstance(field, UUIDField)]
+
+        return self._uuid_fns
 
     def _set_mode(self, value):
         assert value in ('fill', 'update'), 'Wrong mode `{0}`'.format(value)
@@ -34,8 +43,13 @@ class BulkCreate(object):
         self.upd_counter = 0
         self.counter = 0
 
-    def _lower_keys(self, d):
-        return dict((k.lower(), v) for k, v in d.iteritems())
+    def _lower_keys_empty_uuids_to_none(self, d):
+        for key, value in d.iteritems():
+            key = key.lower()
+            if key in self.uuid_field_names:
+                yield (key, value or None)
+            else:
+                yield (key, value)
 
     def _create(self):
         self.model.objects.bulk_create(self.objects)
@@ -44,7 +58,7 @@ class BulkCreate(object):
             db.reset_queries()
 
     def push(self, raw_data, related_attrs=None):
-        data = self._lower_keys(raw_data.attrib)
+        data = dict(self._lower_keys_empty_uuids_to_none(raw_data.attrib))
 
         if isinstance(related_attrs, dict):
             data.update(related_attrs)

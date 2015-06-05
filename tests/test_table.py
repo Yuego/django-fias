@@ -4,8 +4,8 @@ from __future__ import unicode_literals, absolute_import
 from fias.importer.table import BadTableNameError, Table
 import datetime
 from rarfile import PipeReader
-from unittest import TestCase
-
+from django.test import TestCase
+import pytest
 
 from .mock.archive import Archive
 from .mock.table import get_table_date, get_table_uuid, get_table_name, get_bad_table_name

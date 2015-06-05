@@ -1,12 +1,15 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+from django.db.transaction import commit
 from django.db.utils import IntegrityError
+from django.test import TestCase, TransactionTestCase
 from fias import models
 from fias.importer.loader import loader, UnknownTableError
 from fias.importer.loader.base import LoaderBase
 from fias.importer.table import Table
-from unittest import TestCase
+import pytest
+
 
 from .mock.archive import Archive
 from .mock.table import get_table_name
@@ -51,7 +54,8 @@ class TestLoaderSelector(TestCase):
         self.assertIsInstance(ldr, LoaderBase)
 
 
-class TestTableLoading(TestCase):
+@pytest.mark.django_db(transaction=True)
+class TestTableLoading(TransactionTestCase):
 
     def _get_table(self, name):
         return Table(Archive(), get_table_name(name))

@@ -25,4 +25,4 @@ class Common(models.Model):
     updatedate = models.DateField()
     startdate = models.DateField()
     enddate = models.DateField()
-    normdoc = UUIDField(blank=True, null=True, auto=False)
+    normdoc = UUIDField(blank=True, null=True)

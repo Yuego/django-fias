@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 import datetime
 from django.db import connection, connections, router
+from django.db.transaction import atomic
 from fias.importer.log import log
 from lxml import etree
 
@@ -30,6 +31,7 @@ class LoaderBase(object):
     def _init(self):
         raise NotImplementedError()
 
+    @atomic
     def _truncate(self):
         db_table = self._model._meta.db_table
         cursor = connections[router.db_for_write(self._model)].cursor()

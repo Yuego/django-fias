@@ -1,12 +1,11 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from unittest import TestCase
-
 from django.db.models import Model
+from django.test import TestCase
 
 from fias.routers import FIASRouter
-from fias.config import FIAS_DATABASE_ALIAS
+from fias.config import DJ_VERSION, FIAS_DATABASE_ALIAS
 
 
 fias = __import__('fias.models')
@@ -57,11 +56,16 @@ class TestRouter(TestCase):
         self.assertIsNone(self.router.allow_relation(TestModel2, TestModel))
 
     def test_syncdb(self):
+        if DJ_VERSION < 18:
+            method = self.router.allow_syncdb
+        else:
+            method = self.router.allow_migrate
+
         for model in self.models:
             if issubclass(model, Model):
-                self.assertTrue(self.router.allow_syncdb(FIAS_DATABASE_ALIAS, model))
-                self.assertFalse(self.router.allow_syncdb('default', model))
+                self.assertTrue(method(FIAS_DATABASE_ALIAS, model))
+                self.assertFalse(method('default', model))
 
-        self.assertFalse(self.router.allow_syncdb(FIAS_DATABASE_ALIAS, TestModel))
-        self.assertIsNone(self.router.allow_syncdb('default', TestModel))
+        self.assertFalse(method(FIAS_DATABASE_ALIAS, TestModel))
+        self.assertIsNone(method('default', TestModel))
 

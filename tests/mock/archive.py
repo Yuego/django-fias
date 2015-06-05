@@ -1,7 +1,7 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-test_archive = 'fias/tests/data/fias.rar'
+test_archive = 'tests/data/fias.rar'
 import rarfile
 
 class Archive(object):

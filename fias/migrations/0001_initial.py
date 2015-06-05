@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import fias.fields.uuid
 
 
 class Migration(migrations.Migration):
@@ -24,12 +23,12 @@ class Migration(migrations.Migration):
                 ('updatedate', models.DateField()),
                 ('startdate', models.DateField()),
                 ('enddate', models.DateField()),
-                ('normdoc', fias.fields.uuid.UUIDField(auto=False, null=True, blank=True)),
-                ('aoguid', fias.fields.uuid.UUIDField(serialize=False, editable=False, primary_key=True, blank=True)),
-                ('parentguid', fias.fields.uuid.UUIDField(db_index=True, auto=False, null=True, blank=True)),
-                ('aoid', fias.fields.uuid.UUIDField(db_index=True, unique=True, editable=False, blank=True)),
-                ('previd', fias.fields.uuid.UUIDField(auto=False, null=True, blank=True)),
-                ('nextid', fias.fields.uuid.UUIDField(auto=False, null=True, blank=True)),
+                ('normdoc', models.UUIDField(null=True, blank=True)),
+                ('aoguid', models.UUIDField(serialize=False, primary_key=True)),
+                ('parentguid', models.UUIDField(db_index=True, null=True, blank=True)),
+                ('aoid', models.UUIDField(unique=True, db_index=True)),
+                ('previd', models.UUIDField(null=True, blank=True)),
+                ('nextid', models.UUIDField(null=True, blank=True)),
                 ('formalname', models.CharField(max_length=120, db_index=True)),
                 ('offname', models.CharField(max_length=120, null=True, blank=True)),
                 ('shortname', models.CharField(max_length=10, db_index=True)),
@@ -59,7 +58,7 @@ class Migration(migrations.Migration):
             name='AddrObjIndex',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('aoguid', fias.fields.uuid.UUIDField(editable=False, blank=True)),
+                ('aoguid', models.UUIDField()),
                 ('aolevel', models.PositiveSmallIntegerField()),
                 ('scname', models.TextField()),
                 ('fullname', models.TextField()),
@@ -79,14 +78,14 @@ class Migration(migrations.Migration):
                 ('updatedate', models.DateField()),
                 ('startdate', models.DateField()),
                 ('enddate', models.DateField()),
-                ('normdoc', fias.fields.uuid.UUIDField(auto=False, null=True, blank=True)),
+                ('normdoc', models.UUIDField(null=True, blank=True)),
                 ('housenum', models.CharField(max_length=20, null=True, blank=True)),
                 ('eststatus', models.BooleanField(default=False)),
                 ('buildnum', models.CharField(max_length=10, null=True, blank=True)),
                 ('strucnum', models.CharField(max_length=10, null=True, blank=True)),
                 ('strstatus', models.PositiveSmallIntegerField()),
-                ('houseguid', fias.fields.uuid.UUIDField(serialize=False, editable=False, primary_key=True, blank=True)),
-                ('houseid', fias.fields.uuid.UUIDField(editable=False, blank=True)),
+                ('houseguid', models.UUIDField(serialize=False, primary_key=True)),
+                ('houseid', models.UUIDField()),
                 ('statstatus', models.PositiveSmallIntegerField()),
                 ('counter', models.IntegerField()),
                 ('aoguid', models.ForeignKey(to='fias.AddrObj')),
@@ -105,9 +104,9 @@ class Migration(migrations.Migration):
                 ('updatedate', models.DateField()),
                 ('startdate', models.DateField()),
                 ('enddate', models.DateField()),
-                ('normdoc', fias.fields.uuid.UUIDField(auto=False, null=True, blank=True)),
-                ('houseintid', fias.fields.uuid.UUIDField(editable=False, blank=True)),
-                ('intguid', fias.fields.uuid.UUIDField(serialize=False, editable=False, primary_key=True, blank=True)),
+                ('normdoc', models.UUIDField(null=True, blank=True)),
+                ('houseintid', models.UUIDField()),
+                ('intguid', models.UUIDField(serialize=False, primary_key=True)),
                 ('intstart', models.PositiveIntegerField()),
                 ('intend', models.PositiveIntegerField()),
                 ('intstatus', models.PositiveIntegerField()),
@@ -128,9 +127,9 @@ class Migration(migrations.Migration):
                 ('updatedate', models.DateField()),
                 ('startdate', models.DateField()),
                 ('enddate', models.DateField()),
-                ('normdoc', fias.fields.uuid.UUIDField(auto=False, null=True, blank=True)),
-                ('landid', fias.fields.uuid.UUIDField(editable=False, blank=True)),
-                ('landguid', fias.fields.uuid.UUIDField(serialize=False, editable=False, primary_key=True, blank=True)),
+                ('normdoc', models.UUIDField(null=True, blank=True)),
+                ('landid', models.UUIDField()),
+                ('landguid', models.UUIDField(serialize=False, primary_key=True)),
                 ('location', models.TextField()),
                 ('aoguid', models.ForeignKey(to='fias.AddrObj')),
             ],
@@ -138,7 +137,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='NormDoc',
             fields=[
-                ('normdocid', fias.fields.uuid.UUIDField(serialize=False, editable=False, primary_key=True, blank=True)),
+                ('normdocid', models.UUIDField(serialize=False, primary_key=True)),
                 ('docname', models.TextField(blank=True)),
                 ('docdate', models.DateField(null=True, blank=True)),
                 ('docnum', models.CharField(max_length=20, null=True, blank=True)),

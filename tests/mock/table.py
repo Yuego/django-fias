@@ -9,11 +9,11 @@ def get_table_uuid():
 
 
 def get_table_date_str():
-    return '20140101'
+    return '20150101'
 
 
 def get_table_date():
-    return datetime.date(2014, 1, 1)
+    return datetime.date(2015, 1, 1)
 
 
 def get_table_name(name='table'):

@@ -67,6 +67,7 @@ class Archive(object):
         if self._date is None:
             table = list(self.tables.values())[0]
             self._date = table.date
+            print ([table, table.date])
         return self._date
 
     def _get_version(self):

@@ -1,0 +1,7 @@
+django>=1.5
+django_select2>=3.2.0
+rarfile
+six
+lxml
+unrar
+suds
