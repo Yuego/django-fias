@@ -1,35 +1,23 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+from django.forms.fields import ChoiceField
 from django.forms.models import ModelChoiceField
+from django.forms.models import ModelChoiceIterator
+from django.utils.encoding import force_text
 
-from django_select2.fields import HeavyModelSelect2ChoiceField
-
-from fias import widgets
-
-
-class AddressSelect2Field(HeavyModelSelect2ChoiceField):
-
-    widget = widgets.AddressSelect2
-
-    def __init__(self, *args, **kwargs):
-        super(AddressSelect2Field, self).__init__(*args, **kwargs)
-        self.widget.field = self
-
-    def _txt_for_val(self, value):
-        if not value:
-            return
-        obj = self.queryset.get(pk=value)
-        return obj.full_name(5, True)
+from django_select2.forms import ModelSelect2Widget
 
 
-class ChainedAreaField(ModelChoiceField):
+class AddressSelect2Widget(ModelSelect2Widget):
 
-    def __init__(self, app_name, model_name, address_field, *args, **kwargs):
+    def render_options(self, choices, selected_choices):
+        choices = ((force_text(obj.pk), obj) for obj in self.queryset.filter(pk__in=selected_choices))
 
-        defaults = {
-            'widget': widgets.AreaChainedSelect(app_name, model_name, address_field)
-        }
-        defaults.update(kwargs)
+        return super(AddressSelect2Widget, self).render_options(choices, selected_choices)
 
-        super(ChainedAreaField, self).__init__(*args, **defaults)
+class AddressSelect2Field(ModelChoiceField):
+
+    def __init__(self, queryset, *args, **kwargs):
+        super(AddressSelect2Field, self).__init__(queryset, *args, **kwargs)
+        setattr(self, '_choices', [])

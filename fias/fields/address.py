@@ -8,6 +8,8 @@ from django.core.exceptions import ValidationError
 from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
 
+from django_select2.forms import ModelSelect2Widget
+
 from fias import forms
 from fias.config import FIAS_DATABASE_ALIAS, FIAS_SUGGEST_VIEW
 
@@ -23,11 +25,16 @@ class AddressField(ForeignKey):
             raise ValueError("Cannot create form field for %r yet, because "
                              "its related model %r has not been loaded yet" %
                              (self.name, self.rel.to))
+
         defaults = {
+            'form_class': forms.AddressSelect2Field,
+            'widget': forms.AddressSelect2Widget(
+                queryset=self.rel.to._default_manager.using(db),
+                search_fields='parentguid__exact',
+                data_view='fias:json',
+            ),
             'queryset': self.rel.to._default_manager.using(db),
             'to_field_name': self.rel.field_name,
-            'form_class': forms.AddressSelect2Field,
-            'data_view': FIAS_SUGGEST_VIEW,
         }
         defaults.update(kwargs)
 
@@ -48,11 +55,6 @@ class AddressField(ForeignKey):
         if not qs.exists():
             raise ValidationError(self.error_messages['invalid'] % {
                 'model': self.rel.to._meta.verbose_name, 'pk': value})
-
-    def south_field_triple(self):
-        from south.modelsinspector import introspector
-        args, kwargs = introspector(self)
-        return (six.binary_type('fias.fields.address.AddressField'), args, kwargs)
 
 
 class ChainedAreaField(ForeignKey):

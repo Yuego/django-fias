@@ -53,7 +53,5 @@ class FIASRouter(object):
 
         return None
 
-
-# Backwards compatibility
-if DJ_VERSION < 18:
-    FIASRouter.allow_syncdb = FIASRouter.allow_migrate
+    # Backwards compatibility
+    allow_syncdb = allow_migrate
