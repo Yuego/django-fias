@@ -3,5 +3,5 @@ from __future__ import unicode_literals, absolute_import
 
 # fias version info
 
-VERSION = (0, 6, 2)
+VERSION = (1, 0, 0)
 __version__ = '.'.join(map(str, VERSION))

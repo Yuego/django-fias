@@ -5,6 +5,7 @@ import six
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db import router
 from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
 
@@ -17,6 +18,7 @@ from fias.config import FIAS_DATABASE_ALIAS, FIAS_SUGGEST_VIEW
 class AddressField(ForeignKey):
 
     def __init__(self, to='fias.AddrObj', **kwargs):
+        kwargs.setdefault('related_name', '+')
         ForeignKey.__init__(self, to, **kwargs)
 
     def formfield(self, **kwargs):
@@ -47,7 +49,7 @@ class AddressField(ForeignKey):
         if value is None:
             return
 
-        using = FIAS_DATABASE_ALIAS if 'fias.routers.FIASRouter' in getattr(settings, 'DATABASE_ROUTERS', []) else None
+        using = router.db_for_read(self.rel.to)
         qs = self.rel.to._default_manager.using(using).filter(
                 **{self.rel.field_name: value}
              )
@@ -70,6 +72,7 @@ class ChainedAreaField(ForeignKey):
         self.address_field = address_field
         kwargs.setdefault('blank', True)
         kwargs.setdefault('null', True)
+        kwargs.setdefault('related_name', '+')
 
         ForeignKey.__init__(self, to, **kwargs)
 
@@ -90,8 +93,3 @@ class ChainedAreaField(ForeignKey):
         defaults.update(kwargs)
 
         return super(ChainedAreaField, self).formfield(**defaults)
-
-    def south_field_triple(self):
-        from south.modelsinspector import introspector
-        args, kwargs = introspector(self)
-        return (six.binary_type('fias.fields.address.ChainedAreaField'), args, kwargs)

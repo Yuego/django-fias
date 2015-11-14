@@ -2,10 +2,11 @@
 from setuptools import setup, find_packages
 import codecs
 import sys
-sys.path.insert(0, '..')
-PY3 = sys.version_info[0] == 3
 
 from fias.version import __version__
+
+sys.path.insert(0, '..')
+PY3 = sys.version_info[0] == 3
 
 extra_requirements = []
 if PY3:
@@ -30,12 +31,13 @@ setup(
 
     license='MIT license',
     install_requires=[
-        'django>=1.5',
-        'django_select2==4.3.2',
+        'django>=1.7',
+        'django_select2>=5.3.0',
         'rarfile',
         'six',
         'lxml',
         'unrar',
+        'dbfread>=2.0.0',
     ] + extra_requirements,
     packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,
@@ -47,11 +49,11 @@ setup(
         'Natural Language :: Russian',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
 )

@@ -21,6 +21,3 @@ except ImportError:
 
     except ImportError:
         raise ImproperlyConfigured('You must use Django 1.8+ or install `django_extensions` package')
-
-
-

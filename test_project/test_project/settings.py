@@ -25,7 +25,7 @@ DATABASES = {
     },
     'fias_test': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'fias',
+       'NAME': 'fias_test',
        'USER': 'postgres',
        'PASSWORD': '',
        'HOST': '127.0.0.1',
@@ -150,6 +150,9 @@ INSTALLED_APPS = (
 )
 DATABASE_ROUTERS = ['fias.routers.FIASRouter']
 FIAS_DATABASE_ALIAS = 'fias'
+
+
+FIAS_SEARCH_ENGINE = 'sphinx'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

@@ -1,6 +1,8 @@
-django>=1.5
-django_select2==4.3.2
+django>=1.7
+django_select2>=5.3.0
 rarfile
 six
 lxml
 unrar
+suds-jurko>=0.4
+dbfread>=2.0.0
