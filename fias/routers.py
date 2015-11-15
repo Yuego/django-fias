@@ -3,8 +3,8 @@ from __future__ import unicode_literals, absolute_import
 
 from django.db.utils import DEFAULT_DB_ALIAS
 
-from fias.config import DJ_VERSION, FIAS_DATABASE_ALIAS
-
+#from fias.config import FIAS_DATABASE_ALIAS
+FIAS_DATABASE_ALIAS = 'fias'
 
 class FIASRouter(object):
     ALLOWED_REL = ['AddrObj']

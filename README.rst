@@ -12,11 +12,15 @@
 
 
 Совместимость
-=============
+===========
 
-Django 1.5+
-Для работы с django <1.8 необходимо доустановить django_extensions
-Для работы с django <1.7 необходимо доустановить south версии 1.0 или выше
+* Django 1.7+ (*Для работы с django 1.7 необходимо доустановить django_extensions*)
+
+
+Внешние зависимости
+====================
+
+* `Sphinx Search Engine <http://sphinxsearch.com>`_ Для Debian, Ubuntu, RHEL, Windows есть `пакеты <http://sphinxsearch.com/downloads/release/>`_
 
 
 Установка
@@ -51,18 +55,14 @@ Django 1.5+
 
 * Выполните::
 
-        # для South или Django >= 1.7
+
         python manage.py migrate --database=fias
-        # без South
-        python manage.py syncdb --database=fias
+
 где `fias` - имя БД ФИАС
 
 5. Выполните::
 
-        # для South или Django >= 1.7
         python manage.py migrate
-        # без South
-        python manage.py syncdb
 
 6. Выполните::
 
@@ -70,22 +70,13 @@ Django 1.5+
 
 Настройка полнотекстового поиска
 ================================
-AddressField поддерживает 2 метода поиска адреса: последовательный (sequence) и полнотекстовый (sphinx).
 
 **NOTE**: поддерживаются только 2 СУБД: PostgreSQL и MySQL.
 **NOTE2**: для индексации базы в MySQL может потребоваться до 2-2.5ГБ свободного места во временном каталоге MySQL.
 **NOTE3**: нет необходимости слишком часто пересоздавать поисковый индекс базы ФИАС. Это требуется делать только после обновления базы.
 
-По-умолчанию используется последовательный метод, т. к. не требует дополнительных настроек.
-Для активации полнотекстового поиска необходимо выполнить несколько дополнительных шагов:
+1. Установите:
 
-1. Добавьте в ваш `settings.py` параметр::
-
-    FIAS_SEARCH_ENGINE='sphinx'
-
-2. Установите:
-
-* `sphinxit <https://github.com/semirook/sphinxit>`_
 * `Sphinx Search Engine <http://sphinxsearch.com>`_ Для Debian, Ubuntu, RHEL, Windows есть `пакеты <http://sphinxsearch.com/downloads/release/>`_
 
 

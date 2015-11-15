@@ -22,26 +22,10 @@ FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'default')
 if FIAS_DATABASE_ALIAS not in settings.DATABASES:
     raise ImproperlyConfigured('FIAS: database alias `{0}` was not found in DATABASES'.format(FIAS_DATABASE_ALIAS))
 
-FIAS_SEARCHERS = {
-    'sequence': 'step_by_step',
-    'sphinx': 'by_sphinx',
-}
 
-_s = getattr(settings, 'FIAS_SEARCH_ENGINE', 'sequence')
+FIAS_SPHINX_ADDROBJ_INDEX_NAME = getattr(settings, 'FIAS_SPHINX_ADDROBJ_INDEX_NAME', 'addrobj')
 
-FIAS_SEARCH_ENGINE = _s if _s in FIAS_SEARCHERS else 'sequence'
-
-if FIAS_SEARCH_ENGINE == 'sphinx':
-    try:
-        import sphinxit
-    except ImportError:
-        raise ImproperlyConfigured('sphinxit module required for `sphinx` search engine!')
-
-    FIAS_SPHINX_ADDROBJ_INDEX_NAME = getattr(settings, 'FIAS_SPHINX_ADDROBJ_INDEX_NAME', 'addrobj')
-
-    FIAS_SPHINX_ADDROBJ_INDEX = FIAS_DATABASE_ALIAS + '_' + FIAS_SPHINX_ADDROBJ_INDEX_NAME
-
-FIAS_SUGGEST_VIEW = 'fias:suggest_{0}'.format(FIAS_SEARCHERS[FIAS_SEARCH_ENGINE])
+FIAS_SPHINX_ADDROBJ_INDEX = FIAS_DATABASE_ALIAS + '_' + FIAS_SPHINX_ADDROBJ_INDEX_NAME
 
 user_weights = getattr(settings, 'FIAS_SB_WEIGHTS', {})
 if not isinstance(user_weights, dict):

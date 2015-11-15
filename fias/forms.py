@@ -4,13 +4,13 @@ from __future__ import unicode_literals, absolute_import
 from django.core.urlresolvers import reverse
 from django.forms import widgets
 from django.forms.models import ModelChoiceField
-from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
 from django_select2.forms import ModelSelect2Widget
 
 
 class AddressSelect2Widget(ModelSelect2Widget):
+    search_fields = ['parentguid__exact']
 
     def build_attrs(self, extra_attrs=None, **kwargs):
         attrs = super(AddressSelect2Widget, self).build_attrs(extra_attrs=extra_attrs, **kwargs)
@@ -21,20 +21,16 @@ class AddressSelect2Widget(ModelSelect2Widget):
         return attrs
 
     def render_options(self, choices, selected_choices):
-        empty = False
         if '' in selected_choices:
-            empty = True
             selected_choices.pop(selected_choices.index(''))
 
-        choices = ((force_text(obj.pk), obj.full_name(5, True)) for obj in self.queryset.filter(pk__in=selected_choices))
-
-        if empty:
-            selected_choices.append('')
+        choices = ((obj.pk, obj.full_name(5, True)) for obj in self.queryset.filter(pk__in=selected_choices))
 
         return super(AddressSelect2Widget, self).render_options(choices, selected_choices)
 
 
 class AddressSelect2Field(ModelChoiceField):
+    widget = AddressSelect2Widget
 
     def __init__(self, queryset, *args, **kwargs):
         super(AddressSelect2Field, self).__init__(queryset, *args, **kwargs)

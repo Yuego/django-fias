@@ -1,7 +1,7 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from django.db import connections
+from django.db import connections, OperationalError
 from django.http import Http404, JsonResponse
 from django.utils.encoding import smart_text
 from django.views.generic.list import BaseListView
@@ -63,17 +63,19 @@ class SphinxResponseView(AutoResponseView):
 
     def get_queryset(self):
 
-        cur = connections['fias_search'].cursor()
+        try:
+            cur = connections['fias_search'].cursor()
 
-        query = 'SELECT aoguid, fullname FROM {0} WHERE MATCH(%s) ORDER BY item_weight DESC, ' \
-                'weight() DESC LIMIT 0,50 OPTION field_weights=(' \
-                'formalname=100, fullname=80' \
-                ')'.format(FIAS_SPHINX_ADDROBJ_INDEX)
+            query = 'SELECT aoguid, fullname FROM {0} WHERE MATCH(%s) ORDER BY item_weight DESC, ' \
+                    'weight() DESC LIMIT 0,50 OPTION field_weights=(' \
+                    'formalname=100, fullname=80' \
+                    ')'.format(FIAS_SPHINX_ADDROBJ_INDEX)
 
-        cur.execute(query, (self.term + '*',))
+            cur.execute(query, (self.term + '*',))
 
-        return dict_fetchall(cur)
-
+            return dict_fetchall(cur)
+        except OperationalError:
+            return []
 
 class GetAreasListView(BaseListView):
 

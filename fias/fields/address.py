@@ -3,16 +3,12 @@ from __future__ import unicode_literals, absolute_import
 
 import six
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import router
 from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
 
-from django_select2.forms import ModelSelect2Widget
-
 from fias import forms
-from fias.config import FIAS_DATABASE_ALIAS, FIAS_SUGGEST_VIEW
 
 
 class AddressField(ForeignKey):
@@ -32,7 +28,6 @@ class AddressField(ForeignKey):
             'form_class': forms.AddressSelect2Field,
             'widget': forms.AddressSelect2Widget(
                 queryset=self.rel.to._default_manager.using(db),
-                search_fields='parentguid__exact',
                 data_view='fias:json',
             ),
             'queryset': self.rel.to._default_manager.using(db),

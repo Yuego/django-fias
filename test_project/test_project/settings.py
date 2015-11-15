@@ -25,7 +25,7 @@ DATABASES = {
     },
     'fias_test': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'fias_test',
+       'NAME': 'fias',
        'USER': 'postgres',
        'PASSWORD': '',
        'HOST': '127.0.0.1',
