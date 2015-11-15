@@ -41,17 +41,11 @@ class FIASRouter(object):
             return True
         return None
 
-    def allow_migrate(self, db, model):
+    def allow_migrate(self, db, app_label, model=None, **hints):
         """Разрешить синхронизацию моделей в базе ФИАС"""
-        if db == FIAS_DATABASE_ALIAS:
-            if model._meta.app_label in ('fias', 'south'):
-                return True
-            else:
-                return False
-        elif model._meta.app_label == 'fias':
+        if app_label == 'fias':
+            return db == FIAS_DATABASE_ALIAS
+        elif db == FIAS_DATABASE_ALIAS:
             return False
 
         return None
-
-    # Backwards compatibility
-    allow_syncdb = allow_migrate
