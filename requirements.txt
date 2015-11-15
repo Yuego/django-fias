@@ -6,3 +6,4 @@ lxml
 unrar
 suds-jurko>=0.4
 dbfread>=2.0.0
+progress
