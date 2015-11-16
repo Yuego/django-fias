@@ -9,6 +9,7 @@ from fias.importer.table import Table
 from fias.models import Status, Version
 from lxml.etree import XMLSyntaxError
 import rarfile
+rarfile.UNRAR_TOOL = 'unrar'
 try:
     from urllib import urlretrieve
 except ImportError:

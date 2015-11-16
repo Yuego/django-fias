@@ -31,7 +31,7 @@ setup(
     license='MIT license',
     install_requires=[
         'django>=1.5',
-        'django_select2',
+        'django_select2==4.3.2',
         'rarfile',
         'six',
         'lxml',
