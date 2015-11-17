@@ -15,7 +15,7 @@ FIAS_TABLES.extend([x.lower() for x in list(getattr(settings, 'FIAS_TABLES', _DE
 
 FIAS_DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 
-FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'fias')
+FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'default')
 
 if FIAS_DATABASE_ALIAS not in settings.DATABASES:
     raise ImproperlyConfigured('FIAS: database alias `{0}` was not found in DATABASES'.format(FIAS_DATABASE_ALIAS))
