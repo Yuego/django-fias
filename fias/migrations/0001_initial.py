@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -80,7 +80,7 @@ class Migration(migrations.Migration):
                 ('enddate', models.DateField()),
                 ('normdoc', models.UUIDField(null=True, blank=True)),
                 ('housenum', models.CharField(max_length=20, null=True, blank=True)),
-                ('eststatus', models.BooleanField(default=False)),
+                ('eststatus', models.PositiveSmallIntegerField(default=0)),
                 ('buildnum', models.CharField(max_length=10, null=True, blank=True)),
                 ('strucnum', models.CharField(max_length=10, null=True, blank=True)),
                 ('strstatus', models.PositiveSmallIntegerField()),
