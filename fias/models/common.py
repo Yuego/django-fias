@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.db import models
-from fias.fields import UUIDField
+from .normdoc import NormDoc
 
 __all__ = ['Common']
 
@@ -25,4 +25,4 @@ class Common(models.Model):
     updatedate = models.DateField()
     startdate = models.DateField()
     enddate = models.DateField()
-    normdoc = UUIDField(blank=True, null=True)
+    normdoc = models.ForeignKey(NormDoc, blank=True, null=True)

@@ -1,0 +1,64 @@
+#coding: utf-8
+from __future__ import unicode_literals, absolute_import
+
+import datetime
+from lxml import etree
+
+from .table import ParentLookupException, Table, TableIterator
+
+_bom_header = b'\xef\xbb\xbf'
+
+
+class XMLIterator(TableIterator):
+
+    def __init__(self, fd, model):
+        super(XMLIterator, self).__init__(fd=fd, model=model)
+
+        self._context = etree.iterparse(self._fd)
+
+    def format_row(self, row):
+        for key, value in row.items():
+            key = key.lower()
+            if key in self.uuid_fields:
+                yield (key, value or None)
+            elif key in self.date_fields:
+                yield (key, datetime.datetime.strptime(value, "%Y-%m-%d").date())
+            elif key in self.related_fields:
+                field = self.related_fields[key]
+                rel = field.rel.to
+                try:
+                    rel.objects.get(pk=value)
+                except rel.DoesNotExist:
+                    raise ParentLookupException('{0} with key `{1}` not found. Skipping house...'.format(rel.__name__, value))
+            else:
+                yield (key, value)
+
+    def get_next(self):
+        event, row = next(self._context)
+        item = self.process_row(row)
+        row.clear()
+        while row.getprevious() is not None:
+            del row.getparent()[0]
+
+        return item
+
+
+class XMLTable(Table):
+    iterator = XMLIterator
+
+    def __init__(self, filename, **kwargs):
+        super(XMLTable, self).__init__(filename=filename, **kwargs)
+        self.deleted = 'deleted' in kwargs
+
+    def rows(self, archive):
+        xml = self.open(archive)
+
+        # workaround for XMLSyntaxError: Document is empty, line 1, column 1
+        bom = xml.read(3)
+        if bom != _bom_header:
+            xml = self.open(archive)
+        else:
+            #log.info('Fixed wrong BOM header')
+            pass
+
+        return self.iterator(xml, self.model)
