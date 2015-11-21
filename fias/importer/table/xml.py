@@ -4,6 +4,8 @@ from __future__ import unicode_literals, absolute_import
 import datetime
 from lxml import etree
 
+from django.db import models
+from fias.fields import UUIDField
 from .table import ParentLookupException, Table, TableIterator
 
 _bom_header = b'\xef\xbb\xbf'
@@ -14,6 +16,21 @@ class XMLIterator(TableIterator):
     def __init__(self, fd, model):
         super(XMLIterator, self).__init__(fd=fd, model=model)
 
+        """
+        self.related_fields = dict({
+            (f.name, f) for f in self.model._meta.get_fields()
+            if f.one_to_one or f.many_to_one
+        })
+        """
+        self.uuid_fields = dict({
+            (f.name, f) for f in self.model._meta.get_fields()
+            if isinstance(f, UUIDField)
+        })
+        self.date_fields = dict({
+            (f.name, f) for f in self.model._meta.get_fields()
+            if isinstance(f, models.DateField)
+        })
+
         self._context = etree.iterparse(self._fd)
 
     def format_row(self, row):
@@ -23,13 +40,13 @@ class XMLIterator(TableIterator):
                 yield (key, value or None)
             elif key in self.date_fields:
                 yield (key, datetime.datetime.strptime(value, "%Y-%m-%d").date())
-            elif key in self.related_fields:
-                field = self.related_fields[key]
-                rel = field.rel.to
-                try:
-                    rel.objects.get(pk=value)
-                except rel.DoesNotExist:
-                    raise ParentLookupException('{0} with key `{1}` not found. Skipping house...'.format(rel.__name__, value))
+            # elif key in self.related_fields:
+            #     field = self.related_fields[key]
+            #     rel = field.rel.to
+            #     try:
+            #         rel.objects.get(pk=value)
+            #     except rel.DoesNotExist:
+            #         raise ParentLookupException('{0} with key `{1}` not found. Skipping house...'.format(rel.__name__, value))
             else:
                 yield (key, value)
 
@@ -50,13 +67,13 @@ class XMLTable(Table):
         super(XMLTable, self).__init__(filename=filename, **kwargs)
         self.deleted = 'deleted' in kwargs
 
-    def rows(self, archive):
-        xml = self.open(archive)
+    def rows(self, tablelist):
+        xml = self.open(tablelist=tablelist)
 
         # workaround for XMLSyntaxError: Document is empty, line 1, column 1
         bom = xml.read(3)
         if bom != _bom_header:
-            xml = self.open(archive)
+            xml = self.open(tablelist=tablelist)
         else:
             #log.info('Fixed wrong BOM header')
             pass

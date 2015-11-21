@@ -7,18 +7,12 @@ from fias.importer.log import log
 from fias.importer.table import Table
 from fias.models import Status, Version
 
-import rarfile
-rarfile.UNRAR_TOOL = 'unrar'
-try:
-    from urllib import urlretrieve
-except ImportError:
-    from urllib.request import urlretrieve
-
-from .table import TableFactory
 
 
-class BadArchiveError(Exception):
-    pass
+
+
+
+
 
 
 class Archive(object):

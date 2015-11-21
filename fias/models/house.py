@@ -15,7 +15,7 @@ class House(Common):
     class Meta:
         app_label = 'fias'
 
-    aoguid = models.ForeignKey(AddrObj)
+    aoguid = UUIDField()
 
     housenum = models.CharField(max_length=20, blank=True, null=True)
     eststatus = models.PositiveSmallIntegerField(default=0)
@@ -37,7 +37,7 @@ class HouseInt(Common):
 
     houseintid = UUIDField()
     intguid = UUIDField(primary_key=True)
-    aoguid = models.ForeignKey(AddrObj)
+    aoguid = UUIDField()
 
     intstart = models.PositiveIntegerField()
     intend = models.PositiveIntegerField()

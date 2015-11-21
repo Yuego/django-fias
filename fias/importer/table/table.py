@@ -1,8 +1,12 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from django.db import models
-from fias.fields import UUIDField
+try:
+    from functools import reduce
+except ImportError:
+    pass # Python 2 builtin reduce
+
+from fias.config import TABLE_ROW_FILTERS
 from fias.models import (
     AddrObj,
     House, HouseInt,
@@ -10,7 +14,6 @@ from fias.models import (
     NormDoc,
     SocrBase,
 )
-
 
 table_names = {
     'addrobj': AddrObj,
@@ -31,19 +34,6 @@ class TableIterator(object):
     def __init__(self, fd, model):
         self._fd = fd
         self.model = model
-
-        self.related_fields = dict({
-            (f.name, f) for f in self.model._meta.get_fields()
-            if f.one_to_one or f.many_to_one
-        })
-        self.uuid_fields = dict({
-            (f.name, f) for f in self.model._meta.get_fields()
-            if isinstance(f, UUIDField)
-        })
-        self.date_fields = dict({
-            (f.name, f) for f in self.model._meta.get_fields()
-            if isinstance(f, models.DateField)
-        })
 
     def __iter__(self):
         if self.model is None:
@@ -66,7 +56,7 @@ class TableIterator(object):
         except ParentLookupException as e:
             return None
 
-        return self.model(**row)
+        return reduce(lambda a, x: x(a) if a is not None else a, TABLE_ROW_FILTERS, self.model(**row))
 
     def __next__(self):
         return self.get_next()
@@ -84,8 +74,8 @@ class Table(object):
         self.name = kwargs['name'].lower()
         self.model = table_names.get(self.name, None)
 
-    def open(self, archive):
-        return archive.open(self.filename)
+    def open(self, tablelist):
+        return tablelist.open(self.filename)
 
-    def rows(self, archive):
+    def rows(self, tablelist):
         raise NotImplementedError()
