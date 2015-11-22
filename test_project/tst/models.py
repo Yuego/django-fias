@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 
-from fias.fields import AddressField
-from fias.models import FIASAddress, FIASAddressWithArea, FIASHouse
+from fias.fields import AddressField, ChainedAreaField
+from fias.models import AddrObj, FIASAddress, FIASAddressWithArea, FIASHouse
 
 class Item(models.Model):
     
@@ -11,18 +11,28 @@ class Item(models.Model):
 
     location = AddressField()
 
-class CachedAddress(FIASAddress):
-    pass
 
+class ItemWithArea(models.Model):
 
-class CachedAddressWithArea(FIASAddressWithArea):
-    pass
-
-
-class CachedAddressWithHouse(FIASAddress, FIASHouse):
-    pass
-
-class NullableAddressItem(models.Model):
     title = models.CharField('title', max_length=100)
 
-    location = AddressField(blank=True, null=True)
+    location = AddressField()
+
+    area = ChainedAreaField(AddrObj, address_field='location', related_name='+')
+
+
+#class CachedAddress(FIASAddress):
+#    pass
+
+
+#class CachedAddressWithArea(FIASAddressWithArea):
+#    pass
+
+
+#class CachedAddressWithHouse(FIASAddress, FIASHouse):
+#    pass
+
+#class NullableAddressItem(models.Model):
+#    title = models.CharField('title', max_length=100)
+#
+#    location = AddressField(blank=True, null=True)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import django
 from django.conf import settings
-from django.core.management import call_command
 
 def pytest_configure():
     import sys
@@ -53,10 +53,6 @@ def pytest_configure():
 
     settings.configure(
         INSTALLED_APPS=[
-            'django.contrib.auth',
-            'django.contrib.contenttypes',
-            'django.contrib.admin',
-            'django.contrib.sessions',
             'tests.testapp',
             'fias',
         ],
@@ -71,13 +67,19 @@ def pytest_configure():
                 'NAME': 'db.sqlite',
             },
             'fias': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': 'fias.sqlite',
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'NAME': 'fias_test',
+                'USER': 'postgres',
+                'PASSWORD': '',
+                'HOST': '127.0.0.1',
+                'PORT': '5432',
             },
         },
         SECRET_KEY='key',
         FIAS_DATABASE_ALIAS='fias',
+        DATABASE_ROUTERS=['fias.routers.FIASRouter'],
         ROOT_URLCONF='tests.urls',
         DEBUG=True,
         TEMPLATE_DEBUG=True,
+
     )

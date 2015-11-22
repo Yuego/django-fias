@@ -3,10 +3,8 @@ from __future__ import unicode_literals, absolute_import
 
 import six
 from django.utils.encoding import python_2_unicode_compatible
-from django.conf import settings
 from django.db import models
 
-from fias.config import FIAS_DATABASE_ALIAS
 from fias.fields import UUIDField
 from fias.models.common import Common
 

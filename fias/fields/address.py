@@ -3,18 +3,18 @@ from __future__ import unicode_literals, absolute_import
 
 import six
 
-from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db import router
 from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
 
 from fias import forms
-from fias.config import FIAS_DATABASE_ALIAS, FIAS_SUGGEST_VIEW
 
 
 class AddressField(ForeignKey):
 
     def __init__(self, to='fias.AddrObj', **kwargs):
+        kwargs.setdefault('related_name', '+')
         ForeignKey.__init__(self, to, **kwargs)
 
     def formfield(self, **kwargs):
@@ -23,11 +23,15 @@ class AddressField(ForeignKey):
             raise ValueError("Cannot create form field for %r yet, because "
                              "its related model %r has not been loaded yet" %
                              (self.name, self.rel.to))
+
         defaults = {
+            'form_class': forms.AddressSelect2Field,
+            'widget': forms.AddressSelect2Widget(
+                queryset=self.rel.to._default_manager.using(db),
+                data_view='fias:json',
+            ),
             'queryset': self.rel.to._default_manager.using(db),
             'to_field_name': self.rel.field_name,
-            'form_class': forms.AddressSelect2Field,
-            'data_view': FIAS_SUGGEST_VIEW,
         }
         defaults.update(kwargs)
 
@@ -40,7 +44,7 @@ class AddressField(ForeignKey):
         if value is None:
             return
 
-        using = FIAS_DATABASE_ALIAS if 'fias.routers.FIASRouter' in getattr(settings, 'DATABASE_ROUTERS', []) else None
+        using = router.db_for_read(self.rel.to)
         qs = self.rel.to._default_manager.using(using).filter(
                 **{self.rel.field_name: value}
              )
@@ -48,11 +52,6 @@ class AddressField(ForeignKey):
         if not qs.exists():
             raise ValidationError(self.error_messages['invalid'] % {
                 'model': self.rel.to._meta.verbose_name, 'pk': value})
-
-    def south_field_triple(self):
-        from south.modelsinspector import introspector
-        args, kwargs = introspector(self)
-        return (six.binary_type('fias.fields.address.AddressField'), args, kwargs)
 
 
 class ChainedAreaField(ForeignKey):
@@ -68,6 +67,7 @@ class ChainedAreaField(ForeignKey):
         self.address_field = address_field
         kwargs.setdefault('blank', True)
         kwargs.setdefault('null', True)
+        kwargs.setdefault('related_name', '+')
 
         ForeignKey.__init__(self, to, **kwargs)
 
@@ -88,8 +88,3 @@ class ChainedAreaField(ForeignKey):
         defaults.update(kwargs)
 
         return super(ChainedAreaField, self).formfield(**defaults)
-
-    def south_field_triple(self):
-        from south.modelsinspector import introspector
-        args, kwargs = introspector(self)
-        return (six.binary_type('fias.fields.address.ChainedAreaField'), args, kwargs)

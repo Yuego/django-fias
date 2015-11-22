@@ -5,7 +5,7 @@ from django.db.models import Model
 from django.test import TestCase
 
 from fias.routers import FIASRouter
-from fias.config import DJ_VERSION, FIAS_DATABASE_ALIAS
+from fias.config import FIAS_DATABASE_ALIAS
 
 
 fias = __import__('fias.models')
@@ -56,16 +56,13 @@ class TestRouter(TestCase):
         self.assertIsNone(self.router.allow_relation(TestModel2, TestModel))
 
     def test_syncdb(self):
-        if DJ_VERSION < 18:
-            method = self.router.allow_syncdb
-        else:
-            method = self.router.allow_migrate
+        method = self.router.allow_migrate
 
         for model in self.models:
             if issubclass(model, Model):
-                self.assertTrue(method(FIAS_DATABASE_ALIAS, model))
-                self.assertFalse(method('default', model))
+                self.assertTrue(method(FIAS_DATABASE_ALIAS, app_label=model._meta.app_label, model=model))
+                self.assertFalse(method('default', app_label=model._meta.app_label, model=model))
 
-        self.assertFalse(method(FIAS_DATABASE_ALIAS, TestModel))
-        self.assertIsNone(method('default', TestModel))
+        self.assertFalse(method(FIAS_DATABASE_ALIAS, app_label=TestModel._meta.app_label, model=TestModel))
+        self.assertIsNone(method('default', app_label=TestModel._meta.app_label, model=TestModel))
 

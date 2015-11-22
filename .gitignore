@@ -12,9 +12,11 @@ reports
 test_project/static/*
 test_project/db.*
 
+.cache
 .tox
 *.egg-info
 build/
 dist/
 .coverage
 *.sqlite
+logs
