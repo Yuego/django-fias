@@ -7,6 +7,7 @@ from lxml import etree
 from django.db import models
 from fias.fields import UUIDField
 from .table import ParentLookupException, Table, TableIterator
+from .raw import RawTable
 
 _bom_header = b'\xef\xbb\xbf'
 
@@ -79,3 +80,7 @@ class XMLTable(Table):
             pass
 
         return self.iterator(xml, self.model)
+
+
+class RawXMLTable(Table):
+    pass

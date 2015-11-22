@@ -4,6 +4,39 @@ from __future__ import unicode_literals, absolute_import
 import datetime
 from django.conf import settings
 from django import db
+from progress.helpers import WritelnMixin
+from sys import stderr
+
+
+class LoadingBar(WritelnMixin):
+    file = stderr
+
+    text = 'Table: %(table)s. Loaded: %(loaded)d | Updated: %(updated)d | Skipped:  %(skipped)d'
+
+    loaded = 0
+    updated = 0
+    skipped = 0
+    hide_cursor = False
+
+    def __init__(self, message=None, **kwargs):
+        self.table = kwargs.pop('table', 'unknown')
+        super(LoadingBar, self).__init__(message=message, **kwargs)
+
+    def __getitem__(self, key):
+        if key.startswith('_'):
+            return None
+        return getattr(self, key, None)
+
+    def update(self, loaded=0, updated=0, skipped=0):
+        if loaded:
+            self.loaded = loaded
+        if updated:
+            self.updated = updated
+        if skipped:
+            self.skipped = skipped
+
+        ln = self.text % self
+        self.writeln(ln)
 
 
 class TableLoader(object):
@@ -36,9 +69,11 @@ class TableLoader(object):
         if settings.DEBUG:
             db.reset_queries()
 
-    def load(self, archive, table):
+    def load(self, tablelist, table):
+        bar = LoadingBar(table=table.name)
+
         objects = []
-        for item in table.rows(archive):
+        for item in table.rows(tablelist=tablelist):
             if not self.check(item):
                 self.skip_counter += 1
                 continue
@@ -49,18 +84,28 @@ class TableLoader(object):
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects)
                 objects = []
-                print ('Created {0} objects'.format(self.counter))
+                bar.update(loaded=self.counter)
 
         if objects:
             self.create(table, objects)
-            print ('Created {0} objects'.format(self.counter))
+            bar.update(loaded=self.counter)
 
-        print ('Skipped {0} objects'.format(self.skip_counter))
+        bar.update(skipped=self.skip_counter)
+        bar.finish()
 
-    def update(self, archive, table):
+
+class TableUpdater(TableLoader):
+
+    def __init__(self, limit=10000):
+        self.upd_limit = limit / 10
+        super(TableUpdater, self).__init__(limit=limit)
+
+    def load(self, tablelist, table):
+        bar = LoadingBar()
+
         model = table.model
         objects = []
-        for item in table.rows(archive):
+        for item in table.rows(tablelist=tablelist):
             if not self.check(item):
                 self.skip_counter += 1
                 continue
@@ -71,20 +116,21 @@ class TableLoader(object):
                 objects.append(item)
                 self.counter += 1
             else:
-                if old_obj.updatedate < item.updatedate:
+                if not hasattr(item, 'updatedate') or old_obj.updatedate < item.updatedate:
                     item.save()
                     self.upd_counter += 1
 
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects)
                 objects = []
-                print ('Created {0} objects'.format(self.counter))
+                bar.update(loaded=self.counter)
+
+            if self.upd_counter and self.upd_counter % self.upd_limit == 0:
+                bar.update(updated=self.upd_counter)
 
         if objects:
             self.create(table, objects)
-            print ('Created {0} objects'.format(self.counter))
+            bar.update(loaded=self.counter)
 
-        if self.upd_counter:
-            print ('Updated {0} objects'.format(self.upd_counter))
-
-        print ('Skipped {0} objects'.format(self.skip_counter))
+        bar.update(skipped=self.skip_counter)
+        bar.finish()

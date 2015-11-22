@@ -4,7 +4,9 @@ from __future__ import unicode_literals, absolute_import
 try:
     from functools import reduce
 except ImportError:
-    pass # Python 2 builtin reduce
+    pass  # Python 2 builtin reduce
+
+from django.db import connections, router
 
 from fias.config import TABLE_ROW_FILTERS
 from fias.models import (
@@ -72,7 +74,22 @@ class Table(object):
         self.filename = filename
 
         self.name = kwargs['name'].lower()
-        self.model = table_names.get(self.name, None)
+        self.model = table_names.get(self.name)
+
+    def _truncate(self, model):
+        db_table = model._meta.db_table
+        connection = connections[router.db_for_write(model)]
+        cursor = connection.cursor()
+
+        if connection.vendor == 'postgresql':
+            cursor.execute('TRUNCATE TABLE {0} RESTART IDENTITY CASCADE'.format(db_table))
+        elif connection.vendor == 'mysql':
+            cursor.execute('TRUNCATE TABLE `{0}`'.format(db_table))
+        else:
+            cursor.execute('DELETE FROM {0}'.format(db_table))
+
+    def truncate(self):
+        self._truncate(self.model)
 
     def open(self, tablelist):
         return tablelist.open(self.filename)

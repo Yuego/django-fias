@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 import datetime
+import os
 import rarfile
 from progress.bar import Bar
 
@@ -21,9 +22,9 @@ class BadArchiveError(TableListLoadingError):
 
 class LocalArchiveTableList(TableList):
 
-    def __init__(self, path):
+    def __init__(self, path, version=None):
         self._archive = None
-        super(LocalArchiveTableList, self).__init__(path)
+        super(LocalArchiveTableList, self).__init__(path=path, version=version)
 
     def load(self, path):
         try:
@@ -68,4 +69,7 @@ class RemoteArchiveTableList(LocalArchiveTableList):
 
         path = urlretrieve(path, reporthook=update_progress)[0]
         progress.finish()
+
+        # Сохраняем путь к временному файлу
+        self._path = path
         super(RemoteArchiveTableList, self).load(path)

@@ -2,12 +2,17 @@
 from __future__ import unicode_literals, absolute_import
 
 from .table import Table, TableIterator
-from dbfread.dbf import DBF, FieldParser
+from .raw import RawTable
 
 
 class DBFTableIterator(TableIterator):
     pass
 
+
 class DBFTable(Table):
+    pass
+
+
+class RawDBFTable(RawTable):
     pass
 

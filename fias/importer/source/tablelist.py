@@ -9,10 +9,16 @@ class TableListLoadingError(Exception):
 
 
 class TableList(object):
-    def __init__(self, path):
-        self._version = None
-        self._path = None
-        self._date = None
+    def __init__(self, path, version=None, raw=False):
+        self._version = version
+        self._path = path
+        self._raw = raw
+
+        if self._version is not None:
+            self._date = self._version.dumpdate
+        else:
+            self._date = None
+
         self._tables = None
         self.load(path)
 
@@ -27,7 +33,7 @@ class TableList(object):
         if self._tables is None:
             self._tables = {}
             for filename in self.get_tables_list():
-                table = TableFactory.parse(filename=filename)
+                table = TableFactory.parse(filename=filename, raw=self._raw)
                 self._tables.setdefault(table.name, []).append(table)
 
         return self._tables

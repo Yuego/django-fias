@@ -24,7 +24,6 @@ class Version(models.Model):
 
     objects = VersionManager()
 
-
     ver = models.IntegerField(primary_key=True)
     date = models.DateField(db_index=True, blank=True, null=True)
     dumpdate = models.DateField(db_index=True)

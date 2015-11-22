@@ -24,7 +24,14 @@ def fetch_version_info(update_all=False):
                 setattr(ver, 'complete_xml_url', item['FiasCompleteXmlUrl'])
                 setattr(ver, 'complete_dbf_url', item['FiasCompleteDbfUrl'])
 
-                setattr(ver, 'delta_xml_url', item.get('FiasDeltaXmlUrl', None))
-                setattr(ver, 'delta_dbf_url', item.get('FiasDeltaDbfUrl', None))
+                if hasattr(item, 'FiasDeltaXmlUrl'):
+                    setattr(ver, 'delta_xml_url', item['FiasDeltaXmlUrl'])
+                else:
+                    setattr(ver, 'delta_xml_url', None)
+
+                if hasattr(item, 'FiasDeltaDbfUrl'):
+                    setattr(ver, 'delta_dbf_url', item['FiasDeltaDbfUrl'])
+                else:
+                    setattr(ver, 'delta_dbf_url', None)
 
                 ver.save()

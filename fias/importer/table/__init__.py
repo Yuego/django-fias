@@ -3,8 +3,8 @@ from __future__ import unicode_literals, absolute_import
 
 import re
 
-from .dbf import DBFTable
-from .xml import XMLTable
+from .dbf import DBFTable, RawDBFTable
+from .xml import XMLTable, RawXMLTable
 
 
 table_xml_prefix = 'as_'
@@ -23,14 +23,16 @@ class BadTableNameError(Exception):
 class TableFactory(object):
 
     @staticmethod
-    def parse(filename):
+    def parse(filename, raw=False):
         table = None
         m = table_xml_re.match(filename)
         if m is not None:
-            table = XMLTable(filename=filename, **m.groupdict())
+            cls = XMLTable if not raw else RawXMLTable
+            table = cls(filename=filename, **m.groupdict())
         m = table_dbf_re.match(filename)
         if m is not None:
-            table = DBFTable(filename=filename, **m.groupdict())
+            cls = DBFTable if not raw else RawDBFTable
+            table = cls(filename=filename, **m.groupdict())
         m = table_dbt_re.match(filename)
         if m is not None:
             table = None
@@ -39,5 +41,3 @@ class TableFactory(object):
             raise BadTableNameError('Wrong tablename `{0}`'.format(filename))
 
         return table
-
-

@@ -14,6 +14,7 @@ _DEFAULT = ('landmark', 'houseint', 'house')
 FIAS_TABLES = ['socrbase', 'normdoc', 'addrobj']
 FIAS_TABLES.extend([x.lower() for x in list(getattr(settings, 'FIAS_TABLES', _DEFAULT)) if x.lower() in _DEFAULT])
 
+
 FIAS_DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 
 FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'default')
