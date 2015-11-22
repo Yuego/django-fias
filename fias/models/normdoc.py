@@ -14,7 +14,7 @@ class NormDoc(models.Model):
         app_label = 'fias'
 
     normdocid = UUIDField(primary_key=True)
-    docname = models.TextField(blank=True)
+    docname = models.TextField(blank=True, null=True)
     docdate = models.DateField(blank=True, null=True)
     docnum = models.CharField(max_length=20, blank=True, null=True)
     doctype = models.PositiveIntegerField()

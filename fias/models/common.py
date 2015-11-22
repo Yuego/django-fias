@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from django.db import models
 from fias.fields import UUIDField
+from .normdoc import NormDoc
 
 __all__ = ['Common']
 

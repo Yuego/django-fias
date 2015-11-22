@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import
 import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.utils.module_loading import import_module
 from fias.weights import weights
 
 DJ_VERSION = django.VERSION[0] + 10*django.VERSION[1]
@@ -12,6 +13,7 @@ _DEFAULT = ('landmark', 'houseint', 'house')
 
 FIAS_TABLES = ['socrbase', 'normdoc', 'addrobj']
 FIAS_TABLES.extend([x.lower() for x in list(getattr(settings, 'FIAS_TABLES', _DEFAULT)) if x.lower() in _DEFAULT])
+
 
 FIAS_DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 
@@ -49,3 +51,13 @@ weights.update(user_weights)
 
 # Чтобы использовать для данных ФИАС другую базу данных,
 # добавьте роутер 'fias.routers.FIASRouter' в список `DATABASE_ROUTERS`
+
+row_filters = getattr(settings, 'FIAS_TABLE_ROW_FILTERS', [])
+TABLE_ROW_FILTERS = []
+for flt_path in row_filters:
+    try:
+        flt = import_module(flt_path)
+    except ImportError:
+        raise ImproperlyConfigured('Table row filter module `{0}` does not exists'.format(flt_path))
+    else:
+        TABLE_ROW_FILTERS.append(flt)

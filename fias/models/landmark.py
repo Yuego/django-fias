@@ -17,6 +17,6 @@ class LandMark(Common):
 
     landid = UUIDField()
     landguid = UUIDField(primary_key=True)
-    aoguid = models.ForeignKey(AddrObj)
+    aoguid = UUIDField()
 
     location = models.TextField()
