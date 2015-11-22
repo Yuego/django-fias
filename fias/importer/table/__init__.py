@@ -35,7 +35,7 @@ class TableFactory(object):
             table = cls(filename=filename, **m.groupdict())
         m = table_dbt_re.match(filename)
         if m is not None:
-            table = None
+            return None
 
         if table is None:
             raise BadTableNameError('Wrong tablename `{0}`'.format(filename))

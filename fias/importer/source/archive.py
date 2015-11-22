@@ -2,7 +2,10 @@
 from __future__ import unicode_literals, absolute_import
 
 import datetime
+import os
 import rarfile
+import shutil
+import tempfile
 from progress.bar import Bar
 
 try:
@@ -11,6 +14,8 @@ try:
 except ImportError:
     from urllib import urlretrieve
     HTTPError = IOError
+
+from fias.importer.table import table_dbf_re, table_dbt_re
 
 from .tablelist import TableList, TableListLoadingError
 
@@ -25,7 +30,16 @@ class LocalArchiveTableList(TableList):
 
     def __init__(self, src, version=None):
         self._archive = None
+
+        self._unpack = False
+        self._list = None
+        self._path = None
         super(LocalArchiveTableList, self).__init__(src=src, version=version)
+
+    def unpack(self):
+        self._path = tempfile.mkdtemp()
+
+        self._archive.extractall(self._path)
 
     def load_archive(self):
         try:
@@ -38,21 +52,50 @@ class LocalArchiveTableList(TableList):
             raise BadArchiveError('Archive: `{0}`, ver: `{1}` is empty'
                                   ''.format(self._src))
 
+        first_name = self._archive.namelist()[0]
+        if table_dbf_re.match(first_name) or table_dbt_re.match(first_name):
+            self._unpack = True
+            self.unpack()
+
+
     @property
     def source(self):
         if self._archive is None:
             self.load_archive()
-        return self._archive
+
+        if not self._unpack:
+            return self._archive
+        else:
+            return self._path
 
     def get_tables_list(self):
-        return self.source.namelist()
+        if self._archive is None:
+            self.load_archive()
+
+        if not self._unpack:
+            return self.source.namelist()
+        else:
+            if self._list is None:
+                self._list = [f for f in os.listdir(self.source) if os.path.isfile(os.path.join(self.source, f))]
+            return self._list
 
     def get_date_info(self, name):
-        info = self.source.getinfo(name)
-        return datetime.date(*info.date_time[0:3])
+        if not self._unpack:
+            info = self.source.getinfo(name)
+            return datetime.date(*info.date_time[0:3])
+        else:
+            st = os.stat(os.path.join(self.source, name))
+            return datetime.datetime.fromtimestamp(st.st_mtime)
 
     def open(self, filename):
-        return self.source.open(filename)
+        if not self._unpack:
+            return self.source.open(filename)
+        else:
+            return os.path.join(self.source, filename)
+
+    def __del__(self):
+        if self._unpack:
+            shutil.rmtree(self._path, ignore_errors=True)
 
 
 class DlProgressBar(Bar):

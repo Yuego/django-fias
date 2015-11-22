@@ -34,6 +34,8 @@ class TableList(object):
             self._tables = {}
             for filename in self.get_tables_list():
                 table = TableFactory.parse(filename=filename, raw=self._raw)
+                if table is None:
+                    continue
                 self._tables.setdefault(table.name, []).append(table)
 
         return self._tables

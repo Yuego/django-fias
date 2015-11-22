@@ -26,6 +26,9 @@ table_names = {
     'socrbase': SocrBase,
 }
 
+name_trans = {
+    'nordoc': 'normdoc',
+}
 
 class BadTableError(Exception):
     pass
@@ -77,7 +80,9 @@ class Table(object):
     def __init__(self, filename, **kwargs):
         self.filename = filename
 
-        self.name = kwargs['name'].lower()
+        name = kwargs['name'].lower()
+
+        self.name = name_trans.get(name, name)
         self.model = table_names.get(self.name)
 
     def _truncate(self, model):

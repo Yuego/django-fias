@@ -7,11 +7,14 @@ from django import db
 from progress.helpers import WritelnMixin
 from sys import stderr
 
+from .validators import validators
 
 class LoadingBar(WritelnMixin):
     file = stderr
 
-    text = 'Table: %(table)s. Loaded: %(loaded)d | Updated: %(updated)d | Skipped:  %(skipped)d'
+    text = 'Table: %(table)s.' \
+           ' Loaded: %(loaded)d | Updated: %(updated)d | Skipped:  %(skipped)d' \
+           ' \t\t\tFilename: %(filename)s'
 
     loaded = 0
     updated = 0
@@ -20,6 +23,7 @@ class LoadingBar(WritelnMixin):
 
     def __init__(self, message=None, **kwargs):
         self.table = kwargs.pop('table', 'unknown')
+        self.filename = kwargs.pop('filename', 'unknown')
         super(LoadingBar, self).__init__(message=message, **kwargs)
 
     def __getitem__(self, key):
@@ -48,20 +52,11 @@ class TableLoader(object):
         self.skip_counter = 0
         self.today = datetime.date.today()
 
-    def check(self, item):
+    def validate(self, table, item):
         if item is None or item.pk is None:
             return False
 
-        if getattr(item, 'nextid', None):
-            return False
-
-        if hasattr(item, 'enddate') and item.enddate and item.enddate < self.today:
-            return False
-
-        if hasattr(item, 'startdate') and item.startdate and item.startdate > self.today:
-            return False
-
-        return True
+        return validators.get(table.name, lambda x, **kwargs: True)(item, today=self.today)
 
     def create(self, table, objects):
         table.model.objects.bulk_create(objects)
@@ -70,11 +65,11 @@ class TableLoader(object):
             db.reset_queries()
 
     def load(self, tablelist, table):
-        bar = LoadingBar(table=table.name)
+        bar = LoadingBar(table=table.name, filename=table.filename)
 
         objects = []
         for item in table.rows(tablelist=tablelist):
-            if not self.check(item):
+            if not self.validate(table, item):
                 self.skip_counter += 1
                 continue
 

@@ -84,7 +84,7 @@ class Command(BaseCommand):
             self.error('One of the tables contains data. Truncate all FIAS tables manually '
                        'or enter key --i-know-what-i-do, to clear the table by means of Django ORM')
 
-        fetch_version_info(update_all=True)
+        #fetch_version_info(update_all=True)
 
         # Force Russian language for internationalized projects
         if settings.USE_I18N:
