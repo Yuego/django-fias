@@ -9,9 +9,9 @@ class TableListLoadingError(Exception):
 
 
 class TableList(object):
-    def __init__(self, path, version=None, raw=False):
+    def __init__(self, src, version=None, raw=False):
         self._version = version
-        self._path = path
+        self._src = src
         self._raw = raw
 
         if self._version is not None:
@@ -20,10 +20,10 @@ class TableList(object):
             self._date = None
 
         self._tables = None
-        self.load(path)
 
-    def load(self, path):
-        raise NotImplementedError()
+    @property
+    def source(self):
+        return self._src
 
     def get_tables_list(self):
         raise NotImplementedError()
@@ -38,9 +38,16 @@ class TableList(object):
 
         return self._tables
 
+    def get_date_info(self, name):
+        raise NotImplementedError()
+
     @property
     def dump_date(self):
-        raise NotImplementedError()
+        if self._date is None:
+            first_name = self.get_tables_list()[0]
+            self._date = self.get_date_info(first_name)
+
+        return self._date
 
     def open(self, filename):
         raise NotImplementedError()

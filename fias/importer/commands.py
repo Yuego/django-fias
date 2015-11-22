@@ -16,17 +16,17 @@ def get_tablelist(path, data_format):
         latest_version = Version.objects.latest('dumpdate')
         url = getattr(latest_version, 'complete_{0}_url'.format(data_format))
 
-        tablelist = RemoteArchiveTableList(path=url, version=latest_version)
+        tablelist = RemoteArchiveTableList(src=url, version=latest_version)
 
     else:
         if os.path.isfile(path):
-            tablelist = LocalArchiveTableList(path=path)
+            tablelist = LocalArchiveTableList(src=path)
 
         elif os.path.isdir(path):
-            tablelist = DirectoryTableList(path=path)
+            tablelist = DirectoryTableList(src=path)
 
         elif path.startswith('http://') or path.startswith('https://') or path.startswith('//'):
-            tablelist = RemoteArchiveTableList(path=path)
+            tablelist = RemoteArchiveTableList(src=path)
 
         else:
             raise TableListLoadingError('Path `{0}` is not valid table list source')
