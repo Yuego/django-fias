@@ -22,7 +22,8 @@ class Command(BaseCommand):
     help = 'Fill or update FIAS database'
     usage_str = 'Usage: ./manage.py fias [--src <path|filename|url|AUTO> [--force] [--i-know-what-i-do]]'\
                 ' [--update [--skip]] [--raw]'\
-                ' [--format=<xml|dbf>] [--limit=<N>] [--tables=<{0}>]'\
+                ' [--format <xml|dbf>] [--limit=<N>] [--tables=<{0}>]'\
+                ' [--update-version-info <yes|no>]'\
                 ' [--fill-weights]'.format(','.join(FIAS_TABLES))
 
     option_list = BaseCommand.option_list + (
@@ -36,7 +37,7 @@ class Command(BaseCommand):
                          ', as this may result in the removal of related data from other tables!'),
 
         make_option('--update', action='store_true', dest='update', default=False,
-                    help='Update database from specified source'),
+                    help='Update database from http://fias.nalog.ru'),
         make_option('--skip', action='store_true', dest='skip', default=False,
                     help='Skip the bad delta files when upgrading'),
 
@@ -55,6 +56,9 @@ class Command(BaseCommand):
         make_option('--tables', action='store', dest='tables', default=None,
                     help='Comma-separated list of tables to import'),
 
+        make_option('--update-version-info', action='store', dest='update-version-info',
+                    type='choice', choices=['yes', 'no'], default='yes',
+                    help='Update list of available database versions from http://fias.nalog.ru'),
 
         make_option('--fill-weights', action='store_true', dest='weights', default=False,
                     help='Fill default weights'),
@@ -84,7 +88,9 @@ class Command(BaseCommand):
             self.error('One of the tables contains data. Truncate all FIAS tables manually '
                        'or enter key --i-know-what-i-do, to clear the table by means of Django ORM')
 
-        fetch_version_info(update_all=True)
+        fetch = options.pop('update-version-info')
+        if fetch == 'yes':
+            fetch_version_info(update_all=True)
 
         # Force Russian language for internationalized projects
         if settings.USE_I18N:

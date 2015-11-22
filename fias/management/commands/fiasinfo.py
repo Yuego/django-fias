@@ -14,18 +14,26 @@ from fias.importer.version import fetch_version_info
 
 class Command(BaseCommand):
     help = 'Fill or update FIAS database'
-    usage_str = 'Usage: ./manage.py fiasinfo --version'
+    usage_str = 'Usage: ./manage.py fiasinfo --db-version [--update-version-info <yes|no>]'
 
     option_list = BaseCommand.option_list + (
         make_option('--db-version', action='store_true', dest='version', default=False,
                     help='Show version info'),
+
+        make_option('--update-version-info', action='store', dest='update-version-info',
+                    type='choice', choices=['yes', 'no'], default='yes',
+                    help='Update list of available database versions from http://fias.nalog.ru'),
+
 
     )
 
     def handle(self, *args, **options):
         ver = options.pop('version')
 
-        fetch_version_info(update_all=True)
+        fetch = options.pop('update-version-info')
+        if fetch == 'yes':
+            fetch_version_info(update_all=True)
+
 
         if ver:
             latest_version = Version.objects.all().latest('dumpdate')

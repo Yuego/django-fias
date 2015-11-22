@@ -3,7 +3,10 @@
 Основные возможности
 ====================
 
-* Импорт базы ФИАС из скачанного архива XML или напрямую с сайта http://fias.nalog.ru
+* Импорт базы ФИАС из:
+    * архива XML или DBF
+    * каталога с XML или DBF
+    * напрямую с сайта http://fias.nalog.ru в формате XML или DBF
 * Возможность хранить данные в отдельной БД
 * Поле модели AddressField, предоставляющее в админке Django ajax-поиск адреса
 * Поддержка полнотекстового поиска для поля AddressField (`демо <http://youtu.be/ZVVrxg9-o_4>`_)
@@ -15,12 +18,15 @@
 ===========
 
 * Django 1.7+ (*Для работы с django 1.7 необходимо доустановить django_extensions*)
-
+* django_select2 5.3.0+
 
 Внешние зависимости
 ====================
 
+
 * `Sphinx Search Engine <http://sphinxsearch.com>`_ Для Debian, Ubuntu, RHEL, Windows есть `пакеты <http://sphinxsearch.com/downloads/release/>`_
+* `django_select2<https://github.com/applegrew/django-select2>`_ модуль интеграции Select2 с Django.
+* `dbfread <https://github.com/olemb/dbfread>`_ Маленькая библиотека для работы с DBF. Для python3.3+ пока что нужно использовать мой `форк<https://github.com/Yuego/dbfread>`_
 
 
 Установка
@@ -164,34 +170,37 @@
 
 Полностью автоматический импорт с сайта ФИАС::
 
-        python manage.py fias --remote-file
+        python manage.py fias --src auto
 
 Такой способ не всегда целесообразен по разным причинам, поэтому лучше самостоятельно скачать полный архив и импортировать уже его::
 
-        python manage.py fias --file /path/to/fias_xml.rar
+        # Архив с XML-файлами
+        python manage.py fias --src /path/to/fias_xml.rar
+        # Архив с DBF-файлами
+        python manage.py fias --src /path/to/fias_dbf.rar
+        # Каталог с распакованным содержимым архива
+        python manage.py fias --src /path/to/fias_data/
 
 **Но!**
 В случае, если в БД уже есть какие-то данные, скрипт выдаст соответствующее сообщение и прекратит работу.
 Такое поведение связано с тем, что при импорте из файла, если версия файла не совпадает с версией данных в какой-то таблице в БД ФИАС,
-данные в этой таблице будут удалены полностью и заменены новыми, при этом
+данные в этой таблице могут быть удалены полностью и заменены новыми, при этом
 ORM Django при наличии связанных таблиц удалит данные так же и оттуда.
-Если вы уверены в том, что делаете, добавьте к предыдущей команде флаг *--really-replace*::
+Если вы уверены в том, что делаете, добавьте к предыдущей команде флаг *--i-know-what-i-do*::
 
-        python manage.py fias --file /path/to/fias_xml.rar --really-replace
+        python manage.py fias --src /path/to/fias_xml.rar --i-know-what-i-do
         # or
-        python manage.py fias --remote-file --really-replace
+        python manage.py fias --src auto --i-know-what-i-do
 
-Если по какой-то причине нужно импортировать всю БД ФИАС заново, добавьте флаг *--force-replace*::
+Если по какой-то причине нужно импортировать всю БД ФИАС заново, добавьте флаг *--truncate*::
 
-        python manage.py fias --file /path/to/fias_xml.rar --force-replace --really-replace
+        python manage.py fias --src /path/to/fias_xml.rar --truncate --i-know-what-i-do
         # or
-        python manage.py fias --remote-file --force-replace --really-replace
+        python manage.py fias --src auto --i-know-what-i-do
 
 Если скачанный файл не актуален, можно добавить к указанной выше команде флаг *--update* - скрипт сразу после импорта обновит БД до актуальной версии.::
 
-        python manage.py fias --file /path/to/fias_xml.rar --update
-        # or
-        python manage.py fias --remote-file --update
+        python manage.py fias --src /path/to/fias_xml.rar --update
         
 **NOTE**
 Импортируются только актуальные записи. Если данные об объекте менялись, будет загружена самая последняя версия записи об этом объекте.
@@ -208,6 +217,19 @@ ORM Django при наличии связанных таблиц удалит д
 **NOTE**
 Как это ни печально, но мы живём в России. Тут всякое бывает. Вот и сервис ФИАС время от времени подсовывает битые дельта-архивы.
 Чтобы оные пропускать автоматически и обновляться следующими по порядку, используйте флаг *--skip* совместно с *--update*
+
+Для вывода всех возможных параметров импорта выполните::
+
+    python manage.py fias --help
+
+
+Просмотр информации о состоянии БД ФИАС
+---------------------------------------
+
+Чтобы узнать, насколько актуальна локальная копия БД ФИАС, выполните::
+
+    python manage.py fiasinfo --db-version
+
 
 Использование
 ==============
