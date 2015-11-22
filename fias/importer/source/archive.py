@@ -87,11 +87,14 @@ class LocalArchiveTableList(TableList):
             st = os.stat(os.path.join(self.source, name))
             return datetime.datetime.fromtimestamp(st.st_mtime)
 
+    def get_full_path(self, filename):
+        return os.path.join(self.source, filename)
+
     def open(self, filename):
         if not self._unpack:
             return self.source.open(filename)
         else:
-            return os.path.join(self.source, filename)
+            return self.get_full_path(filename)
 
     def __del__(self):
         if self._unpack:

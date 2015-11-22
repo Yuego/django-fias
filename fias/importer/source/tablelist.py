@@ -51,6 +51,9 @@ class TableList(object):
 
         return self._date
 
+    def get_full_path(self, filename):
+        raise NotImplementedError()
+
     def open(self, filename):
         raise NotImplementedError()
 

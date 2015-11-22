@@ -20,6 +20,9 @@ class ModelFieldParser(FieldParser):
 
 class DBFTable(Table):
 
+    def open(self, tablelist):
+        return tablelist.get_full_path(self.filename)
+
     def rows(self, tablelist):
         db = DBF(
             self.open(tablelist=tablelist),

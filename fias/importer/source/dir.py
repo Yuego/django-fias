@@ -22,8 +22,11 @@ class DirectoryTableList(TableList):
             self._list = [f for f in os.listdir(self.source) if os.path.isfile(os.path.join(self.source, f))]
         return self._list
 
+    def get_full_path(self, filename):
+        return os.path.join(self.source, filename)
+
     def open(self, filename):
-        return open(os.path.join(self.source, filename), 'rb')
+        return open(self.get_full_path(filename), 'rb')
 
     def get_date_info(self, name):
         st = os.stat(os.path.join(self.source, name))
