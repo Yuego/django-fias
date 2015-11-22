@@ -3,9 +3,9 @@ from __future__ import unicode_literals, absolute_import
 
 import re
 
+from .table import BadTableError
 from .dbf import DBFTable, RawDBFTable
 from .xml import XMLTable, RawXMLTable
-
 
 table_xml_prefix = 'as_'
 table_xml_pattern = r'(?P<deleted>del_)?(?P<name>[a-z]+)_(?P<date>\d+)_(?P<uuid>[a-z0-9-]{36}).xml'

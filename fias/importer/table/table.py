@@ -27,6 +27,10 @@ table_names = {
 }
 
 
+class BadTableError(Exception):
+    pass
+
+
 class ParentLookupException(Exception):
     pass
 

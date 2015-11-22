@@ -46,6 +46,7 @@ class TableLoader(object):
         self.counter = 0
         self.upd_counter = 0
         self.skip_counter = 0
+        self.today = datetime.date.today()
 
     def check(self, item):
         if item is None or item.pk is None:
@@ -54,11 +55,10 @@ class TableLoader(object):
         if getattr(item, 'nextid', None):
             return False
 
-        today = datetime.date.today()
-        if hasattr(item, 'enddate') and item.enddate and item.enddate < today:
+        if hasattr(item, 'enddate') and item.enddate and item.enddate < self.today:
             return False
 
-        if hasattr(item, 'startdate') and item.startdate and item.startdate > today:
+        if hasattr(item, 'startdate') and item.startdate and item.startdate > self.today:
             return False
 
         return True

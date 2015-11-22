@@ -7,9 +7,11 @@ import rarfile
 from progress.bar import Bar
 
 try:
-    from urllib import urlretrieve
-except ImportError:
     from urllib.request import urlretrieve
+    from urllib.error import HTTPError
+except ImportError:
+    from urllib import urlretrieve
+    HTTPError = IOError
 
 from .tablelist import TableList, TableListLoadingError
 
@@ -67,7 +69,12 @@ class RemoteArchiveTableList(LocalArchiveTableList):
         def update_progress(count, block_size, total_size):
             progress.goto(int(count * block_size * 100 / total_size))
 
-        path = urlretrieve(path, reporthook=update_progress)[0]
+        try:
+            path = urlretrieve(path, reporthook=update_progress)[0]
+        except HTTPError as e:
+            raise BadArchiveError('Can not download data archive at url `{0}`. Error occured: "{1}"'.format(
+                path, str(e)
+            ))
         progress.finish()
 
         # Сохраняем путь к временному файлу

@@ -1,6 +1,7 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+import datetime
 import sys
 from optparse import make_option
 
@@ -28,8 +29,8 @@ class Command(BaseCommand):
         make_option('--src', action='store', dest='src', default=None,
                     help='Load dir|file|url into DB. If not specified, the source is automatically selected'),
 
-        make_option('--force', action='store_true', dest='force', default=False,
-                    help='Force replace database'),
+        make_option('--truncate', action='store_true', dest='truncate', default=False,
+                    help='Truncate tables before loading data'),
         make_option('--i-know-what-i-do', action='store_true', dest='doit', default=False,
                     help='If data exist in any table, you should confirm their removal and replacement'
                          ', as this may result in the removal of related data from other tables!'),
@@ -67,6 +68,7 @@ class Command(BaseCommand):
             src = None
             remote = True
 
+        truncate = options.pop('truncate')
         doit = options.pop('doit')
         raw = options.pop('raw')
 
@@ -82,7 +84,6 @@ class Command(BaseCommand):
             self.error('One of the tables contains data. Truncate all FIAS tables manually '
                        'or enter key --i-know-what-i-do, to clear the table by means of Django ORM')
 
-        truncate = False
         fetch_version_info(update_all=True)
 
         # Force Russian language for internationalized projects
@@ -98,22 +99,34 @@ class Command(BaseCommand):
             diff = ', '.join(tables.difference(FIAS_TABLES))
             self.error('Tables `{0}` are not listed in the FIAS_TABLES and can not be processed'.format(diff))
 
-        if src or remote:
-            force = options.pop('force')
-            if force:
-                truncate = True
-                Status.objects.all().delete()
 
+        if src or remote:
+            start_load = datetime.datetime.now()
             try:
+
+                print('Loading started at {0}'.format(start_load))
                 load_complete_data(path=src, data_format=fmt, truncate=truncate, limit=limit, raw=raw)
+
+                end_load = datetime.datetime.now()
+                print('Loading ended at {0}'.format(end_load))
             except TableListLoadingError as e:
                 self.error(str(e))
+            else:
+                print('Estimated time: {0}'.format(end_load - start_load))
 
         if update:
+            start_update = datetime.datetime.now()
             try:
+
+                print('Updating started at {0}'.format(start_update))
                 auto_update_data(skip=skip, data_format=fmt, limit=limit)
+
+                end_update = datetime.datetime.now()
+                print('Updating ended at {0}'.format(end_update))
             except TableListLoadingError as e:
                 self.error(str(e))
+            else:
+                print('Estimated time: {0}'.format(end_update - start_update))
 
         if weights:
             rewrite_weights()

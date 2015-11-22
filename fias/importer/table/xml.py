@@ -6,8 +6,7 @@ from lxml import etree
 
 from django.db import models
 from fias.fields import UUIDField
-from .table import ParentLookupException, Table, TableIterator
-from .raw import RawTable
+from .table import BadTableError, Table, TableIterator
 
 _bom_header = b'\xef\xbb\xbf'
 
@@ -33,6 +32,7 @@ class XMLIterator(TableIterator):
         })
 
         self._context = etree.iterparse(self._fd)
+
 
     def format_row(self, row):
         for key, value in row.items():
@@ -79,8 +79,10 @@ class XMLTable(Table):
             #log.info('Fixed wrong BOM header')
             pass
 
-        return self.iterator(xml, self.model)
-
+        try:
+            return self.iterator(xml, self.model)
+        except etree.XMLSyntaxError as e:
+            raise BadTableError('Error occured during opening table `{0}`: {1}'.format(self.name, str(e)))
 
 class RawXMLTable(Table):
     pass
