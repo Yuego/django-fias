@@ -45,3 +45,10 @@ for flt_path in row_filters:
         raise ImproperlyConfigured('Table row filter module `{0}` does not exists'.format(flt_path))
     else:
         TABLE_ROW_FILTERS.append(flt)
+
+FIAS_SEARCHD_CONNECTION = {
+    'ENGINE': 'django.db.backends.mysql',
+    'host': '127.0.0.1',
+    'port': 9306,
+}
+FIAS_SEARCHD_CONNECTION.update(getattr(settings, 'FIAS_SEARCHD_CONNECTION', {}))

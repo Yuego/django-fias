@@ -7,14 +7,10 @@ from django.utils.encoding import smart_text
 from django.views.generic.list import BaseListView
 from django_select2.views import AutoResponseView
 
-from fias.config import FIAS_SPHINX_ADDROBJ_INDEX
+from fias.config import FIAS_SPHINX_ADDROBJ_INDEX, FIAS_SEARCHD_CONNECTION
 from fias.models import AddrObj
 
-connections.databases['fias_search'] = {
-    'ENGINE': 'django.db.backends.mysql',
-       'HOST': '127.0.0.1',
-       'PORT': '9306',
-}
+connections.databases['fias_search'] = FIAS_SEARCHD_CONNECTION
 
 
 def dict_fetchall(cursor):
