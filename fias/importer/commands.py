@@ -12,6 +12,9 @@ from fias.models import Status, Version
 
 
 def get_tablelist(path, data_format):
+    assert data_format in ['xml', 'dbf'], \
+        'Unsupported data format: `{0}`. Available choices: {1}'.format(data_format, ', '.join(['xml', 'dbf']))
+
     if path is None:
         latest_version = Version.objects.latest('dumpdate')
         url = getattr(latest_version, 'complete_{0}_url'.format(data_format))
@@ -78,6 +81,10 @@ def update_data(path=None, skip=False, data_format='xml', limit=1000, tables=Non
 
     for tbl in get_table_names(tables):
         st = Status.objects.get(table=tbl)
+
+        if st.ver.ver <= tablelist.version.ver:
+            log.info('Update of the table `{0}` is not needed. Skipping...'.format(tbl))
+            continue
 
         log.info('Updating table `{0}` from {1} to {2}...'.format(tbl,
                                                                   st.ver.ver,
