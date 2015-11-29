@@ -7,12 +7,12 @@ from optparse import make_option
 
 from django.core.management.base import BaseCommand
 
-from fias.management.utils.sphinx import render_sphinx_config
+from .utils import render_sphinx_config
 
 
 class Command(BaseCommand):
     help = 'Configure Sphinx engine'
-    usage_str = 'Usage: ./manage.py fias_sphinx --path=PATH [--full]'
+    usage_str = 'Usage: ./manage.py fias_suggest --path=PATH [--full]'
 
     option_list = BaseCommand.option_list + (
         make_option('--path', action='store', dest='path',

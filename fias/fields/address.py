@@ -9,6 +9,7 @@ from django.db.models.fields import Field
 from django.db.models.fields.related import ForeignKey
 
 from fias import forms
+from fias.config import SUGGEST_VIEW
 
 
 class AddressField(ForeignKey):
@@ -28,7 +29,7 @@ class AddressField(ForeignKey):
             'form_class': forms.AddressSelect2Field,
             'widget': forms.AddressSelect2Widget(
                 queryset=self.rel.to._default_manager.using(db),
-                data_view='fias:json',
+                data_view=SUGGEST_VIEW,
             ),
             'queryset': self.rel.to._default_manager.using(db),
             'to_field_name': self.rel.field_name,

@@ -1,31 +1,27 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-import django
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.db.utils import DEFAULT_DB_ALIAS
 from django.utils.module_loading import import_module
 from fias.weights import weights
 
-DJ_VERSION = django.VERSION[0] + 10*django.VERSION[1]
+_DEFAULT = ('normdoc', 'landmark', 'houseint', 'house')
 
-_DEFAULT = ('landmark', 'houseint', 'house')
+TABLES = ['socrbase', 'addrobj']
+TABLES.extend([x.lower() for x in list(getattr(settings, 'FIAS_TABLES', _DEFAULT)) if x.lower() in _DEFAULT])
 
-FIAS_TABLES = ['socrbase', 'normdoc', 'addrobj']
-FIAS_TABLES.extend([x.lower() for x in list(getattr(settings, 'FIAS_TABLES', _DEFAULT)) if x.lower() in _DEFAULT])
-
-
-FIAS_DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
-
-FIAS_DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', 'default')
-
-if FIAS_DATABASE_ALIAS not in settings.DATABASES:
-    raise ImproperlyConfigured('FIAS: database alias `{0}` was not found in DATABASES'.format(FIAS_DATABASE_ALIAS))
+DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 
 
-FIAS_SPHINX_ADDROBJ_INDEX_NAME = getattr(settings, 'FIAS_SPHINX_ADDROBJ_INDEX_NAME', 'addrobj')
+DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', DEFAULT_DB_ALIAS)
 
-FIAS_SPHINX_ADDROBJ_INDEX = FIAS_DATABASE_ALIAS + '_' + FIAS_SPHINX_ADDROBJ_INDEX_NAME
+if DATABASE_ALIAS not in settings.DATABASES:
+    raise ImproperlyConfigured('FIAS: database alias `{0}` was not found in DATABASES'.format(DATABASE_ALIAS))
+elif DATABASE_ALIAS != DEFAULT_DB_ALIAS and 'fias.routers.FIASRouter' not in settings.DATABASE_ROUTERS:
+    raise ImproperlyConfigured('FIAS: for use external database add `fias.routers.FIASRouter`'
+                               ' into `DATABASE_ROUTERS` list in your settings.py')
 
 user_weights = getattr(settings, 'FIAS_SB_WEIGHTS', {})
 if not isinstance(user_weights, dict):
@@ -33,8 +29,6 @@ if not isinstance(user_weights, dict):
 
 weights.update(user_weights)
 
-# Чтобы использовать для данных ФИАС другую базу данных,
-# добавьте роутер 'fias.routers.FIASRouter' в список `DATABASE_ROUTERS`
 
 row_filters = getattr(settings, 'FIAS_TABLE_ROW_FILTERS', [])
 TABLE_ROW_FILTERS = []
@@ -46,9 +40,6 @@ for flt_path in row_filters:
     else:
         TABLE_ROW_FILTERS.append(flt)
 
-FIAS_SEARCHD_CONNECTION = {
-    'ENGINE': 'django.db.backends.mysql',
-    'host': '127.0.0.1',
-    'port': 9306,
-}
-FIAS_SEARCHD_CONNECTION.update(getattr(settings, 'FIAS_SEARCHD_CONNECTION', {}))
+SUGGEST_BACKEND = getattr(settings, 'FIAS_SUGGEST_BACKEND', 'fias.suggest.backends.noop')
+SUGGEST_VIEW = getattr(settings, 'FIAS_SUGGEST_VIEW', 'fias:suggest')
+SUGGEST_AREA_VIEW = getattr(settings, 'FIAS_SUGGEST_AREA_VIEW', 'fias:suggest-area')

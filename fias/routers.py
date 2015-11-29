@@ -1,9 +1,7 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from django.db.utils import DEFAULT_DB_ALIAS
-
-from fias.config import FIAS_DATABASE_ALIAS
+from fias.config import DEFAULT_DB_ALIAS, DATABASE_ALIAS
 
 
 class FIASRouter(object):
@@ -11,12 +9,12 @@ class FIASRouter(object):
     
     def db_for_read(self, model, **hints):
         if model._meta.app_label == 'fias':
-            return FIAS_DATABASE_ALIAS
+            return DATABASE_ALIAS
         return None
 
     def db_for_write(self, model, **hints):
         if model._meta.app_label == 'fias':
-            return FIAS_DATABASE_ALIAS
+            return DATABASE_ALIAS
         else:
             """\
             Странный хак, но без него
@@ -44,8 +42,8 @@ class FIASRouter(object):
     def allow_migrate(self, db, app_label, model=None, **hints):
         """Разрешить синхронизацию моделей в базе ФИАС"""
         if app_label == 'fias':
-            return db == FIAS_DATABASE_ALIAS
-        elif db == FIAS_DATABASE_ALIAS:
+            return db == DATABASE_ALIAS
+        elif db == DATABASE_ALIAS:
             return False
 
         return None

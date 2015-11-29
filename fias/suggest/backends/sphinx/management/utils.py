@@ -3,34 +3,30 @@ from __future__ import unicode_literals, absolute_import
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.db import connection
+from django.db import connections
 from django.template import Context
 from django.template.base import TemplateDoesNotExist
 from django.template.loader import select_template
 
-from fias.config import FIAS_DATABASE_ALIAS, FIAS_SPHINX_ADDROBJ_INDEX
+from fias.config import DATABASE_ALIAS
+from ..config import SPHINX_ADDROBJ_INDEX
 import re
 
+connection = connections[DATABASE_ALIAS]
+
 def _get_database_engine():
-    _engine = settings.DATABASES[FIAS_DATABASE_ALIAS]['ENGINE']
+    _engine = connection.vendor
 
     if 'mysql' in _engine:
         return 'mysql'
     elif 'postgresql' in _engine or 'postgis' in _engine:
         return 'pgsql'
 
-    raise ValueError("Only MySQL and PostgreSQL, and PostGIS engines are supported by FIAS.")
-
-
-try:
-    select_template(['fias/sql/{0}/query.sql'.format(_get_database_engine())])
-except TemplateDoesNotExist:
-    raise ImproperlyConfigured('FIAS: database backend `{0}` '
-                               'is not supported with `sphinx` search engine!'.format(connection.vendor))
+    raise ImproperlyConfigured("Only MySQL and PostgreSQL, and PostGIS engines are supported by FIAS.")
 
 
 def _get_template(name):
-    return select_template(['fias/' + name])
+    return select_template(['fias/sphinx/' + name])
 
 
 def _get_sql_template(name):
@@ -38,20 +34,26 @@ def _get_sql_template(name):
 
 
 def _get_sphinx_template(name):
-    return _get_template('sphinx/{0}.conf'.format(name))
+    return _get_template('config/{0}.conf'.format(name))
+
+try:
+    _get_sql_template('query')
+except TemplateDoesNotExist:
+    raise ImproperlyConfigured('FIAS: database backend `{0}` '
+                               'is not supported with `sphinx` suggest backend!'.format(connection.vendor))
 
 
 def render_sphinx_source():
 
     ctx = {
         'db_type': _get_database_engine(),
-        'db_host': settings.DATABASES[FIAS_DATABASE_ALIAS]['HOST'],
-        'db_port': settings.DATABASES[FIAS_DATABASE_ALIAS]['PORT'],
-        'db_name': settings.DATABASES[FIAS_DATABASE_ALIAS]['NAME'],
-        'db_user': settings.DATABASES[FIAS_DATABASE_ALIAS]['USER'],
-        'db_password': settings.DATABASES[FIAS_DATABASE_ALIAS]['PASSWORD'],
+        'db_host': settings.DATABASES[DATABASE_ALIAS]['HOST'],
+        'db_port': settings.DATABASES[DATABASE_ALIAS]['PORT'],
+        'db_name': settings.DATABASES[DATABASE_ALIAS]['NAME'],
+        'db_user': settings.DATABASES[DATABASE_ALIAS]['USER'],
+        'db_password': settings.DATABASES[DATABASE_ALIAS]['PASSWORD'],
 
-        'index_name': FIAS_SPHINX_ADDROBJ_INDEX,
+        'index_name': SPHINX_ADDROBJ_INDEX,
     }
 
     re_nl = re.compile(r'(?<!;)\n', re.U)
@@ -68,7 +70,7 @@ def render_sphinx_index(path):
     ctx = {
         'sphinx_index_path': path,
 
-        'index_name': FIAS_SPHINX_ADDROBJ_INDEX,
+        'index_name': SPHINX_ADDROBJ_INDEX,
     }
 
     return _get_sphinx_template('index').render(Context(ctx))

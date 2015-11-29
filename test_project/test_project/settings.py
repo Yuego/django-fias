@@ -125,10 +125,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'fias',
     'django_select2',
-    'tst',
 )
 
-FIAS_SEARCH_ENGINE = 'sphinx'
+FIAS_SUGGEST_BACKEND = 'fias.suggest.backends.sphinx'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

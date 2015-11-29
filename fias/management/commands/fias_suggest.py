@@ -3,4 +3,4 @@ from __future__ import unicode_literals, absolute_import
 
 from fias.suggest import backend
 
-urlpatterns = backend.urlpatterns
+Command = backend.Command

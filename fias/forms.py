@@ -7,6 +7,7 @@ from django.forms.models import ModelChoiceField
 from django.utils.safestring import mark_safe
 
 from django_select2.forms import ModelSelect2Widget
+from fias.config import SUGGEST_AREA_VIEW
 
 
 class AddressSelect2Widget(ModelSelect2Widget):
@@ -50,7 +51,7 @@ class AreaChainedSelect(widgets.Select):
 
     def render(self, name, value, attrs=None, choices=()):
 
-        url = reverse('fias:get_areas_list')
+        url = reverse(SUGGEST_AREA_VIEW)
         js = """
         <script type="text/javascript">
         //<![CDATA[

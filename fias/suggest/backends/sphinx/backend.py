@@ -1,6 +1,5 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from fias.suggest import backend
-
-urlpatterns = backend.urlpatterns
+from .management.command import Command
+from .urls import urlpatterns
