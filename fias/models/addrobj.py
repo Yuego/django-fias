@@ -11,6 +11,7 @@ from fias.models.common import Common
 
 __all__ = ['AddrObj']
 
+
 @python_2_unicode_compatible
 class AddrObj(Common):
 
