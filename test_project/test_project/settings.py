@@ -127,8 +127,6 @@ INSTALLED_APPS = (
     'django_select2',
 )
 
-FIAS_SUGGEST_BACKEND = 'fias.suggest.backends.sphinx'
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.

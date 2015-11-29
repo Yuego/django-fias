@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.translation import activate
 
-from fias.config import FIAS_TABLES
+from fias.config import TABLES
 from fias.importer.source import TableListLoadingError
 from fias.importer.commands import auto_update_data, load_complete_data, update_data
 from fias.importer.version import fetch_version_info
@@ -24,7 +24,7 @@ class Command(BaseCommand):
                 ' [--update [--skip]] [--raw]'\
                 ' [--format <xml|dbf>] [--limit=<N>] [--tables=<{0}>]'\
                 ' [--update-version-info <yes|no>]'\
-                ' [--fill-weights]'.format(','.join(FIAS_TABLES))
+                ' [--fill-weights]'.format(','.join(TABLES))
 
     option_list = BaseCommand.option_list + (
         make_option('--src', action='store', dest='src', default=None,
@@ -101,8 +101,8 @@ class Command(BaseCommand):
         tables = options.pop('tables')
         tables = set(tables.split(',')) if tables else set()
 
-        if not tables.issubset(set(FIAS_TABLES)):
-            diff = ', '.join(tables.difference(FIAS_TABLES))
+        if not tables.issubset(set(TABLES)):
+            diff = ', '.join(tables.difference(TABLES))
             self.error('Tables `{0}` are not listed in the FIAS_TABLES and can not be processed'.format(diff))
 
 

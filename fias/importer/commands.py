@@ -3,7 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 import os
 from django.db.models import Min
-from fias.config import FIAS_TABLES
+from fias.config import TABLES
 from fias.importer.source import *
 from fias.importer.table import BadTableError
 from fias.importer.loader import TableLoader, TableUpdater
@@ -35,7 +35,7 @@ def get_tablelist(path, data_format):
 
 
 def get_table_names(tables):
-    return tables if tables is not None else FIAS_TABLES
+    return tables if tables is not None else TABLES
 
 
 def load_complete_data(path=None,
