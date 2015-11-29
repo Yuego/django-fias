@@ -13,7 +13,7 @@ from .info import FAKE_FILES
 from .mock.wrapper import Wrapper
 
 
-class TestDirectoryTableList(TestCase):
+class TestTableList(TestCase):
     original_wrapper = None
 
     def setUp(self):
