@@ -7,7 +7,7 @@ from optparse import make_option
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from fias.config import FIAS_TABLES
+from fias.config import TABLES
 from fias.models import Status, Version
 from fias.importer.version import fetch_version_info
 
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             latest_version = Version.objects.all().latest('dumpdate')
             print ('Latest version: {0}'.format(latest_version))
             statuses = dict((s.table, s) for s in Status.objects.select_related('ver').all())
-            for table in FIAS_TABLES:
+            for table in TABLES:
                 ver = statuses[table].ver.ver if table in statuses else 0
                 print ('Table: {0}, version: {1}, actual: {2}'.format(
                     table,
