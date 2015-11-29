@@ -43,6 +43,24 @@ def pytest_configure():
         sys.exit(1)
 
     try:
+        import dbfread  # NOQA
+    except ImportError:
+        print("Error: missing test dependency:")
+        print("  dbfread library is needed to run test suite")
+        print("  you can install it with 'pip install dbfread'")
+        print("  or use tox to automatically handle test dependencies")
+        sys.exit(1)
+
+    try:
+        import progress  # NOQA
+    except ImportError:
+        print("Error: missing test dependency:")
+        print("  progress library is needed to run test suite")
+        print("  you can install it with 'pip install progress'")
+        print("  or use tox to automatically handle test dependencies")
+        sys.exit(1)
+
+    try:
         import six  # NOQA
     except ImportError:
         print("Error: missing test dependency:")
@@ -60,14 +78,20 @@ def pytest_configure():
             'django.contrib.auth.middleware.AuthenticationMiddleware',
             'django.contrib.messages.middleware.MessageMiddleware',
         ),
-        DATABASES = {
+        DATABASES={
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': 'db.sqlite',
             },
+            'fias': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': 'fias.sqlite',
+            },
         },
         SECRET_KEY='key',
         ROOT_URLCONF='tests.urls',
+        FIAS_DATABASE_ALIAS='fias',
+        DATABASE_ROUTERS=['fias.routers.FIASRouter'],
         DEBUG=True,
         TEMPLATE_DEBUG=True,
 

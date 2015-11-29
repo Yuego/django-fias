@@ -4,13 +4,14 @@ from __future__ import unicode_literals, absolute_import
 from fias.models import Version
 from ..table import TableFactory
 
+from .wrapper import SourceWrapper
 
 class TableListLoadingError(Exception):
     pass
 
 
 class TableList(object):
-    wrapper_class = None
+    wrapper_class = SourceWrapper
     wrapper = None
 
     table_list = None
@@ -31,7 +32,7 @@ class TableList(object):
         self.wrapper = self.load_data(src)
 
     def load_data(self, source):
-        raise NotImplementedError()
+        return self.wrapper_class(source=source)
 
     def get_table_list(self):
         return self.wrapper.get_file_list()
