@@ -76,7 +76,7 @@ class RemoteArchiveTableList(LocalArchiveTableList):
         try:
             src = urlretrieve(source, reporthook=update_progress)[0]
         except HTTPError as e:
-            raise RetrieveError('Can not download data archive at url `{0}`. Error occured: "{1}"'.format(
+            raise RetrieveError('Can not download data archive at url `{0}`. Error occurred: "{1}"'.format(
                 source, str(e)
             ))
         progress.finish()

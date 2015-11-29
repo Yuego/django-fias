@@ -125,6 +125,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'fias',
     'django_select2',
+    'tst',
 )
 
 # A sample logging configuration. The only tangible logging
