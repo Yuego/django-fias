@@ -9,6 +9,7 @@ from sys import stderr
 
 from .validators import validators
 
+
 class LoadingBar(WritelnMixin):
     file = stderr
 
@@ -58,7 +59,8 @@ class TableLoader(object):
 
         return validators.get(table.name, lambda x, **kwargs: True)(item, today=self.today)
 
-    def create(self, table, objects):
+    @staticmethod
+    def create(table, objects):
         table.model.objects.bulk_create(objects)
 
         if settings.DEBUG:
@@ -101,7 +103,7 @@ class TableUpdater(TableLoader):
         model = table.model
         objects = []
         for item in table.rows(tablelist=tablelist):
-            if not self.check(item):
+            if not self.validate(table, item):
                 self.skip_counter += 1
                 continue
 

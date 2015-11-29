@@ -30,6 +30,7 @@ name_trans = {
     'nordoc': 'normdoc',
 }
 
+
 class BadTableError(Exception):
     pass
 
@@ -65,7 +66,7 @@ class TableIterator(object):
         except ParentLookupException as e:
             return None
 
-        return reduce(lambda a, x: x(a) if a is not None else a, TABLE_ROW_FILTERS, self.model(**row))
+        return reduce(lambda a, x: x(a) if a is not None else None, TABLE_ROW_FILTERS, self.model(**row))
 
     def __next__(self):
         return self.get_next()

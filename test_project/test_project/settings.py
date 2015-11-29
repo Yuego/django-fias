@@ -15,29 +15,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_PATH, 'db.sqlite'),                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
-    },
-    'fias_test': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'fias',
-       'USER': 'postgres',
-       'PASSWORD': '',
-       'HOST': '127.0.0.1',
-       'PORT': '5432', 
-    },
-    'fias': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-       'NAME': 'fias_test',
-       'USER': 'postgres',
-       'PASSWORD': '',
-       'HOST': '127.0.0.1',
-       'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(PROJECT_PATH, 'db.sqlite'),
     },
 }
 
@@ -148,9 +127,6 @@ INSTALLED_APPS = (
     'django_select2',
     'tst',
 )
-DATABASE_ROUTERS = ['fias.routers.FIASRouter']
-FIAS_DATABASE_ALIAS = 'fias'
-
 
 FIAS_SEARCH_ENGINE = 'sphinx'
 

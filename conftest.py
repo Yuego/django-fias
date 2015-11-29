@@ -53,7 +53,6 @@ def pytest_configure():
 
     settings.configure(
         INSTALLED_APPS=[
-            'tests.testapp',
             'fias',
         ],
         MIDDLEWARE_CLASSES=(
@@ -66,18 +65,8 @@ def pytest_configure():
                 'ENGINE': 'django.db.backends.sqlite3',
                 'NAME': 'db.sqlite',
             },
-            'fias': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
-                'NAME': 'fias_test',
-                'USER': 'postgres',
-                'PASSWORD': '',
-                'HOST': '127.0.0.1',
-                'PORT': '5432',
-            },
         },
         SECRET_KEY='key',
-        FIAS_DATABASE_ALIAS='fias',
-        DATABASE_ROUTERS=['fias.routers.FIASRouter'],
         ROOT_URLCONF='tests.urls',
         DEBUG=True,
         TEMPLATE_DEBUG=True,

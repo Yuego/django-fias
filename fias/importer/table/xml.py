@@ -84,5 +84,6 @@ class XMLTable(Table):
         except etree.XMLSyntaxError as e:
             raise BadTableError('Error occured during opening table `{0}`: {1}'.format(self.name, str(e)))
 
+
 class RawXMLTable(Table):
     pass

@@ -19,5 +19,9 @@ except ImportError:
                     return 'uuid'
                 return super(UUIDField, self).db_type(connection)
 
+        # MonkeyPatch...
+        from django.db import models
+        models.UUIDField = UUIDField
+
     except ImportError:
         raise ImproperlyConfigured('You must use Django 1.8+ or install `django_extensions` package')

@@ -4,61 +4,66 @@ from __future__ import unicode_literals, absolute_import
 from fias.models import Version
 from ..table import TableFactory
 
+
 class TableListLoadingError(Exception):
     pass
 
 
 class TableList(object):
+    wrapper_class = None
+    wrapper = None
+
+    table_list = None
+    date = None
+    version_info = None
+    raw = False
+
     def __init__(self, src, version=None, raw=False):
-        self._version = version
-        self._src = src
-        self._raw = raw
+        self.info_version = version
+        self.src = src
+        self.raw = raw
 
-        if self._version is not None:
-            self._date = self._version.dumpdate
-        else:
-            self._date = None
+        if version is not None:
+            assert isinstance(version, Version), 'version must be an instance of Version model'
 
-        self._tables = None
+            self.date = version.dumpdate
 
-    @property
-    def source(self):
-        return self._src
+        self.wrapper = self.load_data(src)
 
-    def get_tables_list(self):
+    def load_data(self, source):
         raise NotImplementedError()
+
+    def get_table_list(self):
+        return self.wrapper.get_file_list()
 
     @property
     def tables(self):
-        if self._tables is None:
-            self._tables = {}
-            for filename in self.get_tables_list():
-                table = TableFactory.parse(filename=filename, raw=self._raw)
+        if self.table_list is None:
+            self.table_list = {}
+            for filename in self.get_table_list():
+                table = TableFactory.parse(filename=filename, raw=self.raw)
                 if table is None:
                     continue
-                self._tables.setdefault(table.name, []).append(table)
+                self.table_list.setdefault(table.name, []).append(table)
 
-        return self._tables
+        return self.table_list
 
     def get_date_info(self, name):
-        raise NotImplementedError()
+        return self.wrapper.get_date_info(filename=name)
 
     @property
     def dump_date(self):
-        if self._date is None:
-            first_name = self.get_tables_list()[0]
-            self._date = self.get_date_info(first_name)
+        if self.date is None:
+            first_name = self.get_table_list()[0]
+            self.date = self.get_date_info(first_name)
 
-        return self._date
-
-    def get_full_path(self, filename):
-        raise NotImplementedError()
+        return self.date
 
     def open(self, filename):
-        raise NotImplementedError()
+        return self.wrapper.open(filename=filename)
 
     @property
     def version(self):
-        if self._version is None:
-            self._version = Version.objects.nearest_by_date(self.dump_date)
-        return self._version
+        if self.version_info is None:
+            self.version_info = Version.objects.nearest_by_date(self.dump_date)
+        return self.version_info
