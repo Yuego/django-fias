@@ -1,7 +1,7 @@
 #coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from .table import Table, TableIterator
+from .table import Table
 from .raw import RawTable
 
 from dbfread import DBF, FieldParser
@@ -10,7 +10,7 @@ from dbfread import DBF, FieldParser
 class ModelFieldParser(FieldParser):
 
     def parseC(self, field, data):
-        result = super(ModelFieldParser, self).parseC(field, data)
+        result = FieldParser.parseC(self, field, data)
 
         if not result:
             return None
@@ -21,7 +21,7 @@ class ModelFieldParser(FieldParser):
 class DBFTable(Table):
 
     def open(self, tablelist):
-        return tablelist.get_full_path(self.filename)
+        return tablelist.wrapper.get_full_path(self.filename)
 
     def rows(self, tablelist):
         db = DBF(
