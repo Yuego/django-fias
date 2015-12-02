@@ -30,6 +30,20 @@ if not isinstance(user_weights, dict):
 weights.update(user_weights)
 
 
+"""
+см. fias.importer.filters
+указывается список путей к функциям-фильтрам
+фильтры применяются к *каждому* объекту
+один за другим, пока не закончатся,
+либо пока какой-нибудь из них не вернёт None
+если фильтр вернул None, объект не импортируется в БД
+
+пример:
+
+FIAS_TABLE_ROW_FILTERS = [
+    'fias.importer.filters.example_filter_accept',
+]
+"""
 row_filters = getattr(settings, 'FIAS_TABLE_ROW_FILTERS', [])
 TABLE_ROW_FILTERS = []
 for flt_path in row_filters:

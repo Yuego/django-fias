@@ -66,7 +66,14 @@ class TableIterator(object):
         except ParentLookupException as e:
             return None
 
-        return reduce(lambda a, x: x(a) if a is not None else None, TABLE_ROW_FILTERS, self.model(**row))
+        item = self.model(**row)
+        for filter in TABLE_ROW_FILTERS:
+            if item is None:
+                break
+
+            item = filter(item)
+
+        return item
 
     def __next__(self):
         return self.get_next()
