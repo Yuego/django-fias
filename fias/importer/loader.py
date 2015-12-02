@@ -69,18 +69,18 @@ class TableLoader(object):
     def load(self, tablelist, table):
         bar = LoadingBar(table=table.name, filename=table.filename)
 
-        objects = []
+        objects = set()
         for item in table.rows(tablelist=tablelist):
             if not self.validate(table, item):
                 self.skip_counter += 1
                 continue
 
-            objects.append(item)
+            objects.add(item)
             self.counter += 1
 
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects)
-                objects = []
+                objects.clear()
                 bar.update(loaded=self.counter)
 
         if objects:
@@ -101,7 +101,7 @@ class TableUpdater(TableLoader):
         bar = LoadingBar()
 
         model = table.model
-        objects = []
+        objects = set()
         for item in table.rows(tablelist=tablelist):
             if not self.validate(table, item):
                 self.skip_counter += 1
@@ -110,7 +110,7 @@ class TableUpdater(TableLoader):
             try:
                 old_obj = model.objects.filter(pk=item.pk)
             except model.DoesNotExist:
-                objects.append(item)
+                objects.add(item)
                 self.counter += 1
             else:
                 if not hasattr(item, 'updatedate') or old_obj.updatedate < item.updatedate:
@@ -119,7 +119,7 @@ class TableUpdater(TableLoader):
 
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects)
-                objects = []
+                objects.clear()
                 bar.update(loaded=self.counter)
 
             if self.upd_counter and self.upd_counter % self.upd_limit == 0:
