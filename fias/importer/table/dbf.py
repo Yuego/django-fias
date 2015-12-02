@@ -24,6 +24,9 @@ class DBFTable(Table):
         return tablelist.wrapper.get_full_path(self.filename)
 
     def rows(self, tablelist):
+        if self.deleted:
+            return []
+
         db = DBF(
             self.open(tablelist=tablelist),
             lowernames=True,

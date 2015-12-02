@@ -83,6 +83,7 @@ class TableIterator(object):
 
 class Table(object):
     name = None
+    deleted = False
     iterator = TableIterator
 
     def __init__(self, filename, **kwargs):
@@ -92,6 +93,8 @@ class Table(object):
 
         self.name = name_trans.get(name, name)
         self.model = table_names.get(self.name)
+
+        self.deleted = bool(kwargs.get('deleted', False))
 
     def _truncate(self, model):
         db_table = model._meta.db_table

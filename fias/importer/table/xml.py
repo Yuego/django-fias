@@ -69,6 +69,9 @@ class XMLTable(Table):
         self.deleted = 'deleted' in kwargs
 
     def rows(self, tablelist):
+        if self.deleted:
+            return []
+
         xml = self.open(tablelist=tablelist)
 
         # workaround for XMLSyntaxError: Document is empty, line 1, column 1
