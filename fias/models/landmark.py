@@ -5,7 +5,6 @@ from django.db import models
 
 from fias.fields import UUIDField
 from fias.models.common import Common
-from fias.models.addrobj import AddrObj
 
 __all__ = ['LandMark']
 
