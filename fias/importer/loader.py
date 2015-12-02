@@ -15,7 +15,7 @@ class LoadingBar(WritelnMixin):
 
     text = 'Table: %(table)s.' \
            ' Loaded: %(loaded)d | Updated: %(updated)d | Skipped:  %(skipped)d' \
-           ' \t\t\tFilename: %(filename)s'
+           ' \t\tFilename: %(filename)s'
 
     loaded = 0
     updated = 0
