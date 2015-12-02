@@ -14,7 +14,11 @@ def common_validator(item, today, **kwargs):
 
 
 def addrobj_validator(item, today, **kwargs):
-    return not item.nextid and common_validator(item, today=today, **kwargs)
+    return (
+        not item.nextid and
+        item.actstatus and
+        common_validator(item, today=today, **kwargs)
+    )
 
 validators = {
     'socrbase': socr_base_validator,
