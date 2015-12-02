@@ -2,7 +2,6 @@
 from __future__ import unicode_literals, absolute_import
 
 from .table import Table
-from .raw import RawTable
 
 from dbfread import DBF, FieldParser
 
@@ -37,7 +36,4 @@ class DBFTable(Table):
 
         return db
 
-
-class RawDBFTable(RawTable):
-    pass
 

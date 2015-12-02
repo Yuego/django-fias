@@ -66,7 +66,6 @@ class XMLTable(Table):
 
     def __init__(self, filename, **kwargs):
         super(XMLTable, self).__init__(filename=filename, **kwargs)
-        self.deleted = 'deleted' in kwargs
 
     def rows(self, tablelist):
         if self.deleted:
@@ -86,7 +85,3 @@ class XMLTable(Table):
             return self.iterator(xml, self.model)
         except etree.XMLSyntaxError as e:
             raise BadTableError('Error occured during opening table `{0}`: {1}'.format(self.name, str(e)))
-
-
-class RawXMLTable(Table):
-    pass

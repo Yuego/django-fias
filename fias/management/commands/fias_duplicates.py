@@ -37,6 +37,7 @@ class Command(BaseCommand):
 
         tablelist = get_tablelist(path=src, data_format='xml')
         for tbl in tablelist.tables[table]:
+
             for item in tbl.rows(tablelist=tablelist):
                 if item.pk == key:
                     print(item)

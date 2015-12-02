@@ -11,17 +11,16 @@ from django.utils.translation import activate
 
 from fias.config import TABLES
 from fias.importer.source import TableListLoadingError
-from fias.importer.commands import auto_update_data, load_complete_data, update_data
+from fias.importer.commands import auto_update_data, load_complete_data
 from fias.importer.version import fetch_version_info
 from fias.management.utils.weights import rewrite_weights
 from fias.models import Status
 
 
-
 class Command(BaseCommand):
     help = 'Fill or update FIAS database'
     usage_str = 'Usage: ./manage.py fias [--src <path|filename|url|AUTO> [--force] [--i-know-what-i-do]]'\
-                ' [--update [--skip]] [--raw]'\
+                ' [--update [--skip]]'\
                 ' [--format <xml|dbf>] [--limit=<N>] [--tables=<{0}>]'\
                 ' [--update-version-info <yes|no>]'\
                 ' [--fill-weights]'.format(','.join(TABLES))
@@ -40,9 +39,6 @@ class Command(BaseCommand):
                     help='Update database from http://fias.nalog.ru'),
         make_option('--skip', action='store_true', dest='skip', default=False,
                     help='Skip the bad delta files when upgrading'),
-
-        make_option('--raw', action='store_true', dest='raw', default=False,
-                    help='Use RAW models to speed up imports. The integrity of the database is not guaranteed.'),
 
 
         make_option('--format', action='store', dest='format',
@@ -74,7 +70,6 @@ class Command(BaseCommand):
 
         truncate = options.pop('truncate')
         doit = options.pop('doit')
-        raw = options.pop('raw')
 
         update = options.pop('update')
         skip = options.pop('skip')
@@ -111,7 +106,7 @@ class Command(BaseCommand):
             try:
 
                 print('Loading started at {0}'.format(start_load))
-                load_complete_data(path=src, data_format=fmt, truncate=truncate, limit=limit, raw=raw)
+                load_complete_data(path=src, data_format=fmt, truncate=truncate, limit=limit)
 
                 end_load = datetime.datetime.now()
                 print('Loading ended at {0}'.format(end_load))

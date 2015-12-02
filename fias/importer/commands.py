@@ -43,7 +43,7 @@ def get_table_names(tables):
 
 def load_complete_data(path=None,
                        data_format='xml',
-                       truncate=False, raw=False,
+                       truncate=False,
                        limit=10000, tables=None):
 
     tablelist = get_tablelist(path=path, data_format=data_format)

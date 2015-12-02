@@ -4,8 +4,8 @@ from __future__ import unicode_literals, absolute_import
 import re
 
 from .table import BadTableError
-from .dbf import DBFTable, RawDBFTable
-from .xml import XMLTable, RawXMLTable
+from .dbf import DBFTable
+from .xml import XMLTable
 
 table_xml_prefix = 'as_'
 table_xml_pattern = r'(?P<deleted>del_)?(?P<name>[a-z]+)_(?P<date>\d+)_(?P<uuid>[a-z0-9-]{36}).xml'
@@ -23,15 +23,15 @@ class BadTableNameError(Exception):
 class TableFactory(object):
 
     @staticmethod
-    def parse(filename, raw=False):
+    def parse(filename):
         table = None
         m = table_xml_re.match(filename)
         if m is not None:
-            cls = XMLTable if not raw else RawXMLTable
+            cls = XMLTable
             table = cls(filename=filename, **m.groupdict())
         m = table_dbf_re.match(filename)
         if m is not None:
-            cls = DBFTable if not raw else RawDBFTable
+            cls = DBFTable
             table = cls(filename=filename, **m.groupdict())
         m = table_dbt_re.match(filename)
         if m is not None:

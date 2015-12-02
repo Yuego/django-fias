@@ -17,12 +17,10 @@ class TableList(object):
     table_list = None
     date = None
     version_info = None
-    raw = False
 
-    def __init__(self, src, version=None, raw=False):
+    def __init__(self, src, version=None):
         self.info_version = version
         self.src = src
-        self.raw = raw
 
         if version is not None:
             assert isinstance(version, Version), 'version must be an instance of Version model'
@@ -42,7 +40,7 @@ class TableList(object):
         if self.table_list is None:
             self.table_list = {}
             for filename in self.get_table_list():
-                table = TableFactory.parse(filename=filename, raw=self.raw)
+                table = TableFactory.parse(filename=filename)
                 if table is None:
                     continue
                 self.table_list.setdefault(table.name, []).append(table)
