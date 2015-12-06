@@ -9,7 +9,9 @@
     * напрямую с сайта http://fias.nalog.ru в формате XML или DBF
 * Возможность хранить данные в отдельной БД
 * Поле модели AddressField, предоставляющее в админке Django ajax-поиск адреса
-* Поддержка полнотекстового поиска для поля AddressField (`демо <http://youtu.be/ZVVrxg9-o_4>`_)
+* Поддержка полнотекстового поиска для поля AddressField (`демо <http://youtu.be/ZVVrxg9-o_4>`_) с помощью:
+    * `Sphinx Search Engine <http://sphinxsearch.com>`_ Для Debian, Ubuntu, RHEL, Windows есть `пакеты <http://sphinxsearch.com/downloads/release/>`_
+
 * Связанное поле модели для выбора района внутри выбранного в AddressField города (районы никак не привязаны к улицам, соответственно, их нужно выбирать отдельно, если это требуется)
 * Несколько абстрактных моделей, немного упрощающих жизнь
 
@@ -23,8 +25,6 @@
 Внешние зависимости
 ====================
 
-
-* `Sphinx Search Engine <http://sphinxsearch.com>`_ Для Debian, Ubuntu, RHEL, Windows есть `пакеты <http://sphinxsearch.com/downloads/release/>`_
 * `django_select2<https://github.com/applegrew/django-select2>`_ модуль интеграции Select2 с Django.
 * `dbfread <https://github.com/olemb/dbfread>`_ Маленькая библиотека для работы с DBF. Для python3.3+ пока что нужно использовать мой `форк<https://github.com/Yuego/dbfread>`_
 
