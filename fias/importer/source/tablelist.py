@@ -2,7 +2,9 @@
 from __future__ import unicode_literals, absolute_import
 
 from fias.models import Version
-from ..table import TableFactory
+
+from fias.importer.signals import pre_load, post_load
+from fias.importer.table import TableFactory
 
 from .wrapper import SourceWrapper
 
@@ -27,7 +29,9 @@ class TableList(object):
 
             self.date = version.dumpdate
 
+        pre_load.send(sender=self.__class__, src=src)
         self.wrapper = self.load_data(src)
+        post_load.send(sender=self.__class__, wrapper=self.wrapper)
 
     def load_data(self, source):
         return self.wrapper_class(source=source)

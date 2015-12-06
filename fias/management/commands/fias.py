@@ -10,6 +10,7 @@ from django.core.management.base import BaseCommand
 from django.utils.translation import activate
 
 from fias.config import TABLES
+from fias.importer.signals import pre_import, post_import
 from fias.importer.source import TableListLoadingError
 from fias.importer.commands import auto_update_data, load_complete_data
 from fias.importer.version import fetch_version_info
@@ -62,6 +63,9 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
+        from fias.importer.timer import Timer
+        Timer.init()
+
         src = options.pop('src')
         remote = False
         if src and src.lower() == 'auto':
@@ -100,34 +104,19 @@ class Command(BaseCommand):
             diff = ', '.join(tables.difference(TABLES))
             self.error('Tables `{0}` are not listed in the FIAS_TABLES and can not be processed'.format(diff))
 
-
         if src or remote:
-            start_load = datetime.datetime.now()
+
             try:
-
-                print('Loading started at {0}'.format(start_load))
                 load_complete_data(path=src, data_format=fmt, truncate=truncate, limit=limit)
-
-                end_load = datetime.datetime.now()
-                print('Loading ended at {0}'.format(end_load))
             except TableListLoadingError as e:
                 self.error(str(e))
-            else:
-                print('Estimated time: {0}'.format(end_load - start_load))
 
         if update:
-            start_update = datetime.datetime.now()
+
             try:
-
-                print('Updating started at {0}'.format(start_update))
                 auto_update_data(skip=skip, data_format=fmt, limit=limit)
-
-                end_update = datetime.datetime.now()
-                print('Updating ended at {0}'.format(end_update))
             except TableListLoadingError as e:
                 self.error(str(e))
-            else:
-                print('Estimated time: {0}'.format(end_update - start_update))
 
         if weights:
             rewrite_weights()

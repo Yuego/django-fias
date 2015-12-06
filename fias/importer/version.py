@@ -2,12 +2,15 @@
 from __future__ import unicode_literals, absolute_import
 
 import datetime
+from fias.importer.signals import pre_fetch_version, post_fetch_version
 from fias.models import Version
 
 from suds.client import Client
 
 
 def fetch_version_info(update_all=False):
+    pre_fetch_version.send(object.__class__)
+
     client = Client(url="http://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL")
     result = client.service.GetAllDownloadFileInfo()
 
@@ -35,3 +38,5 @@ def fetch_version_info(update_all=False):
                     setattr(ver, 'delta_dbf_url', None)
 
                 ver.save()
+
+    post_fetch_version.send(object.__class__)

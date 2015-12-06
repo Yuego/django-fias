@@ -7,7 +7,8 @@ from django import db
 from progress.helpers import WritelnMixin
 from sys import stderr
 
-from .validators import validators
+from fias.importer.signals import pre_import_table, post_import_table
+from fias.importer.validators import validators
 
 
 class LoadingBar(WritelnMixin):
@@ -15,7 +16,7 @@ class LoadingBar(WritelnMixin):
 
     text = 'Table: %(table)s.' \
            ' Loaded: %(loaded)d | Updated: %(updated)d | Skipped:  %(skipped)d' \
-           ' \t\tFilename: %(filename)s'
+           ' \tFilename: %(filename)s'
 
     loaded = 0
     updated = 0
@@ -67,6 +68,11 @@ class TableLoader(object):
             db.reset_queries()
 
     def load(self, tablelist, table):
+        pre_import_table.send(sender=self.__class__, table=table)
+        self.do_load(tablelist=tablelist, table=table)
+        post_import_table.send(sender=self.__class__, table=table)
+
+    def do_load(self, tablelist, table):
         bar = LoadingBar(table=table.name, filename=table.filename)
 
         objects = set()
@@ -87,18 +93,18 @@ class TableLoader(object):
             self.create(table, objects)
             bar.update(loaded=self.counter)
 
-        bar.update(skipped=self.skip_counter)
+        bar.update(loaded=self.counter, skipped=self.skip_counter)
         bar.finish()
 
 
 class TableUpdater(TableLoader):
 
     def __init__(self, limit=10000):
-        self.upd_limit = limit / 10
+        self.upd_limit = 100
         super(TableUpdater, self).__init__(limit=limit)
 
-    def load(self, tablelist, table):
-        bar = LoadingBar()
+    def do_load(self, tablelist, table):
+        bar = LoadingBar(table=table.name, filename=table.filename)
 
         model = table.model
         objects = set()
@@ -108,7 +114,7 @@ class TableUpdater(TableLoader):
                 continue
 
             try:
-                old_obj = model.objects.filter(pk=item.pk)
+                old_obj = model.objects.get(pk=item.pk)
             except model.DoesNotExist:
                 objects.add(item)
                 self.counter += 1
@@ -129,5 +135,5 @@ class TableUpdater(TableLoader):
             self.create(table, objects)
             bar.update(loaded=self.counter)
 
-        bar.update(skipped=self.skip_counter)
+        bar.update(loaded=self.counter, updated=self.upd_counter, skipped=self.skip_counter)
         bar.finish()

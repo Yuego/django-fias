@@ -12,6 +12,10 @@ except ImportError:
     from urllib import urlretrieve
     HTTPError = IOError
 
+from fias.importer.signals import (
+    pre_download, post_download,
+    pre_unpack, post_unpack,
+)
 from fias.importer.table import table_dbf_re, table_dbt_re
 
 from .tablelist import TableList, TableListLoadingError
@@ -52,7 +56,12 @@ class LocalArchiveTableList(TableList):
 
         first_name = archive.namelist()[0]
         if table_dbf_re.match(first_name) or table_dbt_re.match(first_name):
+            pre_unpack.send(sender=self.__class__, archive=archive)
+
             path = LocalArchiveTableList.unpack(archive=archive)
+
+            post_unpack.send(sender=self.__class__, archive=archive, dst=path)
+
             return DirectoryTableList.wrapper_class(source=path, is_temporary=True)
 
         return self.wrapper_class(source=archive)
@@ -60,7 +69,7 @@ class LocalArchiveTableList(TableList):
 
 class DlProgressBar(Bar):
     message = 'Downloading: '
-    suffix = '%(index)d/%(max)d'
+    suffix = '%(index)d/%(max)d. ETA: %(elapsed)s'
     hide_cursor = False
 
 
@@ -73,12 +82,14 @@ class RemoteArchiveTableList(LocalArchiveTableList):
         def update_progress(count, block_size, total_size):
             progress.goto(int(count * block_size * 100 / total_size))
 
+        pre_download.send(sender=self.__class__, url=source)
         try:
-            src = urlretrieve(source, reporthook=update_progress)[0]
+            path = urlretrieve(source, reporthook=update_progress)[0]
         except HTTPError as e:
             raise RetrieveError('Can not download data archive at url `{0}`. Error occurred: "{1}"'.format(
                 source, str(e)
             ))
         progress.finish()
+        post_download.send(sender=self.__class__, url=source, path=path)
 
-        return super(RemoteArchiveTableList, self).load_data(source=src)
+        return super(RemoteArchiveTableList, self).load_data(source=path)
