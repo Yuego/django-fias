@@ -33,7 +33,7 @@ def get_tablelist(path, version=None, data_format='xml'):
             tablelist = RemoteArchiveTableList(src=path, version=version)
 
         else:
-            raise TableListLoadingError('Path `{0}` is not valid table list source')
+            raise TableListLoadingError('Path `{0}` is not valid table list source'.format(path))
 
     return tablelist
 
@@ -105,6 +105,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
 
         st.ver = tablelist.version
         st.save()
+
 
 def auto_update_data(skip=False, data_format='xml', limit=1000):
     min_version = Status.objects.filter(table__in=get_table_names(None)).aggregate(Min('ver'))['ver__min']
