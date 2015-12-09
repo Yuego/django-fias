@@ -4,7 +4,6 @@ from __future__ import unicode_literals, absolute_import
 import sys
 from optparse import make_option
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from fias.config import TABLES
@@ -33,7 +32,6 @@ class Command(BaseCommand):
         fetch = options.pop('update-version-info')
         if fetch == 'yes':
             fetch_version_info(update_all=True)
-
 
         if ver:
             latest_version = Version.objects.all().latest('dumpdate')

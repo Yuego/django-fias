@@ -1,7 +1,6 @@
 # coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-import datetime
 import sys
 from optparse import make_option
 
@@ -10,7 +9,6 @@ from django.core.management.base import BaseCommand
 from django.utils.translation import activate
 
 from fias.config import TABLES
-from fias.importer.signals import pre_import, post_import
 from fias.importer.source import TableListLoadingError
 from fias.importer.commands import auto_update_data, load_complete_data
 from fias.importer.version import fetch_version_info
