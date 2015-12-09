@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
 import re
@@ -24,20 +24,18 @@ class TableFactory(object):
 
     @staticmethod
     def parse(filename):
-        table = None
         m = table_xml_re.match(filename)
         if m is not None:
             cls = XMLTable
-            table = cls(filename=filename, **m.groupdict())
+            return cls(filename=filename, **m.groupdict())
+
         m = table_dbf_re.match(filename)
         if m is not None:
             cls = DBFTable
-            table = cls(filename=filename, **m.groupdict())
+            return cls(filename=filename, **m.groupdict())
+
         m = table_dbt_re.match(filename)
         if m is not None:
             return None
 
-        if table is None:
-            raise BadTableNameError('Wrong tablename `{0}`'.format(filename))
-
-        return table
+        raise BadTableNameError('Wrong tablename `{0}`'.format(filename))

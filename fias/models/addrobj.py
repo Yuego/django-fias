@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
 import six
@@ -34,7 +34,7 @@ class AddrObj(Common):
     shortname = models.CharField(max_length=10, db_index=True)
     aolevel = models.PositiveSmallIntegerField(db_index=True)
 
-    #KLADE
+    # KLADE
     regioncode = models.CharField(max_length=2)
     autocode = models.CharField(max_length=1)
     areacode = models.CharField(max_length=3)
@@ -45,7 +45,7 @@ class AddrObj(Common):
     extrcode = models.CharField(max_length=4)
     sextcode = models.CharField(max_length=3)
 
-    #KLADR
+    # KLADR
     code = models.CharField(max_length=17, blank=True, null=True)
     plaincode = models.CharField(max_length=15, blank=True, null=True)
 

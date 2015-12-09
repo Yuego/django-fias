@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
 from fias.models import Version
@@ -7,6 +7,7 @@ from fias.importer.signals import pre_load, post_load
 from fias.importer.table import TableFactory
 
 from .wrapper import SourceWrapper
+
 
 class TableListLoadingError(Exception):
     pass
