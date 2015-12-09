@@ -61,7 +61,7 @@ class AddrObj(Common):
 
         if not self.parentguid or self.aolevel <= 1 or depth <= 0:
             if formal:
-               return self.get_formal_name()
+                return self.get_formal_name()
             return self.get_natural_name()
         else:
             parent = AddrObj.objects.get(pk=self.parentguid)
