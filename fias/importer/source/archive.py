@@ -48,7 +48,7 @@ class LocalArchiveTableList(TableList):
             archive = rarfile.RarFile(source)
         except (rarfile.NotRarFile, rarfile.BadRarFile) as e:
             raise BadArchiveError('Archive: `{0}`, ver: `{1}` corrupted'
-                                  ' or is not rar-archive'.format(self._src))
+                                  ' or is not rar-archive'.format(source))
 
         if not archive.namelist():
             raise BadArchiveError('Archive: `{0}`, ver: `{1}` is empty'
