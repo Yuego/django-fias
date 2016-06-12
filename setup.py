@@ -6,17 +6,7 @@ import sys
 from fias.version import __version__
 
 sys.path.insert(0, '..')
-PY3 = sys.version_info[0] == 3
 
-extra_requirements = []
-if PY3:
-    extra_requirements = [
-        'suds-jurko>=0.6',
-    ]
-else:
-    extra_requirements = [
-        'suds>=0.4',
-    ]
 
 setup(
     name='django-fias',
@@ -33,12 +23,13 @@ setup(
     install_requires=[
         'django>=1.7',
         'django_select2>=5.3.0',
+        'zeep>=0.8.0',
         'rarfile',
         'six',
         'lxml',
         'unrar',
         'dbfread>=2.0.0',
-    ] + extra_requirements,
+    ],
     packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,
     classifiers=[
