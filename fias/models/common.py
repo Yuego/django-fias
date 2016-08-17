@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import
 from django.db import models
 from fias.fields import UUIDField
 
-__all__ = ['Common']
+__all__ = ['Common', 'June2016Update']
 
 
 class Common(models.Model):
@@ -25,4 +25,13 @@ class Common(models.Model):
     updatedate = models.DateField()
     startdate = models.DateField()
     enddate = models.DateField()
-    normdoc = UUIDField(blank=True, null=True, auto=False)
+    normdoc = UUIDField(blank=True, null=True)
+
+
+class June2016Update(Common):
+
+    class Meta:
+        abstract = True
+
+    cadnum = models.CharField(max_length=100, blank=True, null=True)
+    divtype = models.CharField(max_length=1, default=0)

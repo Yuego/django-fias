@@ -8,13 +8,13 @@ from django.db import models
 
 from fias.config import FIAS_DATABASE_ALIAS
 from fias.fields import UUIDField
-from fias.models.common import Common
+from fias.models.common import June2016Update
 
 
 __all__ = ['AddrObj']
 
 @python_2_unicode_compatible
-class AddrObj(Common):
+class AddrObj(June2016Update):
 
     class Meta:
         app_label = 'fias'
@@ -25,10 +25,10 @@ class AddrObj(Common):
         ordering = ['aolevel', 'formalname']
 
     aoguid = UUIDField(primary_key=True)
-    parentguid = UUIDField(blank=True, null=True, auto=False, db_index=True)
+    parentguid = UUIDField(blank=True, null=True, db_index=True)
     aoid = UUIDField(db_index=True, unique=True)
-    previd = UUIDField(blank=True, null=True, auto=False)
-    nextid = UUIDField(blank=True, null=True, auto=False)
+    previd = UUIDField(blank=True, null=True)
+    nextid = UUIDField(blank=True, null=True)
 
     formalname = models.CharField(max_length=120, db_index=True)
     offname = models.CharField(max_length=120, blank=True, null=True)
