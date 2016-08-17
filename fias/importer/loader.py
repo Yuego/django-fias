@@ -60,6 +60,21 @@ class TableLoader(object):
 
         return validators.get(table.name, lambda x, **kwargs: True)(item, today=self.today)
 
+    def validate_double_values(self,model,pklist,objects):
+        if any(model.objects.filter(pk__in=list(pklist))):
+            existing_items = model.objects.filter(pk__in=list(pklist))
+            drop_items = []
+            for potential_drop in objects:
+                for single_existing in existing_items:
+                    if potential_drop.pk == single_existing.pk:
+                        drop_items.append(potential_drop)
+                        self.skip_counter += 1
+                        self.counter -= 1
+            for drop_item in drop_items:
+                # rewrite as we consider the latter would be the newer.
+                drop_item.save()
+                objects.remove(drop_item)
+
     @staticmethod
     def create(table, objects):
         table.model.objects.bulk_create(objects)
@@ -75,6 +90,7 @@ class TableLoader(object):
     def do_load(self, tablelist, table):
         bar = LoadingBar(table=table.name, filename=table.filename)
 
+        pklist = set()
         objects = set()
         for item in table.rows(tablelist=tablelist):
             if not self.validate(table, item):
@@ -83,13 +99,17 @@ class TableLoader(object):
 
             objects.add(item)
             self.counter += 1
+            pklist.add(item.pk)
 
             if self.counter and self.counter % self.limit == 0:
+                self.validate_double_values(table.model,pklist,objects)
                 self.create(table, objects)
                 objects.clear()
+                pklist.clear()
                 bar.update(loaded=self.counter)
 
         if objects:
+            self.validate_double_values(table.model,pklist,objects)
             self.create(table, objects)
             bar.update(loaded=self.counter)
 
