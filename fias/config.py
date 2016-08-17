@@ -10,7 +10,7 @@ from fias.weights import weights
 _DEFAULT = ('normdoc', 'landmark', 'houseint', 'house')
 
 TABLES = ['socrbase', 'addrobj']
-TABLES.extend([x.lower() for x in list(getattr(settings, 'FIAS_TABLES', [])) if x.lower() in _DEFAULT])
+TABLES.extend([x.lower() for x in set(getattr(settings, 'FIAS_TABLES', [])) if x.lower() in _DEFAULT])
 
 DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
 
