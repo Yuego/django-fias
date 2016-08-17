@@ -4,6 +4,6 @@ rarfile
 six
 lxml
 unrar
-suds-jurko>=0.4
+zeep
 dbfread>=2.0.0
 progress
