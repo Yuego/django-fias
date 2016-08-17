@@ -29,6 +29,24 @@
 * `dbfread <https://github.com/olemb/dbfread>`_ Маленькая библиотека для работы с DBF. Для python3.3+ пока что нужно использовать мой `форк<https://github.com/Yuego/dbfread>`_
 
 
+Обновление 0.6.1 до 1.0.0
+=========================
+
+Обновите django-fias до версии 0.6.2, а django до версии 1.7 или выше.
+Смигрируйте базу данных::
+
+    python manage.py migrate fias 0001 --fake
+    python manage.py migrate fias
+
+Обновите django-fias до версии 1.0.0
+Обновите все зависимости до актуальных версий (в частности django-select2 до версии не ниже 5.3.0).
+Обновите статические файлы::
+
+    python manage.py collectstatic
+
+
+Обновите настройки django-fias (см. fias/config.py).
+
 Установка
 ============
 

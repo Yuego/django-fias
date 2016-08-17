@@ -6,14 +6,14 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 
 from fias.fields import UUIDField
-from fias.models.common import Common
+from fias.models.common import June2016Update
 
 
 __all__ = ['AddrObj']
 
 
 @python_2_unicode_compatible
-class AddrObj(Common):
+class AddrObj(June2016Update):
 
     class Meta:
         app_label = 'fias'

@@ -19,3 +19,5 @@ class LandMark(Common):
     aoguid = UUIDField()
 
     location = models.TextField()
+
+    cadnum = models.CharField(max_length=100, blank=True, null=True)

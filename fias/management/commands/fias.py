@@ -18,7 +18,7 @@ from fias.models import Status
 
 class Command(BaseCommand):
     help = 'Fill or update FIAS database'
-    usage_str = 'Usage: ./manage.py fias [--src <path|filename|url|AUTO> [--force] [--i-know-what-i-do]]'\
+    usage_str = 'Usage: ./manage.py fias [--src <path|filename|url|AUTO> [--truncate] [--i-know-what-i-do]]'\
                 ' [--update [--skip]]'\
                 ' [--format <xml|dbf>] [--limit=<N>] [--tables=<{0}>]'\
                 ' [--update-version-info <yes|no>]'\
