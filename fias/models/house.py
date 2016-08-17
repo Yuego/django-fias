@@ -4,12 +4,12 @@ from __future__ import unicode_literals, absolute_import
 from django.db import models
 
 from fias.fields import UUIDField
-from fias.models.common import Common
+from fias.models.common import Common, June2016Update
 
 __all__ = ['House', 'HouseInt']
 
 
-class House(Common):
+class House(June2016Update):
 
     class Meta:
         app_label = 'fias'
@@ -25,6 +25,8 @@ class House(Common):
     houseid = UUIDField()
 
     statstatus = models.PositiveSmallIntegerField()
+
+    regioncode = models.CharField(max_length=2, blank=True, null=True)
 
     counter = models.IntegerField()
 

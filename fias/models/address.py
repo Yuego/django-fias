@@ -78,7 +78,6 @@ class FIASHouse(models.Model):
     apartment = models.CharField(_('apartment'), null=True, blank=True)
 
 
-
 class GetAddressMixin(object):
 
     def _get_full_address(self):
