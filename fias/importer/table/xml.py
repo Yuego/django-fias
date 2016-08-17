@@ -33,7 +33,6 @@ class XMLIterator(TableIterator):
 
         self._context = etree.iterparse(self._fd)
 
-
     def format_row(self, row):
         for key, value in row.items():
             key = key.lower()
