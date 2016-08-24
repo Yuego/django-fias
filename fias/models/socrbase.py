@@ -10,20 +10,28 @@ __all__ = ['SocrBase']
 
 @python_2_unicode_compatible
 class SocrBase(models.Model):
-
+    """
+    Информация по типам адресных объектов в БД ФИАС
+    """
     class Meta:
         app_label = 'fias'
+        verbose_name = 'Тип адресного объекта'
+        verbose_name_plural = 'Типы адресных объектов'
         index_together = (
             ('level', 'scname'),
         )
         ordering = ['level', 'scname']
 
-    level = models.PositiveSmallIntegerField(_('level'))
-    scname = models.CharField(max_length=10, default=" ")
-    socrname = models.CharField(max_length=50, default=" ")
-    kod_t_st = models.PositiveIntegerField(primary_key=True)
+    level = models.PositiveSmallIntegerField('Уровень адресного объекта')
+    scname = models.CharField('Краткое наименование типа объекта', max_length=10, default=" ")
+    socrname = models.CharField('Полное наименование типа объекта', max_length=50, default=" ")
+    kod_t_st = models.PositiveIntegerField('Ключевое поле', primary_key=True)
 
-    item_weight = models.PositiveSmallIntegerField(default=64)
+    item_weight = models.PositiveSmallIntegerField('Вес типа объекта', default=64,
+                                                   help_text='Используется для сортировки результатов поиска'
+                                                             ' с помощью Sphinx. Допустимые значения 1-128.'
+                                                             ' Чем больше число, тем выше объекты данного'
+                                                             ' типа в поиске.')
 
     def __str__(self):
         return self.socrname

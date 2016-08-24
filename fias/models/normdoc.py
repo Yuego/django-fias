@@ -2,12 +2,14 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 from fias.fields import UUIDField
 
 __all__ = ['NormDoc', 'NDocType']
 
 
+@python_2_unicode_compatible
 class NDocType(models.Model):
     """
     Состав и структура файла с информацией
@@ -21,15 +23,23 @@ class NDocType(models.Model):
     ndtypeid = models.PositiveIntegerField(primary_key=True, verbose_name='Идентификатор записи (ключ)')
     name = models.CharField('Наименование типа нормативного документа', max_length=250)
 
+    def __str__(self):
+        return self.name
+
 
 class NormDoc(models.Model):
-
+    """
+    Информация по сведениям по нормативным документам,
+    являющимся основанием присвоения адресному элементу наименования в БД ФИАС
+    """
     class Meta:
         app_label = 'fias'
+        verbose_name = 'Нормативный документ'
+        verbose_name_plural = 'Нормативные документы'
 
-    normdocid = UUIDField(primary_key=True)
-    docname = models.TextField(blank=True, null=True)
-    docdate = models.DateField(blank=True, null=True)
-    docnum = models.CharField(max_length=20, blank=True, null=True)
-    doctype = models.PositiveIntegerField()
-    docimgid = models.PositiveIntegerField(blank=True, null=True)
+    normdocid = UUIDField(primary_key=True, verbose_name='Идентификатор нормативного документа')
+    docname = models.TextField('Наименование документа', blank=True, null=True)
+    docdate = models.DateField('Дата документа', blank=True, null=True)
+    docnum = models.CharField('Номер документа', max_length=20, blank=True, null=True)
+    doctype = models.PositiveIntegerField('Тип документа')
+    docimgid = models.PositiveIntegerField('Идентификатор образа (внешний ключ)', blank=True, null=True)

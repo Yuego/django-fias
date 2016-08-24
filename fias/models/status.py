@@ -2,6 +2,7 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 __all__ = [
     'ActStat', 'CenterSt', 'CurentSt',
@@ -10,6 +11,7 @@ __all__ = [
 ]
 
 
+@python_2_unicode_compatible
 class ActStat(models.Model):
     """
     Информация по статусу актуальности в БД ФИАС
@@ -22,7 +24,11 @@ class ActStat(models.Model):
     actstatid = models.PositiveIntegerField(primary_key=True, verbose_name='Идентификатор статуса (ключ)')
     name = models.CharField('Наименование', max_length=100)
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class CenterSt(models.Model):
     """
     Информация по статусу центра в БД ФИАС
@@ -35,7 +41,11 @@ class CenterSt(models.Model):
     centerstid = models.PositiveIntegerField(primary_key=True, verbose_name='Идентификатор статуса')
     name = models.CharField('Наименование', max_length=100)
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class CurentSt(models.Model):
     """
     Информация по статусу актуальности КЛАДР 4.0 в БД ФИАС
@@ -48,7 +58,11 @@ class CurentSt(models.Model):
     curentstid = models.PositiveIntegerField(primary_key=True, verbose_name='Идентификатор статуса (ключ)')
     name = models.CharField('Наименование', max_length=100)
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class EstStat(models.Model):
     """
     Информация по признакам владения в БД ФИАС
@@ -62,7 +76,11 @@ class EstStat(models.Model):
     name = models.CharField('Наименование', max_length=20)
     shortname = models.CharField('Краткое наименование', max_length=20, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class HSTStat(models.Model):
     """
     Информация по статусу состояния домов  в БД ФИАС
@@ -75,7 +93,11 @@ class HSTStat(models.Model):
     housestid = models.PositiveIntegerField(primary_key=True, verbose_name='Идентификатор статуса')
     name = models.CharField('Наименование', max_length=60)
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class IntvStat(models.Model):
     """
     Информация по статусу интервалов домов в БД ФИАС
@@ -89,7 +111,11 @@ class IntvStat(models.Model):
                                              verbose_name='Идентификатор статуса (обычный, четный, нечетный)')
     name = models.CharField('Наименование', max_length=60)
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class OperStat(models.Model):
     """
     Информация по статусу действия в БД ФИАС
@@ -102,7 +128,11 @@ class OperStat(models.Model):
     operstatid = models.PositiveIntegerField(primary_key=True, verbose_name='Идентификатор статуса (ключ)')
     name = models.CharField('Наименование', max_length=100)
 
+    def __str__(self):
+        return self.name
 
+
+@python_2_unicode_compatible
 class StrStat(models.Model):
     """
     Информация по признакам строения в БД ФИАС
@@ -115,3 +145,6 @@ class StrStat(models.Model):
     strstatid = models.PositiveIntegerField('Признак строения', primary_key=True)
     name = models.CharField('Наименование', max_length=20)
     shortname = models.CharField('Краткое наименование', max_length=20, blank=True, null=True)
+
+    def __str__(self):
+        return self.name
