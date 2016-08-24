@@ -107,7 +107,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         st.save()
 
 
-def auto_update_data(skip=False, data_format='xml', limit=1000):
+def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None):
     min_version = Status.objects.filter(table__in=get_table_names(None)).aggregate(Min('ver'))['ver__min']
     min_ver = Version.objects.get(ver=min_version)
 
@@ -116,7 +116,7 @@ def auto_update_data(skip=False, data_format='xml', limit=1000):
             pre_update.send(sender=object.__class__, before=min_ver, after=version)
 
             url = getattr(version, 'delta_{0}_url'.format(data_format))
-            update_data(path=url, version=version, skip=skip, data_format=data_format, limit=limit)
+            update_data(path=url, version=version, skip=skip, data_format=data_format, limit=limit, tables=tables)
 
             post_update.send(sender=object.__class__, before=min_ver, after=version)
             min_ver = version

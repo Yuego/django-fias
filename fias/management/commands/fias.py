@@ -105,14 +105,14 @@ class Command(BaseCommand):
         if src or remote:
 
             try:
-                load_complete_data(path=src, data_format=fmt, truncate=truncate, limit=limit)
+                load_complete_data(path=src, data_format=fmt, truncate=truncate, limit=limit, tables=tables)
             except TableListLoadingError as e:
                 self.error(str(e))
 
         if update:
 
             try:
-                auto_update_data(skip=skip, data_format=fmt, limit=limit)
+                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables)
             except TableListLoadingError as e:
                 self.error(str(e))
 
