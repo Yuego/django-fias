@@ -39,7 +39,7 @@ setup(
         'six',
         'lxml',
         'unrar',
-        'dbfread>=2.0.0',
+        'dbfread>=2.0.5',
         'progress',
     ] + extra_requirements,
     packages=find_packages(exclude=('tests', 'tests.*')),
