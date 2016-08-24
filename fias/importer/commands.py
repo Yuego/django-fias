@@ -39,7 +39,7 @@ def get_tablelist(path, version=None, data_format='xml'):
 
 
 def get_table_names(tables):
-    return tables if tables is not None else TABLES
+    return tables if tables else TABLES
 
 
 def load_complete_data(path=None,
