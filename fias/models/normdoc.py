@@ -41,5 +41,5 @@ class NormDoc(models.Model):
     docname = models.TextField('Наименование документа', blank=True, null=True)
     docdate = models.DateField('Дата документа', blank=True, null=True)
     docnum = models.CharField('Номер документа', max_length=20, blank=True, null=True)
-    doctype = models.PositiveIntegerField('Тип документа')
+    doctype = models.ForeignKey(NDocType, verbose_name='Тип документа')
     docimgid = models.PositiveIntegerField('Идентификатор образа (внешний ключ)', blank=True, null=True)

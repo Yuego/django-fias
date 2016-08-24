@@ -5,6 +5,7 @@ from django.db import models
 
 from fias.fields import UUIDField
 from fias.models.common import Common, June2016Update
+from fias.models.status import EstStat, IntvStat, StrStat
 
 __all__ = ['House', 'HouseInt']
 
@@ -17,10 +18,10 @@ class House(June2016Update):
     aoguid = UUIDField()
 
     housenum = models.CharField(max_length=20, blank=True, null=True)
-    eststatus = models.PositiveSmallIntegerField(default=0)
+    eststatus = models.ForeignKey(EstStat)
     buildnum = models.CharField(max_length=10, blank=True, null=True)
     strucnum = models.CharField(max_length=10, blank=True, null=True)
-    strstatus = models.PositiveSmallIntegerField()
+    strstatus = models.ForeignKey(StrStat)
     houseguid = UUIDField(primary_key=True)
     houseid = UUIDField()
 
@@ -43,7 +44,7 @@ class HouseInt(Common):
     intstart = models.PositiveIntegerField()
     intend = models.PositiveIntegerField()
 
-    intstatus = models.PositiveIntegerField()
+    intstatus = models.ForeignKey(IntvStat)
 
     counter = models.PositiveIntegerField()
 

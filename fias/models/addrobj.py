@@ -7,6 +7,7 @@ from django.db import models
 
 from fias.fields import UUIDField
 from fias.models.common import June2016Update
+from fias.models.status import OperStat
 
 
 __all__ = ['AddrObj']
@@ -51,7 +52,7 @@ class AddrObj(June2016Update):
 
     actstatus = models.BooleanField(default=False)
     centstatus = models.PositiveSmallIntegerField()
-    operstatus = models.PositiveSmallIntegerField()
+    operstatus = models.ForeignKey(OperStat)
     currstatus = models.PositiveSmallIntegerField()
 
     livestatus = models.BooleanField(default=False)
