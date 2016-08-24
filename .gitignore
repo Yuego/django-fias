@@ -1,4 +1,4 @@
 
 test_project/static/*
 
-*.sqlite
+*.sqlite*
