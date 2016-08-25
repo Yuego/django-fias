@@ -31,7 +31,7 @@ class Stead(June2016Update):
     number = models.CharField(max_length=120, blank=True, null=True)
     regioncode = models.CharField(max_length=2)
 
-    operstatus = models.ForeignKey(OperStat)
+    operstatus = models.ForeignKey(OperStat, default=0)
     livestatus = models.BooleanField(default=False)
 
     def __str__(self):

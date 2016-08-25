@@ -51,9 +51,9 @@ class AddrObj(June2016Update):
     plaincode = models.CharField(max_length=15, blank=True, null=True)
 
     actstatus = models.BooleanField(default=False)
-    centstatus = models.ForeignKey(CenterSt)
-    operstatus = models.ForeignKey(OperStat)
-    currstatus = models.ForeignKey(CurentSt)
+    centstatus = models.ForeignKey(CenterSt, default=0)
+    operstatus = models.ForeignKey(OperStat, default=0)
+    currstatus = models.ForeignKey(CurentSt, default=0)
 
     livestatus = models.BooleanField(default=False)
 

@@ -18,10 +18,10 @@ class House(June2016Update):
     aoguid = UUIDField()
 
     housenum = models.CharField(max_length=20, blank=True, null=True)
-    eststatus = models.ForeignKey(EstStat)
+    eststatus = models.ForeignKey(EstStat, default=0)
     buildnum = models.CharField(max_length=10, blank=True, null=True)
     strucnum = models.CharField(max_length=10, blank=True, null=True)
-    strstatus = models.ForeignKey(StrStat)
+    strstatus = models.ForeignKey(StrStat, default=0)
     houseguid = UUIDField(primary_key=True)
     houseid = UUIDField()
 
@@ -44,7 +44,7 @@ class HouseInt(Common):
     intstart = models.PositiveIntegerField()
     intend = models.PositiveIntegerField()
 
-    intstatus = models.ForeignKey(IntvStat)
+    intstatus = models.ForeignKey(IntvStat, default=0)
 
     counter = models.PositiveIntegerField()
 

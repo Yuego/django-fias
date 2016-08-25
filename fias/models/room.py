@@ -41,7 +41,7 @@ class Room(models.Model):
 
     normdoc = UUIDField(blank=True, null=True)
 
-    operstatus = models.ForeignKey(OperStat)
+    operstatus = models.ForeignKey(OperStat, default=0)
 
     cadnum = models.CharField(max_length=100, blank=True, null=True)
     roomcadnum = models.CharField(max_length=100, blank=True, null=True)

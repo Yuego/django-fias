@@ -6,7 +6,7 @@ from lxml import etree
 
 from django.db import models
 from fias.fields import UUIDField
-from .table import BadTableError, Table, TableIterator
+from .table import BadTableError, Table, TableIterator, ParentLookupException
 
 _bom_header = b'\xef\xbb\xbf'
 
@@ -16,16 +16,16 @@ class XMLIterator(TableIterator):
     def __init__(self, fd, model):
         super(XMLIterator, self).__init__(fd=fd, model=model)
 
-        """
         self.related_fields = dict({
-            (f.name, f) for f in self.model._meta.get_fields()
+            (f.name, f.rel.to) for f in self.model._meta.get_fields()
             if f.one_to_one or f.many_to_one
         })
-        """
+
         self.uuid_fields = dict({
             (f.name, f) for f in self.model._meta.get_fields()
             if isinstance(f, UUIDField)
         })
+
         self.date_fields = dict({
             (f.name, f) for f in self.model._meta.get_fields()
             if isinstance(f, models.DateField)
@@ -40,13 +40,14 @@ class XMLIterator(TableIterator):
                 yield (key, value or None)
             elif key in self.date_fields:
                 yield (key, datetime.datetime.strptime(value, "%Y-%m-%d").date())
-            # elif key in self.related_fields:
-            #     field = self.related_fields[key]
-            #     rel = field.rel.to
-            #     try:
-            #         rel.objects.get(pk=value)
-            #     except rel.DoesNotExist:
-            #         raise ParentLookupException('{0} with key `{1}` not found. Skipping house...'.format(rel.__name__, value))
+            #elif key in self.related_fields:
+            #    model = self.related_fields[key]
+            #    try:
+            #        model.objects.get(pk=value)
+            #    except model.DoesNotExist:
+            #        raise ParentLookupException('{0} with key `{1}` not found. Skipping house...'.format(model.__name__, value))
+            elif key in self.related_fields:
+                yield ('{0}_id'.format(key), value)
             else:
                 yield (key, value)
 
