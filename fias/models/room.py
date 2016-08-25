@@ -14,7 +14,7 @@ __all__ = ['Room']
 @python_2_unicode_compatible
 class Room(models.Model):
     """
-    Сведения о помещениях
+    Классификатор помещений
     """
     class Meta:
         app_label = 'fias'

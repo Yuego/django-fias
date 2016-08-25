@@ -3,6 +3,8 @@ from __future__ import unicode_literals, absolute_import
 
 from django.contrib import admin
 from fias.models import (
+    AddrObj, House, HouseInt,
+    LandMark, Room, Stead,
     NormDoc,
     SocrBase,
     NDocType,
@@ -47,6 +49,40 @@ class SocrBaseAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(AddrObj)
+class AddrObjAdmin(ViewAdmin):
+    list_display = ('aoguid', 'shortname', 'offname', 'aolevel', 'code')
+
+
+@admin.register(House)
+class HouseAdmin(ViewAdmin):
+    list_display = ('aoguid', 'houseguid', 'housenum', 'buildnum', 'strucnum')
+    raw_id_fields = ('aoguid',)
+
+
+@admin.register(HouseInt)
+class HouseIntAdmin(ViewAdmin):
+    list_display = ('aoguid', 'intguid', 'houseintid', 'intstart', 'intend')
+    raw_id_fields = ('aoguid',)
+
+
+@admin.register(LandMark)
+class LandMarkAdmin(ViewAdmin):
+    list_display = ('aoguid', 'landguid', 'landid')
+    raw_id_fields = ('aoguid',)
+
+
+@admin.register(Room)
+class RoomAdmin(ViewAdmin):
+    list_display = ('houseguid', 'roomguid', 'roomid', 'flatnumber', 'flattype')
+    raw_id_fields = ('houseguid',)
+
+
+@admin.register(Stead)
+class SteadAdmin(ViewAdmin):
+    list_display = ('steadguid', 'number', 'regioncode')
+
+
 @admin.register(NDocType)
 class NDocTypeAdmin(ViewAdmin):
     list_display = ('ndtypeid', 'name')
@@ -56,7 +92,7 @@ class NDocTypeAdmin(ViewAdmin):
 @admin.register(NormDoc)
 class NormDocAdmin(ViewAdmin):
     list_display = ('normdocid', 'docdate', 'docnum')
-    list_display_links = ('docnum',)
+    list_display_links = ('normdocid',)
 
 
 @admin.register(ActStat)

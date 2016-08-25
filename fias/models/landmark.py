@@ -11,9 +11,13 @@ __all__ = ['LandMark']
 
 
 class LandMark(Common):
-
+    """
+    Описание мест расположения имущественных объектов
+    """
     class Meta:
         app_label = 'fias'
+        verbose_name = 'Место расположения имущественного объекта'
+        verbose_name_plural = 'Места расположения имущественных объектов'
 
     landid = UUIDField('Уникальный идентификатор записи ориентира', unique=True)
     landguid = UUIDField('Глобальный уникальный идентификатор ориентира', primary_key=True)

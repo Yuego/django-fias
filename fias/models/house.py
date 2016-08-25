@@ -13,8 +13,7 @@ __all__ = ['House', 'HouseInt']
 
 class House(June2016Update):
     """
-    Информация по номерам домов улиц городов
-    и населенных пунктов в БД ФИАС
+    Сведения по номерам домов улиц городов и населенных пунктов
     """
     class Meta:
         app_label = 'fias'
@@ -40,9 +39,13 @@ class House(June2016Update):
 
 
 class HouseInt(Common):
-
+    """
+    Интервалы домов
+    """
     class Meta:
         app_label = 'fias'
+        verbose_name = 'Интервал домов'
+        verbose_name_plural = 'Интервалы домов'
 
     houseintid = UUIDField('Идентификатор записи интервала домов')
     intguid = UUIDField('Глобальный уникальный идентификатор интервала домов', primary_key=True)

@@ -14,7 +14,7 @@ __all__ = [
 @python_2_unicode_compatible
 class ActStat(models.Model):
     """
-    Информация по статусу актуальности в БД ФИАС
+    Статус актуальности ФИАС
     """
     class Meta:
         app_label = 'fias'
@@ -31,7 +31,7 @@ class ActStat(models.Model):
 @python_2_unicode_compatible
 class CenterSt(models.Model):
     """
-    Информация по статусу центра в БД ФИАС
+    Статус центра
     """
     class Meta:
         app_label = 'fias'
@@ -48,7 +48,7 @@ class CenterSt(models.Model):
 @python_2_unicode_compatible
 class CurentSt(models.Model):
     """
-    Информация по статусу актуальности КЛАДР 4.0 в БД ФИАС
+    Статус актуальности КЛАДР 4.0
     """
     class Meta:
         app_label = 'fias'
@@ -65,7 +65,7 @@ class CurentSt(models.Model):
 @python_2_unicode_compatible
 class EstStat(models.Model):
     """
-    Информация по признакам владения в БД ФИАС
+    Признак владения
     """
     class Meta:
         app_label = 'fias'
@@ -83,7 +83,7 @@ class EstStat(models.Model):
 @python_2_unicode_compatible
 class HSTStat(models.Model):
     """
-    Информация по статусу состояния домов  в БД ФИАС
+    Статус состояния домов
     """
     class Meta:
         app_label = 'fias'
@@ -100,7 +100,7 @@ class HSTStat(models.Model):
 @python_2_unicode_compatible
 class IntvStat(models.Model):
     """
-    Информация по статусу интервалов домов в БД ФИАС
+    Статус интервалов домов
     """
     class Meta:
         app_label = 'fias'
@@ -118,7 +118,7 @@ class IntvStat(models.Model):
 @python_2_unicode_compatible
 class OperStat(models.Model):
     """
-    Информация по статусу действия в БД ФИАС
+    Статус действия
     """
     class Meta:
         app_label = 'fias'
@@ -135,7 +135,7 @@ class OperStat(models.Model):
 @python_2_unicode_compatible
 class StrStat(models.Model):
     """
-    Информация по признакам строения в БД ФИАС
+    Признак строения
     """
     class Meta:
         app_label = 'fias'

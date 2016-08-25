@@ -11,7 +11,7 @@ __all__ = ['SocrBase']
 @python_2_unicode_compatible
 class SocrBase(models.Model):
     """
-    Информация по типам адресных объектов в БД ФИАС
+    Тип адресного объекта
     """
     class Meta:
         app_label = 'fias'

@@ -15,9 +15,13 @@ __all__ = ['AddrObj']
 
 @python_2_unicode_compatible
 class AddrObj(June2016Update):
-
+    """
+    Классификатор адресообразующих элементов
+    """
     class Meta:
         app_label = 'fias'
+        verbose_name = 'Адресообразующий элемент'
+        verbose_name_plural = 'Адресообразующие элементы'
         index_together = (
             ('aolevel', 'shortname'),
             ('shortname', 'formalname'),
