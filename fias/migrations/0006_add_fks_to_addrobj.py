@@ -18,4 +18,14 @@ class Migration(migrations.Migration):
             name='operstatus',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fias.OperStat'),
         ),
+        migrations.AlterField(
+            model_name='addrobj',
+            name='centstatus',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fias.CenterSt'),
+        ),
+        migrations.AlterField(
+            model_name='addrobj',
+            name='currstatus',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fias.CurentSt'),
+        ),
     ]
