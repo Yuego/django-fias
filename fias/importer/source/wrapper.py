@@ -10,7 +10,7 @@ class SourceWrapper(object):
     source = None
 
     def __init__(self, source, **kwargs):
-        self.source = source
+        self.source = os.path.abspath(source)
 
     def get_date_info(self, filename):
         raise NotImplementedError()
@@ -34,7 +34,10 @@ class DirectoryWrapper(SourceWrapper):
         return datetime.datetime.fromtimestamp(st.st_mtime)
 
     def get_file_list(self):
-        return [f for f in os.listdir(self.source) if os.path.isfile(os.path.join(self.source, f))]
+        return [f for f in os.listdir(self.source) if (
+            not f.startswith('.') and
+            os.path.isfile(os.path.join(self.source, f))
+        )]
 
     def get_full_path(self, filename):
         return os.path.join(self.source, filename)
