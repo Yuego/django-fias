@@ -7,6 +7,9 @@ from .normdoc import *
 from .addrobj import AddrObj
 from .house import House, HouseInt
 from .landmark import LandMark
+from .room import *
+from .stead import *
 from .status import *
+
 from .address import *
 from .sphinx import AddrObjIndex

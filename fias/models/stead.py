@@ -9,6 +9,9 @@ from fias.models.common import June2016Update
 from fias.models.status import OperStat
 
 
+__all__ = ['Stead']
+
+
 @python_2_unicode_compatible
 class Stead(June2016Update):
     """
