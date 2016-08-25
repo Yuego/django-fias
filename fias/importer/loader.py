@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import
 import datetime
 from django.conf import settings
 from django import db
+from django.db import IntegrityError
 from progress.helpers import WritelnMixin
 from sys import stderr
 
@@ -60,9 +61,26 @@ class TableLoader(object):
 
         return validators.get(table.name, lambda x, **kwargs: True)(item, today=self.today)
 
-    @staticmethod
-    def create(table, objects):
-        table.model.objects.bulk_create(objects)
+    def regressive_create(self, table, objects):
+        count = len(objects)
+        batch_len = count // 3 or 1
+        objects = list(objects)
+
+        for i in range(0, batch_len):
+            batch = objects[i*batch_len:(i+1)*batch_len]
+            try:
+                table.model.objects.bulk_create(batch)
+            except IntegrityError:
+                if batch_len <= 1:
+                    continue
+                else:
+                    self.regressive_create(table, batch)
+
+    def create(self, table, objects):
+        try:
+            table.model.objects.bulk_create(objects)
+        except IntegrityError as e:
+            self.regressive_create(table, objects)
 
         if settings.DEBUG:
             db.reset_queries()
