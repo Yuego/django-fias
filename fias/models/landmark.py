@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import
 from django.db import models
 
 from fias.fields import UUIDField
+from fias.models.addrobj import AddrObj
 from fias.models.common import Common
 
 __all__ = ['LandMark']
@@ -14,10 +15,11 @@ class LandMark(Common):
     class Meta:
         app_label = 'fias'
 
-    landid = UUIDField()
-    landguid = UUIDField(primary_key=True)
-    aoguid = UUIDField()
+    landid = UUIDField('Уникальный идентификатор записи ориентира', unique=True)
+    landguid = UUIDField('Глобальный уникальный идентификатор ориентира', primary_key=True)
+    aoguid = models.ForeignKey(AddrObj, verbose_name='Идентификатор записи родительского объекта',
+                               help_text='(улица, город, населенный пункт и т.п.)')
 
-    location = models.TextField()
+    location = models.TextField('Месторасположение ориентира')
 
-    cadnum = models.CharField(max_length=100, blank=True, null=True)
+    cadnum = models.CharField('Кадастровый номер', max_length=100, blank=True, null=True)

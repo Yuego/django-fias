@@ -22,17 +22,19 @@ class Stead(June2016Update):
         verbose_name = 'Земельный участок'
         verbose_name_plural = 'Земельные участки'
 
-    steadguid = UUIDField(primary_key=True)
-    parentguid = UUIDField(blank=True, null=True, db_index=True)
-    steadid = UUIDField(unique=True)
-    previd = UUIDField(blank=True, null=True)
-    nextid = UUIDField(blank=True, null=True)
+    steadguid = UUIDField('Глобальный уникальный идентификатор адресного объекта (земельного участка)',
+                          primary_key=True)
+    parentguid = UUIDField('Идентификатор объекта родительского объекта', blank=True, null=True, db_index=True)
+    steadid = UUIDField('Уникальный идентификатор записи', unique=True)
+    previd = UUIDField('Идентификатор записи связывания с предыдушей исторической записью', blank=True, null=True)
+    nextid = UUIDField('Идентификатор записи  связывания с последующей исторической записью', blank=True, null=True)
 
-    number = models.CharField(max_length=120, blank=True, null=True)
-    regioncode = models.CharField(max_length=2)
+    number = models.CharField('Номер земельного участка', max_length=120, blank=True, null=True)
+    regioncode = models.CharField('Код региона', max_length=2)
 
-    operstatus = models.ForeignKey(OperStat, default=0)
-    livestatus = models.BooleanField(default=False)
+    operstatus = models.ForeignKey(OperStat, verbose_name='Статус действия над записью – причина появления записи',
+                                   default=0)
+    livestatus = models.BooleanField('Признак действующего адресного объекта', default=False)
 
     def __str__(self):
         return self.number

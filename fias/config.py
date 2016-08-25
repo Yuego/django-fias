@@ -12,7 +12,7 @@ TABLES_STATS = (
     'eststat', 'hststat', 'intvstat',
     'ndoctype', 'operstat', 'strstat'
 )
-TABLES_DEFAULT = ('normdoc', 'landmark', 'houseint', 'house')
+TABLES_DEFAULT = ('normdoc', 'landmark', 'house', 'houseint', 'room', 'stead')
 
 TABLES = TABLES_STATS + ('socrbase', 'addrobj')
 TABLES += tuple(x.lower() for x in TABLES_DEFAULT if x.lower() in list(set(getattr(settings, 'FIAS_TABLES', []))))
