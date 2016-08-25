@@ -9,6 +9,7 @@
     * напрямую с сайта http://fias.nalog.ru в формате XML или DBF
 * Импорт всех существующих справочников и классификаторов ФИАС (с возможностью выборочного импорта)
 * Возможность хранить данные в отдельной БД
+* Все справочники и классификаторы доступны для просмотра в админке Django
 * Поле модели AddressField, предоставляющее в админке Django ajax-поиск адреса
 * Поддержка полнотекстового поиска для поля AddressField (`демо <http://youtu.be/ZVVrxg9-o_4>`_) с помощью:
     * `Sphinx Search Engine <http://sphinxsearch.com>`_ Для Debian, Ubuntu, RHEL, Windows есть `пакеты <http://sphinxsearch.com/downloads/release/>`_
