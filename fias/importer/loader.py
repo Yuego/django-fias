@@ -105,6 +105,8 @@ class TableLoader(object):
         except IntegrityError as e:
             self.regressive_create(table, objects, bar)
 
+        #  Обнуляем индикатор регрессии
+        bar.update(regress_depth=0, regress_len=0)
         if settings.DEBUG:
             db.reset_queries()
 
