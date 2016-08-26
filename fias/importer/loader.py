@@ -173,7 +173,7 @@ class TableUpdater(TableLoader):
                     self.upd_counter += 1
 
             if self.counter and self.counter % self.limit == 0:
-                self.create(table, objects)
+                self.create(table, objects, bar=bar)
                 objects.clear()
                 bar.update(loaded=self.counter)
 
@@ -181,8 +181,7 @@ class TableUpdater(TableLoader):
                 bar.update(updated=self.upd_counter)
 
         if objects:
-            self.create(table, objects)
-            bar.update(loaded=self.counter)
+            self.create(table, objects, bar=bar)
 
         bar.update(loaded=self.counter, updated=self.upd_counter, skipped=self.skip_counter)
         bar.finish()
