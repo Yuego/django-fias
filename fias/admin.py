@@ -51,12 +51,12 @@ class SocrBaseAdmin(admin.ModelAdmin):
 
 @admin.register(AddrObj)
 class AddrObjAdmin(ViewAdmin):
-    list_display = ('aoguid', 'shortname', 'offname', 'aolevel', 'code')
+    list_display = ('offname', 'shortname', 'aolevel', 'code', 'aoguid')
 
 
 @admin.register(House)
 class HouseAdmin(ViewAdmin):
-    list_display = ('aoguid', 'houseguid', 'housenum', 'buildnum', 'strucnum')
+    list_display = ('aoguid', 'housenum', 'buildnum', 'strucnum', 'houseguid')
     raw_id_fields = ('aoguid',)
 
 
@@ -74,7 +74,7 @@ class LandMarkAdmin(ViewAdmin):
 
 @admin.register(Room)
 class RoomAdmin(ViewAdmin):
-    list_display = ('houseguid', 'roomguid', 'roomid', 'flatnumber', 'flattype')
+    list_display = ('houseguid', 'flatnumber', 'flattype', 'roomguid', 'roomid')
     raw_id_fields = ('houseguid',)
 
 
