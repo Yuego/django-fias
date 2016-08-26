@@ -15,13 +15,16 @@ from fias.importer.validators import validators
 class LoadingBar(WritelnMixin):
     file = stderr
 
-    text = 'Table: %(table)s.' \
-           ' Load: %(loaded)d | Upd: %(updated)d | Skip:  %(skipped)d | Regr: %(depth)d[%(stack_str)s]' \
-           ' \tFilename: %(filename)s'
+    text = 'T: %(table)s.' \
+           ' L: %(loaded)d | U: %(updated)d' \
+           ' | S: %(skipped)d[E:%(errors)d]' \
+           ' | R: %(depth)d[%(stack_str)s]' \
+           ' \tFN: %(filename)s'
 
     loaded = 0
     updated = 0
     skipped = 0
+    errors = 0
     depth = 0
     stack = []
     stack_str = 0
@@ -37,19 +40,21 @@ class LoadingBar(WritelnMixin):
             return None
         return getattr(self, key, None)
 
-    def update(self, loaded=0, updated=0, skipped=0, regress_depth=0, regress_len=0):
+    def update(self, loaded=0, updated=0, skipped=0, errors=0, regress_depth=0, regress_len=0, regress_iteration=0):
         if loaded:
             self.loaded = loaded
         if updated:
             self.updated = updated
         if skipped:
             self.skipped = skipped
+        if errors:
+            self.errors = errors
 
         self.depth = regress_depth
         if not self.depth:
             self.stack_str = 0
         else:
-            regress_len = str(regress_len)
+            regress_len = '{0}:{1}'.format(regress_iteration, regress_len)
             stack_len = len(self.stack)
             if stack_len == self.depth:
                 self.stack[self.depth-1] = regress_len
@@ -72,6 +77,7 @@ class TableLoader(object):
         self.counter = 0
         self.upd_counter = 0
         self.skip_counter = 0
+        self.err_counter = 0
         self.today = datetime.date.today()
 
     def validate(self, table, item):
@@ -85,24 +91,25 @@ class TableLoader(object):
         batch_len = count // 3 or 1
         objects = list(objects)
 
-        for i in range(0, batch_len):
-            batch = objects[i*batch_len:(i+1)*batch_len]
-            bar.update(regress_depth=depth, regress_len=batch_len)
+        for i in range(0, batch_len + 1):
+            batch = objects[i * batch_len:(i + 1) * batch_len]
+            bar.update(regress_depth=depth, regress_len=batch_len, regress_iteration=i + 1)
             try:
                 table.model.objects.bulk_create(batch)
             except IntegrityError:
                 if batch_len <= 1:
                     self.counter -= 1
                     self.skip_counter += 1
-                    bar.update(skipped=self.skip_counter)
+                    self.err_counter += 1
+                    bar.update(loaded=self.counter, skipped=self.skip_counter, errors=self.err_counter)
                     continue
                 else:
-                    self.regressive_create(table, batch, bar=bar, depth=depth+1)
+                    self.regressive_create(table, batch, bar=bar, depth=depth + 1)
 
     def create(self, table, objects, bar):
         try:
             table.model.objects.bulk_create(objects)
-        except IntegrityError as e:
+        except IntegrityError:
             self.regressive_create(table, objects, bar)
 
         #  Обнуляем индикатор регрессии
@@ -130,11 +137,10 @@ class TableLoader(object):
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects, bar=bar)
                 objects.clear()
-                bar.update(loaded=self.counter)
+                bar.update(loaded=self.counter, skipped=self.skip_counter)
 
         if objects:
             self.create(table, objects, bar=bar)
-            bar.update(loaded=self.counter)
 
         bar.update(loaded=self.counter, skipped=self.skip_counter)
         bar.finish()
