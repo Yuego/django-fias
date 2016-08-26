@@ -16,12 +16,15 @@ class LoadingBar(WritelnMixin):
     file = stderr
 
     text = 'Table: %(table)s.' \
-           ' Loaded: %(loaded)d | Updated: %(updated)d | Skipped:  %(skipped)d' \
+           ' Load: %(loaded)d | Upd: %(updated)d | Skip:  %(skipped)d | Regr: %(depth)d[%(stack_str)s]' \
            ' \tFilename: %(filename)s'
 
     loaded = 0
     updated = 0
     skipped = 0
+    depth = 0
+    stack = []
+    stack_str = 0
     hide_cursor = False
 
     def __init__(self, message=None, **kwargs):
@@ -34,13 +37,29 @@ class LoadingBar(WritelnMixin):
             return None
         return getattr(self, key, None)
 
-    def update(self, loaded=0, updated=0, skipped=0):
+    def update(self, loaded=0, updated=0, skipped=0, regress_depth=0, regress_len=0):
         if loaded:
             self.loaded = loaded
         if updated:
             self.updated = updated
         if skipped:
             self.skipped = skipped
+
+        self.depth = regress_depth
+        if not self.depth:
+            self.stack_str = 0
+        else:
+            regress_len = str(regress_len)
+            stack_len = len(self.stack)
+            if stack_len == self.depth:
+                self.stack[self.depth-1] = regress_len
+            elif stack_len < self.depth:
+                self.stack.append(regress_len)
+            else:
+                self.stack = self.stack[0:self.depth]
+                self.stack[self.depth-1] = regress_len
+
+            self.stack_str = '/'.join(self.stack)
 
         ln = self.text % self
         self.writeln(ln)
@@ -61,26 +80,30 @@ class TableLoader(object):
 
         return validators.get(table.name, lambda x, **kwargs: True)(item, today=self.today)
 
-    def regressive_create(self, table, objects):
+    def regressive_create(self, table, objects, bar, depth=1):
         count = len(objects)
         batch_len = count // 3 or 1
         objects = list(objects)
 
         for i in range(0, batch_len):
             batch = objects[i*batch_len:(i+1)*batch_len]
+            bar.update(regress_depth=depth, regress_len=batch_len)
             try:
                 table.model.objects.bulk_create(batch)
             except IntegrityError:
                 if batch_len <= 1:
+                    self.counter -= 1
+                    self.skip_counter += 1
+                    bar.update(skipped=self.skip_counter)
                     continue
                 else:
-                    self.regressive_create(table, batch)
+                    self.regressive_create(table, batch, bar=bar, depth=depth+1)
 
-    def create(self, table, objects):
+    def create(self, table, objects, bar):
         try:
             table.model.objects.bulk_create(objects)
         except IntegrityError as e:
-            self.regressive_create(table, objects)
+            self.regressive_create(table, objects, bar)
 
         if settings.DEBUG:
             db.reset_queries()
@@ -103,12 +126,12 @@ class TableLoader(object):
             self.counter += 1
 
             if self.counter and self.counter % self.limit == 0:
-                self.create(table, objects)
+                self.create(table, objects, bar=bar)
                 objects.clear()
                 bar.update(loaded=self.counter)
 
         if objects:
-            self.create(table, objects)
+            self.create(table, objects, bar=bar)
             bar.update(loaded=self.counter)
 
         bar.update(loaded=self.counter, skipped=self.skip_counter)
