@@ -22,7 +22,9 @@ class Command(BaseCommand):
                 ' [--update [--skip]]'\
                 ' [--format <xml|dbf>] [--limit=<N>] [--tables=<{0}>]'\
                 ' [--update-version-info <yes|no>]'\
-                ' [--fill-weights]'.format(','.join(TABLES))
+                ' [--fill-weights]' \
+                ' [--drop-indexes]' \
+                ''.format(','.join(TABLES))
 
     option_list = BaseCommand.option_list + (
         make_option('--src', action='store', dest='src', default=None,
@@ -58,6 +60,8 @@ class Command(BaseCommand):
         make_option('--fill-weights', action='store_true', dest='weights', default=False,
                     help='Fill default weights'),
 
+        make_option('--drop-indexes', action='store_true', dest='drop_indexes', default=False,
+                    help='Drop all table indexes before import and restore after'),
     )
 
     def handle(self, *args, **options):
@@ -97,6 +101,7 @@ class Command(BaseCommand):
         limit = int(options.pop('limit'))
         tables = options.pop('tables')
         tables = set(tables.split(',')) if tables else set()
+        drop_indexes = options.pop('drop_indexes')
 
         if not tables.issubset(set(TABLES)):
             diff = ', '.join(tables.difference(TABLES))
@@ -105,14 +110,17 @@ class Command(BaseCommand):
         if src or remote:
 
             try:
-                load_complete_data(path=src, data_format=fmt, truncate=truncate, limit=limit, tables=tables)
+                load_complete_data(
+                    path=src, data_format=fmt, truncate=truncate,
+                    limit=limit, tables=tables, drop_indexes=drop_indexes
+                )
             except TableListLoadingError as e:
                 self.error(str(e))
 
         if update:
 
             try:
-                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables)
+                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables, drop_indexes=drop_indexes)
             except TableListLoadingError as e:
                 self.error(str(e))
 

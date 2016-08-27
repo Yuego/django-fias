@@ -15,6 +15,12 @@ post_unpack = Signal(providing_args=['archive', 'dst'])
 pre_load = Signal(providing_args=['src'])
 post_load = Signal(providing_args=['wrapper'])
 
+pre_drop_indexes = Signal(providing_args=['table'])
+post_drop_indexes = Signal(providing_args=['table'])
+
+pre_restore_indexes = Signal(providing_args=['table'])
+post_restore_indexes = Signal(providing_args=['table'])
+
 pre_import_table = Signal(providing_args=['table'])
 post_import_table = Signal(providing_args=['table'])
 

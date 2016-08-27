@@ -45,7 +45,9 @@ def get_table_names(tables):
 def load_complete_data(path=None,
                        data_format='xml',
                        truncate=False,
-                       limit=10000, tables=None):
+                       limit=10000, tables=None,
+                       drop_indexes=False,
+                       ):
 
     tablelist = get_tablelist(path=path, data_format=data_format)
     clear = {}
@@ -69,7 +71,7 @@ def load_complete_data(path=None,
                     clear[tbl] = False
 
                 loader = TableLoader(limit=limit)
-                loader.load(tablelist=tablelist, table=table)
+                loader.load(tablelist=tablelist, table=table, drop_indexes=drop_indexes)
 
             st = Status(table=tbl, ver=tablelist.version)
             st.save()
@@ -81,7 +83,7 @@ def load_complete_data(path=None,
     post_import.send(sender=object.__class__, version=tablelist.version)
 
 
-def update_data(path=None, version=None, skip=False, data_format='xml', limit=1000, tables=None):
+def update_data(path=None, version=None, skip=False, data_format='xml', limit=1000, tables=None, drop_indexes=False):
     tablelist = get_tablelist(path=path, version=version, data_format=data_format)
 
     for tbl in get_table_names(tables):
@@ -96,7 +98,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         for table in tablelist.tables[tbl]:
             loader = TableUpdater(limit=limit)
             try:
-                loader.load(tablelist=tablelist, table=table)
+                loader.load(tablelist=tablelist, table=table, drop_indexes=drop_indexes)
             except BadTableError as e:
                 if skip:
                     log.error(str(e))
@@ -107,7 +109,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         st.save()
 
 
-def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None):
+def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None, drop_indexes=False):
     min_version = Status.objects.filter(table__in=get_table_names(None)).aggregate(Min('ver'))['ver__min']
     min_ver = Version.objects.get(ver=min_version)
 
@@ -116,7 +118,11 @@ def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None):
             pre_update.send(sender=object.__class__, before=min_ver, after=version)
 
             url = getattr(version, 'delta_{0}_url'.format(data_format))
-            update_data(path=url, version=version, skip=skip, data_format=data_format, limit=limit, tables=tables)
+            update_data(
+                path=url, version=version, skip=skip,
+                data_format=data_format, limit=limit,
+                tables=tables, drop_indexes=drop_indexes,
+            )
 
             post_update.send(sender=object.__class__, before=min_ver, after=version)
             min_ver = version
