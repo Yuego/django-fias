@@ -101,6 +101,7 @@ class Command(BaseCommand):
         limit = int(options.pop('limit'))
         tables = options.pop('tables')
         tables = set(tables.split(',')) if tables else set()
+
         drop_indexes = options.pop('drop_indexes')
 
         if not tables.issubset(set(TABLES)):
@@ -120,7 +121,7 @@ class Command(BaseCommand):
         if update:
 
             try:
-                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables, drop_indexes=drop_indexes)
+                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables, drop_indexes=False)
             except TableListLoadingError as e:
                 self.error(str(e))
 
