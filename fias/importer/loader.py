@@ -98,7 +98,7 @@ class TableLoader(object):
             bar.update(regress_depth=depth, regress_len=batch_len, regress_iteration=i + 1)
             try:
                 table.model.objects.bulk_create(batch)
-            except IntegrityError:
+            except (IntegrityError, ValueError) as e:
                 if batch_len <= 1:
                     self.counter -= 1
                     self.skip_counter += 1
@@ -111,7 +111,7 @@ class TableLoader(object):
     def create(self, table, objects, bar):
         try:
             table.model.objects.bulk_create(objects)
-        except IntegrityError:
+        except (IntegrityError, ValueError):
             self.regressive_create(table, objects, bar)
 
         #  Обнуляем индикатор регрессии
