@@ -85,6 +85,7 @@ class Command(BaseCommand):
         if not any([src, remote, update, weights]):
             self.error(self.usage_str)
 
+        # TODO: какая-то нелогичная логика получилась. Надо бы поправить.
         if (src or remote) and Status.objects.count() > 0 and not doit:
             self.error('One of the tables contains data. Truncate all FIAS tables manually '
                        'or enter key --i-know-what-i-do, to clear the table by means of Django ORM')
@@ -121,7 +122,7 @@ class Command(BaseCommand):
         if update:
 
             try:
-                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables, drop_indexes=False)
+                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables)
             except TableListLoadingError as e:
                 self.error(str(e))
 

@@ -4,7 +4,12 @@ from __future__ import unicode_literals, absolute_import
 import os
 from django.db.models import Min
 from fias.config import TABLES
-from fias.importer.signals import pre_import, post_import, pre_update, post_update
+from fias.importer.indexes import remove_indexes_from_model, restore_indexes_for_model
+from fias.importer.signals import (
+    pre_drop_indexes, post_drop_indexes,
+    pre_restore_indexes, post_restore_indexes,
+    pre_import, post_import, pre_update, post_update
+)
 from fias.importer.source import *
 from fias.importer.table import BadTableError
 from fias.importer.loader import TableLoader, TableUpdater
@@ -63,6 +68,15 @@ def load_complete_data(path=None,
                 st.delete()
                 raise Status.DoesNotExist()
         except Status.DoesNotExist:
+            # Берём для работы любую таблицу с именем tbl
+            first_table = tablelist.tables[tbl][0]
+
+            # Удаляем индексы из модели перед импортом
+            if drop_indexes:
+                pre_drop_indexes.send(sender=object.__class__, table=first_table)
+                remove_indexes_from_model(model=first_table.model)
+                post_drop_indexes.send(sender=object.__class__, table=first_table)
+
             for table in tablelist.tables[tbl]:
                 if clear[tbl]:
                     table.truncate()
@@ -71,7 +85,13 @@ def load_complete_data(path=None,
                     clear[tbl] = False
 
                 loader = TableLoader(limit=limit)
-                loader.load(tablelist=tablelist, table=table, drop_indexes=drop_indexes)
+                loader.load(tablelist=tablelist, table=table)
+
+            # Восстанавливаем удалённые индексы
+            if drop_indexes:
+                pre_restore_indexes.send(sender=object.__class__, table=first_table)
+                restore_indexes_for_model(model=first_table.model)
+                post_restore_indexes.send(sender=object.__class__, table=first_table)
 
             st = Status(table=tbl, ver=tablelist.version)
             st.save()
@@ -83,7 +103,7 @@ def load_complete_data(path=None,
     post_import.send(sender=object.__class__, version=tablelist.version)
 
 
-def update_data(path=None, version=None, skip=False, data_format='xml', limit=1000, tables=None, drop_indexes=False):
+def update_data(path=None, version=None, skip=False, data_format='xml', limit=1000, tables=None):
     tablelist = get_tablelist(path=path, version=version, data_format=data_format)
 
     for tbl in get_table_names(tables):
@@ -98,7 +118,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         for table in tablelist.tables[tbl]:
             loader = TableUpdater(limit=limit)
             try:
-                loader.load(tablelist=tablelist, table=table, drop_indexes=drop_indexes)
+                loader.load(tablelist=tablelist, table=table)
             except BadTableError as e:
                 if skip:
                     log.error(str(e))
@@ -109,7 +129,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         st.save()
 
 
-def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None, drop_indexes=False):
+def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None):
     min_version = Status.objects.filter(table__in=get_table_names(None)).aggregate(Min('ver'))['ver__min']
     min_ver = Version.objects.get(ver=min_version)
 
@@ -121,7 +141,7 @@ def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None, dro
             update_data(
                 path=url, version=version, skip=skip,
                 data_format=data_format, limit=limit,
-                tables=tables, drop_indexes=drop_indexes,
+                tables=tables,
             )
 
             post_update.send(sender=object.__class__, before=min_ver, after=version)

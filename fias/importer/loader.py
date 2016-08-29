@@ -8,10 +8,7 @@ from django.db import IntegrityError
 from progress.helpers import WritelnMixin
 from sys import stderr
 
-from fias.importer.indexes import remove_indexes_from_model, restore_indexes_for_model
 from fias.importer.signals import (
-    pre_drop_indexes, post_drop_indexes,
-    pre_restore_indexes, post_restore_indexes,
     pre_import_table, post_import_table
 )
 from fias.importer.validators import validators
@@ -122,22 +119,10 @@ class TableLoader(object):
         if settings.DEBUG:
             db.reset_queries()
 
-    def load(self, tablelist, table, drop_indexes):
-        # Удаляем индексы из модели перед импортом
-        if drop_indexes:
-            pre_drop_indexes.send(sender=self.__class__, table=table)
-            remove_indexes_from_model(model=table.model)
-            post_drop_indexes.send(sender=self.__class__, table=table)
-
+    def load(self, tablelist, table):
         pre_import_table.send(sender=self.__class__, table=table)
         self.do_load(tablelist=tablelist, table=table)
         post_import_table.send(sender=self.__class__, table=table)
-
-        # Восстанавливаем удалённые индексы
-        if drop_indexes:
-            pre_restore_indexes.send(sender=self.__class__, table=table)
-            restore_indexes_for_model(model=table.model)
-            post_restore_indexes.send(sender=self.__class__, table=table)
 
     def do_load(self, tablelist, table):
         bar = LoadingBar(table=table.name, filename=table.filename)

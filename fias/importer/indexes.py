@@ -30,12 +30,9 @@ def get_simple_field(field):
     return simple_field
 
 
-def get_indexed_fields(model, update=False):
+def get_indexed_fields(model):
     for field in model._meta.fields:
-        if update and field.primary_key:
-            continue
-
-        if field.db_index or field.unique or field.primary_key:
+        if field.db_index or field.unique:
             yield field, get_simple_field(field)
 
 
@@ -45,11 +42,11 @@ def change_indexes_for_model(model, field_from, field_to):
     ed.alter_field(model, field_from, field_to)
 
 
-def remove_indexes_from_model(model, update=False):
-    for field, simple_field in get_indexed_fields(model=model, update=update):
+def remove_indexes_from_model(model):
+    for field, simple_field in get_indexed_fields(model=model):
         change_indexes_for_model(model=model, field_from=field, field_to=simple_field)
 
 
-def restore_indexes_for_model(model, update=False):
-    for field, simple_field in get_indexed_fields(model=model, update=update):
+def restore_indexes_for_model(model):
+    for field, simple_field in get_indexed_fields(model=model):
         change_indexes_for_model(model=model, field_from=simple_field, field_to=field)
