@@ -55,21 +55,22 @@ def load_complete_data(path=None,
                        ):
 
     tablelist = get_tablelist(path=path, data_format=data_format)
-    clear = {}
 
     pre_import.send(sender=object.__class__, version=tablelist.version)
 
     for tbl in get_table_names(tables):
-        clear[tbl] = truncate
-
         try:
             st = Status.objects.get(table=tbl)
-            if clear[tbl]:  # Удаляем запись из БД и вызываем-таки исключение сами %)
+            if truncate:
                 st.delete()
                 raise Status.DoesNotExist()
         except Status.DoesNotExist:
             # Берём для работы любую таблицу с именем tbl
             first_table = tablelist.tables[tbl][0]
+
+            # Очищаем таблицу перед импортом
+            if truncate:
+                first_table.truncate()
 
             # Удаляем индексы из модели перед импортом
             if drop_indexes:
@@ -77,13 +78,8 @@ def load_complete_data(path=None,
                 remove_indexes_from_model(model=first_table.model)
                 post_drop_indexes.send(sender=object.__class__, table=first_table)
 
+            # Импортируем все таблицы модели
             for table in tablelist.tables[tbl]:
-                if clear[tbl]:
-                    table.truncate()
-                    # Может быть несколько файлов для одной таблицы
-                    # Не надо очищать таблицу перед загрузкой каждого
-                    clear[tbl] = False
-
                 loader = TableLoader(limit=limit)
                 loader.load(tablelist=tablelist, table=table)
 
