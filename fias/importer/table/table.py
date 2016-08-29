@@ -13,6 +13,7 @@ from fias.models import (
     AddrObj,
     House, HouseInt,
     LandMark,
+    Room, Stead,
     NormDoc, NDocType,
     SocrBase,
 
@@ -38,6 +39,8 @@ table_names = {
     'ndoctype': NDocType,
     'operstat': OperStat,
     'strstat': StrStat,
+    'room': Room,
+    'stead': Stead,
 }
 
 name_trans = {
