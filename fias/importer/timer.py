@@ -42,7 +42,7 @@ def pre_fetch_version_callback(sender, **kwargs):
 @receiver(post_fetch_version)
 def post_fetch_version_callback(sender, **kwargs):
     time = timezone.now()
-    print ('Version info updated at {0}. Estimated time: {1}'.format(
+    print('Version info updated at {0}. Estimated time: {1}'.format(
         time,
         time - Timer.start
     ))
