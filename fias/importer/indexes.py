@@ -13,7 +13,7 @@ def get_simple_field(field):
         simple_field = ForeignKey(
             to=field.rel.to,
             db_index=False,
-            primary_key=field.primary_key,
+            primary_key=False,
             unique=False,
         )
     elif isinstance(field, RelatedField):
@@ -21,7 +21,7 @@ def get_simple_field(field):
     else:
         simple_field = field.__class__(
             db_index=False,
-            primary_key=field.primary_key,
+            primary_key=False,
             unique=False,
         )
     simple_field.column = field.column
