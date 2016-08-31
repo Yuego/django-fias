@@ -13,6 +13,8 @@ def get_simple_field(field):
         db_index=False,
         primary_key=False,
         unique=False,
+        blank=field.blank,
+        null=field.null,
     )
 
     if isinstance(field, models.ForeignKey):
