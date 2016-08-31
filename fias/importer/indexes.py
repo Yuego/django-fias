@@ -2,28 +2,31 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.db import connections
-from django.db.models import ForeignKey
+from django.db import models
 from django.db.models.fields.related import RelatedField
 
 from fias.config import DATABASE_ALIAS
 
 
 def get_simple_field(field):
-    if isinstance(field, ForeignKey):
-        simple_field = ForeignKey(
+    params = dict(
+        db_index=False,
+        primary_key=False,
+        unique=False,
+    )
+
+    if isinstance(field, models.ForeignKey):
+        params.update(dict(
             to=field.rel.to,
-            db_index=False,
-            primary_key=False,
-            unique=False,
-        )
+        ))
+    elif isinstance(field, models.CharField):
+        params.update(dict(
+            max_length=field.max_length,
+        ))
     elif isinstance(field, RelatedField):
         raise NotImplementedError('Only ForeignKey and OneToOne related fields supported')
-    else:
-        simple_field = field.__class__(
-            db_index=False,
-            primary_key=False,
-            unique=False,
-        )
+
+    simple_field = field.__class__(**params)
     simple_field.column = field.column
     simple_field.model = field.model
 
@@ -32,6 +35,13 @@ def get_simple_field(field):
 
 def get_indexed_fields(model):
     for field in model._meta.fields:
+        # Не удаляем индекс у первичных ключей и полей,
+        # на которые есть ссылки из других моделей
+        if field.primary_key and any(
+            [rel for rel in model._meta.get_all_related_objects() if rel.field_name == field.name]
+        ):
+            continue
+
         if field.db_index or field.unique:
             yield field, get_simple_field(field)
 
