@@ -565,12 +565,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='room',
             name='roomguid',
-            field=models.UUIDField(db_index=True, unique=True, verbose_name='Глобальный уникальный идентификатор адресного объекта (помещения)'),
+            field=models.UUIDField(primary_key=True, serialize=False, verbose_name='Глобальный уникальный идентификатор адресного объекта (помещения)'),
         ),
         migrations.AlterField(
             model_name='room',
             name='roomid',
-            field=models.UUIDField(primary_key=True, serialize=False, verbose_name='Уникальный идентификатор записи.'),
+            field=models.UUIDField(unique=True, verbose_name='Уникальный идентификатор записи.'),
         ),
         migrations.AlterField(
             model_name='room',
