@@ -10,7 +10,7 @@ class SourceWrapper(object):
     source = None
 
     def __init__(self, source, **kwargs):
-        self.source = os.path.abspath(source)
+        pass
 
     def get_date_info(self, filename):
         raise NotImplementedError()
@@ -26,8 +26,9 @@ class DirectoryWrapper(SourceWrapper):
     is_temporary = False
 
     def __init__(self, source, is_temporary=False, **kwargs):
-        self.is_temporary = is_temporary
         super(DirectoryWrapper, self).__init__(source=source, **kwargs)
+        self.is_temporary = is_temporary
+        self.source = os.path.abspath(source)
 
     def get_date_info(self, filename):
         st = os.stat(os.path.join(self.source, filename))
@@ -51,6 +52,10 @@ class DirectoryWrapper(SourceWrapper):
 
 
 class RarArchiveWrapper(SourceWrapper):
+
+    def __init__(self, source, **kwargs):
+        super(RarArchiveWrapper, self).__init__(source=source, **kwargs)
+        self.source = source
 
     def get_date_info(self, filename):
         info = self.source.getinfo(filename)
