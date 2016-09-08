@@ -22,8 +22,8 @@ class Room(models.Model):
         verbose_name_plural = 'Помещения'
 
     houseguid = models.ForeignKey(House, verbose_name='Идентификатор родительского объекта (дома)')
-    roomguid = UUIDField('Глобальный уникальный идентификатор адресного объекта (помещения)', db_index=True, unique=True)
-    roomid = UUIDField('Уникальный идентификатор записи.', primary_key=True)
+    roomguid = UUIDField('Глобальный уникальный идентификатор адресного объекта (помещения)', primary_key=True)
+    roomid = UUIDField('Уникальный идентификатор записи.', unique=True)
     previd = UUIDField('Идентификатор записи связывания с предыдушей исторической записью', blank=True, null=True)
     nextid = UUIDField('Идентификатор записи  связывания с последующей исторической записью', blank=True, null=True)
     flatnumber = models.CharField('Номер помещения или офиса', max_length=50)

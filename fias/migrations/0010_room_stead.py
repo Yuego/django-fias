@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Room',
             fields=[
-                ('roomguid', models.UUIDField(db_index=True, unique=True)),
-                ('roomid', models.UUIDField(primary_key=True, serialize=False)),
+                ('roomguid', models.UUIDField(primary_key=True, serialize=False)),
+                ('roomid', models.UUIDField(db_index=True, unique=True)),
                 ('previd', models.UUIDField(blank=True, null=True)),
                 ('nextid', models.UUIDField(blank=True, null=True)),
                 ('flatnumber', models.CharField(max_length=50)),
