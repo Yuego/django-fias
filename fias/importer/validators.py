@@ -20,6 +20,20 @@ def addrobj_validator(item, today, **kwargs):
         common_validator(item, today=today, **kwargs)
     )
 
+
+def room_validator(item, today, **kwargs):
+    return (
+        not item.nextid and
+        common_validator(item, today=today, **kwargs)
+    )
+
+
+def stead_validator(item, today, **kwargs):
+    return (
+        not item.nextid and
+        common_validator(item, today=today, **kwargs)
+    )
+
 validators = {
     'socrbase': socr_base_validator,
 
@@ -27,4 +41,6 @@ validators = {
     'house': common_validator,
     'houseint': common_validator,
     'landmark': common_validator,
+    'room': room_validator,
+    'stead': stead_validator,
 }

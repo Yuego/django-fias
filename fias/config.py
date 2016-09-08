@@ -7,12 +7,17 @@ from django.db.utils import DEFAULT_DB_ALIAS
 from django.utils.module_loading import import_module
 from fias.weights import weights
 
-_DEFAULT = ('normdoc', 'landmark', 'houseint', 'house')
+TABLES_STATS = (
+    'actstat', 'centerst', 'curentst',
+    'eststat', 'hststat', 'intvstat',
+    'ndoctype', 'operstat', 'strstat'
+)
+TABLES_DEFAULT = ('normdoc', 'landmark', 'house', 'houseint', 'room', 'stead')
 
-TABLES = ['socrbase', 'addrobj']
-TABLES.extend([x.lower() for x in list(getattr(settings, 'FIAS_TABLES', [])) if x.lower() in _DEFAULT])
+TABLES = TABLES_STATS + ('socrbase', 'addrobj')
+TABLES += tuple(x.lower() for x in TABLES_DEFAULT if x.lower() in list(set(getattr(settings, 'FIAS_TABLES', []))))
 
-DELETED_TABLES = ('addrobj', 'house', 'houseint', 'normdoc')
+DELETED_TABLES = ('normdoc', 'addrobj', 'house', 'room', 'stead', 'houseint')
 
 
 DATABASE_ALIAS = getattr(settings, 'FIAS_DATABASE_ALIAS', DEFAULT_DB_ALIAS)

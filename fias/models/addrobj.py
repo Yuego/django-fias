@@ -7,6 +7,7 @@ from django.db import models
 
 from fias.fields import UUIDField
 from fias.models.common import June2016Update
+from fias.models.status import CenterSt, CurentSt, OperStat
 
 
 __all__ = ['AddrObj']
@@ -14,47 +15,55 @@ __all__ = ['AddrObj']
 
 @python_2_unicode_compatible
 class AddrObj(June2016Update):
-
+    """
+    Классификатор адресообразующих элементов
+    """
     class Meta:
         app_label = 'fias'
+        verbose_name = 'Адресообразующий элемент'
+        verbose_name_plural = 'Адресообразующие элементы'
         index_together = (
             ('aolevel', 'shortname'),
             ('shortname', 'formalname'),
         )
         ordering = ['aolevel', 'formalname']
 
-    aoguid = UUIDField(primary_key=True)
-    parentguid = UUIDField(blank=True, null=True, db_index=True)
-    aoid = UUIDField(db_index=True, unique=True)
-    previd = UUIDField(blank=True, null=True)
-    nextid = UUIDField(blank=True, null=True)
+    aoguid = UUIDField('Глобальный уникальный идентификатор адресного объекта', primary_key=True)
+    parentguid = UUIDField('Идентификатор объекта родительского объекта', blank=True, null=True, db_index=True)
+    aoid = UUIDField('Уникальный идентификатор записи', db_index=True, unique=True)
+    previd = UUIDField('Идентификатор записи связывания с предыдушей исторической записью', blank=True, null=True)
+    nextid = UUIDField('Идентификатор записи  связывания с последующей исторической записью', blank=True, null=True)
 
-    formalname = models.CharField(max_length=120, db_index=True)
-    offname = models.CharField(max_length=120, blank=True, null=True)
-    shortname = models.CharField(max_length=10, db_index=True)
-    aolevel = models.PositiveSmallIntegerField(db_index=True)
+    formalname = models.CharField('Формализованное наименование', max_length=120, db_index=True)
+    offname = models.CharField('Официальное наименование', max_length=120, blank=True, null=True)
+    shortname = models.CharField('Краткое наименование типа объекта', max_length=10, db_index=True)
+    aolevel = models.PositiveSmallIntegerField('Уровень адресного объекта', db_index=True)
 
     # KLADE
-    regioncode = models.CharField(max_length=2)
-    autocode = models.CharField(max_length=1)
-    areacode = models.CharField(max_length=3)
-    citycode = models.CharField(max_length=3)
-    ctarcode = models.CharField(max_length=3)
-    placecode = models.CharField(max_length=3)
-    streetcode = models.CharField(max_length=4)
-    extrcode = models.CharField(max_length=4)
-    sextcode = models.CharField(max_length=3)
+    regioncode = models.CharField('Код региона', max_length=2)
+    autocode = models.CharField('Код автономии', max_length=1)
+    areacode = models.CharField('Код района', max_length=3)
+    citycode = models.CharField('Код города', max_length=3)
+    ctarcode = models.CharField('Код внутригородского района', max_length=3)
+    placecode = models.CharField('Код населенного пункта', max_length=3)
+    streetcode = models.CharField('Код улицы', max_length=4)
+    extrcode = models.CharField('Код дополнительного адресообразующего элемента', max_length=4)
+    sextcode = models.CharField('Код подчиненного дополнительного адресообразующего элемента', max_length=3)
 
     # KLADR
-    code = models.CharField(max_length=17, blank=True, null=True)
-    plaincode = models.CharField(max_length=15, blank=True, null=True)
+    code = models.CharField('Код адресного объекта одной строкой с признаком актуальности из КЛАДР 4.0',
+                            max_length=17, blank=True, null=True)
+    plaincode = models.CharField('Код адресного объекта из КЛАДР 4.0 одной строкой',
+                                 help_text='Без признака актуальности (последних двух цифр)',
+                                 max_length=15, blank=True, null=True)
 
-    actstatus = models.BooleanField(default=False)
-    centstatus = models.PositiveSmallIntegerField()
-    operstatus = models.PositiveSmallIntegerField()
-    currstatus = models.PositiveSmallIntegerField()
+    actstatus = models.BooleanField('Статус исторической записи в жизненном цикле адресного объекта', default=False)
+    centstatus = models.ForeignKey(CenterSt, verbose_name='Статус центра', default=0)
+    operstatus = models.ForeignKey(OperStat, verbose_name='Статус действия над записью – причина появления записи', default=0)
+    currstatus = models.ForeignKey(CurentSt, verbose_name='Статус актуальности КЛАДР 4',
+                                   help_text='последние две цифры в коде', default=0)
 
-    livestatus = models.BooleanField(default=False)
+    livestatus = models.BooleanField('Признак действующего адресного объекта', default=False)
 
     def full_name(self, depth=None, formal=False):
         assert isinstance(depth, six.integer_types), 'Depth must be integer'

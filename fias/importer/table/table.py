@@ -13,8 +13,13 @@ from fias.models import (
     AddrObj,
     House, HouseInt,
     LandMark,
-    NormDoc,
+    Room, Stead,
+    NormDoc, NDocType,
     SocrBase,
+
+    ActStat, CenterSt, CurentSt,
+    EstStat, HSTStat, IntvStat,
+    OperStat, StrStat,
 )
 
 table_names = {
@@ -24,6 +29,18 @@ table_names = {
     'landmark': LandMark,
     'normdoc': NormDoc,
     'socrbase': SocrBase,
+
+    'actstat': ActStat,
+    'centerst': CenterSt,
+    'curentst': CurentSt,
+    'eststat': EstStat,
+    'hststat': HSTStat,
+    'intvstat': IntvStat,
+    'ndoctype': NDocType,
+    'operstat': OperStat,
+    'strstat': StrStat,
+    'room': Room,
+    'stead': Stead,
 }
 
 name_trans = {

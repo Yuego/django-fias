@@ -5,6 +5,7 @@ from django.db import models
 from fias.fields import AddressField, ChainedAreaField
 from fias.models import AddrObj, FIASAddress, FIASAddressWithArea, FIASHouse
 
+
 class Item(models.Model):
     
     title = models.CharField('title', max_length=100)

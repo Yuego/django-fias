@@ -11,6 +11,7 @@ try:
     from zeep.client import Client
 
 
+
     def fetch_version_info(update_all=False):
         pre_fetch_version.send(object.__class__)
 

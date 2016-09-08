@@ -1,12 +1,13 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
 import codecs
 import sys
 
 from fias.version import __version__
+PY3 = sys.version_info[0] == 3
 
 sys.path.insert(0, '..')
-PY3 = sys.version_info[0] == 3
 
 extra_requirements = []
 if PY3:
@@ -17,6 +18,7 @@ else:
     extra_requirements = [
         'suds>=0.4',
     ]
+
 
 setup(
     name='django-fias',
@@ -31,13 +33,15 @@ setup(
 
     license='MIT license',
     install_requires=[
-        'django>=1.7',
+        'django >= 1.7, < 1.10',
         'django_select2>=5.3.0',
+        #'zeep>=0.8.0',
         'rarfile',
         'six',
         'lxml',
         'unrar',
-        'dbfread>=2.0.0',
+        'dbfread>=2.0.5',
+        'progress',
     ] + extra_requirements,
     packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,

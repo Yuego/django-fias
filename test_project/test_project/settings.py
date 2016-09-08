@@ -130,8 +130,12 @@ INSTALLED_APPS = (
 
 
 FIAS_TABLES = [
-    'house',
+    'normdoc',
     'landmark',
+    'house',
+    'room',
+    'stead',
+    'houseint',
 ]
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

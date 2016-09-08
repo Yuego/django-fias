@@ -42,7 +42,7 @@ def pre_fetch_version_callback(sender, **kwargs):
 @receiver(post_fetch_version)
 def post_fetch_version_callback(sender, **kwargs):
     time = timezone.now()
-    print ('Version info updated at {0}. Estimated time: {1}'.format(
+    print('Version info updated at {0}. Estimated time: {1}'.format(
         time,
         time - Timer.start
     ))
@@ -99,8 +99,8 @@ def post_import_callback(sender, version, **kwargs):
     print('Data v.{0} loaded at {1}'.format(version, time))
     print('Estimated time: {0}. Download: {1}. Unpack: {2}. Import: {3}'.format(
         time - Timer.start,
-        Timer.download,
-        Timer.unpack,
+        Timer.download or 0,
+        Timer.unpack or 0,
         time - Timer.load
     ))
     Timer.reset_counters()
@@ -108,7 +108,7 @@ def post_import_callback(sender, version, **kwargs):
 
 @receiver(pre_update)
 def pre_update_callback(sender, before, after, **kwargs):
-    print ('Updating from v.{0} to v.{1} started at {2}'.format(before.ver, after.ver, timezone.now()))
+    print('Updating from v.{0} to v.{1} started at {2}'.format(before.ver, after.ver, timezone.now()))
 
 
 @receiver(post_update)
@@ -116,8 +116,8 @@ def post_update_callback(sender, before, after, **kwargs):
     time = timezone.now()
     print('Data v.{0} is updated to v.{1} at {2}'.format(before.ver, after.ver, time))
     print('Download: {1}. Unpack: {2}. Import: {3}. Total time: {0}.'.format(
-        Timer.download,
-        Timer.unpack,
+        Timer.download or 0,
+        Timer.unpack or 0,
         time - Timer.load,
         time - Timer.start
     ))
