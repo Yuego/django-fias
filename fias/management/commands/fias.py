@@ -60,8 +60,8 @@ class Command(BaseCommand):
         make_option('--fill-weights', action='store_true', dest='weights', default=False,
                     help='Fill default weights'),
 
-        make_option('--drop-indexes', action='store_true', dest='drop_indexes', default=False,
-                    help='Drop all table indexes before import and restore after'),
+        make_option('--keep-indexes', action='store_true', dest='keep_indexes', default=False,
+                    help='Do not drop indexes'),
     )
 
     def handle(self, *args, **options):
@@ -103,7 +103,7 @@ class Command(BaseCommand):
         tables = options.pop('tables')
         tables = set(tables.split(',')) if tables else set()
 
-        drop_indexes = options.pop('drop_indexes')
+        keep_indexes = options.pop('keep_indexes')
 
         if not tables.issubset(set(TABLES)):
             diff = ', '.join(tables.difference(TABLES))
@@ -114,7 +114,7 @@ class Command(BaseCommand):
             try:
                 load_complete_data(
                     path=src, data_format=fmt, truncate=truncate,
-                    limit=limit, tables=tables, drop_indexes=drop_indexes
+                    limit=limit, tables=tables, keep_indexes=keep_indexes
                 )
             except TableListLoadingError as e:
                 self.error(str(e))

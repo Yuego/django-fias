@@ -51,7 +51,7 @@ def load_complete_data(path=None,
                        data_format='xml',
                        truncate=False,
                        limit=10000, tables=None,
-                       drop_indexes=False,
+                       keep_indexes=False,
                        ):
 
     tablelist = get_tablelist(path=path, data_format=data_format)
@@ -73,7 +73,7 @@ def load_complete_data(path=None,
                 first_table.truncate()
 
             # Удаляем индексы из модели перед импортом
-            if drop_indexes:
+            if not keep_indexes:
                 pre_drop_indexes.send(sender=object.__class__, table=first_table)
                 remove_indexes_from_model(model=first_table.model)
                 post_drop_indexes.send(sender=object.__class__, table=first_table)
@@ -84,7 +84,7 @@ def load_complete_data(path=None,
                 loader.load(tablelist=tablelist, table=table)
 
             # Восстанавливаем удалённые индексы
-            if drop_indexes:
+            if not keep_indexes:
                 pre_restore_indexes.send(sender=object.__class__, table=first_table)
                 restore_indexes_for_model(model=first_table.model)
                 post_restore_indexes.send(sender=object.__class__, table=first_table)
