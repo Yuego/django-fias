@@ -79,11 +79,11 @@ class TableIterator(object):
             return None
 
         item = self.model(**row)
-        for filter in TABLE_ROW_FILTERS:
+        for filter_func in TABLE_ROW_FILTERS.get(self.model._meta.model_name, tuple()):
+            item = filter_func(item)
+
             if item is None:
                 break
-
-            item = filter(item)
 
         return item
 

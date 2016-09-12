@@ -18,3 +18,13 @@ def example_filter_reject(item):
     :return item or None:
     """
     return None
+
+
+def example_filter_yaroslavl_region(item):
+    """
+    Всегда разрешает импорт записи
+    :param item:
+    :return item or None:
+    """
+    if item.regioncode == '76':
+        return item

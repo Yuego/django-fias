@@ -45,21 +45,28 @@ weights.update(user_weights)
 
 пример:
 
-FIAS_TABLE_ROW_FILTERS = [
-    'fias.importer.filters.example_filter_accept',
-]
+FIAS_TABLE_ROW_FILTERS = {
+    'addrobj': (
+        'fias.importer.filters.example_filter_yaroslavl_region'
+    ),
+    'house': (
+        'fias.importer.filters.example_filter_yaroslavl_region'
+    ),
+}
 """
-row_filters = getattr(settings, 'FIAS_TABLE_ROW_FILTERS', [])
-TABLE_ROW_FILTERS = []
-for flt_path in row_filters:
-    try:
-        module_name, _, func_name = flt_path.rpartition('.')
-        flt_module = import_module(module_name)
-        flt_func = getattr(flt_module, func_name)
-    except (ImportError, AttributeError):
-        raise ImproperlyConfigured('Table row filter module `{0}` does not exists'.format(flt_path))
-    else:
-        TABLE_ROW_FILTERS.append(flt_func)
+row_filters = getattr(settings, 'FIAS_TABLE_ROW_FILTERS', {})
+TABLE_ROW_FILTERS = {}
+for flt_table, flt_list in row_filters.items():
+    if flt_table in TABLES:
+        for flt_path in flt_list:
+            try:
+                module_name, _, func_name = flt_path.rpartition('.')
+                flt_module = import_module(module_name)
+                flt_func = getattr(flt_module, func_name)
+            except (ImportError, AttributeError):
+                raise ImproperlyConfigured('Table row filter module `{0}` does not exists'.format(flt_path))
+            else:
+                TABLE_ROW_FILTERS.setdefault(flt_table, []).append(flt_func)
 
 SUGGEST_BACKEND = getattr(settings, 'FIAS_SUGGEST_BACKEND', 'fias.suggest.backends.noop')
 SUGGEST_VIEW = getattr(settings, 'FIAS_SUGGEST_VIEW', 'fias:suggest')
