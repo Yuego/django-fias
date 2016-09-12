@@ -1,11 +1,6 @@
 # coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-try:
-    from functools import reduce
-except ImportError:
-    pass  # Python 2 builtin reduce
-
 from django.db import connections, router
 
 from fias.config import TABLE_ROW_FILTERS

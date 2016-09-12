@@ -5,13 +5,7 @@ import rarfile
 import tempfile
 from progress.bar import Bar
 
-try:
-    from urllib.request import urlretrieve
-    from urllib.error import HTTPError
-except ImportError:
-    from urllib import urlretrieve
-    HTTPError = IOError
-
+from fias.compat import urlretrieve, HTTPError
 from fias.importer.signals import (
     pre_download, post_download,
     pre_unpack, post_unpack,

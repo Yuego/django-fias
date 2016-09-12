@@ -5,9 +5,9 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connections
 from django.template import Context
-from django.template.base import TemplateDoesNotExist
 from django.template.loader import select_template
 
+from fias.compat import TemplateDoesNotExist
 from fias.config import DATABASE_ALIAS
 from ..config import SPHINX_ADDROBJ_INDEX
 import re

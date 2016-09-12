@@ -2,10 +2,8 @@
 from __future__ import unicode_literals, absolute_import
 
 from django.core.exceptions import ImproperlyConfigured
-try:
-    from django.utils.importlib import import_module
-except ImportError:
-    from importlib import import_module
+
+from fias.compat import import_module
 from fias.config import SUGGEST_BACKEND
 
 try:
