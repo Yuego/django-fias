@@ -53,11 +53,13 @@ row_filters = getattr(settings, 'FIAS_TABLE_ROW_FILTERS', [])
 TABLE_ROW_FILTERS = []
 for flt_path in row_filters:
     try:
-        flt = import_module(flt_path)
-    except ImportError:
+        module_name, _, func_name = flt_path.rpartition('.')
+        flt_module = import_module(module_name)
+        flt_func = getattr(flt_module, func_name)
+    except (ImportError, AttributeError):
         raise ImproperlyConfigured('Table row filter module `{0}` does not exists'.format(flt_path))
     else:
-        TABLE_ROW_FILTERS.append(flt)
+        TABLE_ROW_FILTERS.append(flt_func)
 
 SUGGEST_BACKEND = getattr(settings, 'FIAS_SUGGEST_BACKEND', 'fias.suggest.backends.noop')
 SUGGEST_VIEW = getattr(settings, 'FIAS_SUGGEST_VIEW', 'fias:suggest')
