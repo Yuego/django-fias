@@ -44,7 +44,7 @@ class DBFTable(Table):
                     except model.DoesNotExist:
                         raise ParentLookupException('{0} with key `{1}`'
                                                     ' not found. Skipping house...'.format(model.__name__, value))
-            return items_dict
+            return self.model(**items_dict)
 
         def fast_recfactory(items):
             items_dict = dict(items)
@@ -52,7 +52,7 @@ class DBFTable(Table):
                 value = items_dict.pop(key, None)
                 if value:
                     items_dict['{0}_id'.format(key)] = value
-            return items_dict
+            return self.model(**items_dict)
 
         db = DBF(
             self.open(tablelist=tablelist),
