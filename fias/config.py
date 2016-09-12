@@ -47,10 +47,10 @@ weights.update(user_weights)
 
 FIAS_TABLE_ROW_FILTERS = {
     'addrobj': (
-        'fias.importer.filters.example_filter_yaroslavl_region'
+        'fias.importer.filters.example_filter_yaroslavl_region',
     ),
     'house': (
-        'fias.importer.filters.example_filter_yaroslavl_region'
+        'fias.importer.filters.example_filter_yaroslavl_region',
     ),
 }
 """
