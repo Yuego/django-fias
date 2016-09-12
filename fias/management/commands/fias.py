@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+import os
 import sys
 from optparse import make_option
 
@@ -24,6 +25,7 @@ class Command(BaseCommand):
                 ' [--update-version-info <yes|no>]'\
                 ' [--fill-weights]' \
                 ' [--drop-indexes]' \
+                ' [--tmpdir <path>]' \
                 ''.format(','.join(TABLES))
 
     option_list = BaseCommand.option_list + (
@@ -62,6 +64,9 @@ class Command(BaseCommand):
 
         make_option('--keep-indexes', action='store_true', dest='keep_indexes', default=False,
                     help='Do not drop indexes'),
+
+        make_option('--tempdir', action='store', dest='tempdir', default=None,
+                    help='Path to the temporary files directory'),
     )
 
     def handle(self, *args, **options):
@@ -84,6 +89,15 @@ class Command(BaseCommand):
 
         if not any([src, remote, update, weights]):
             self.error(self.usage_str)
+
+        tempdir = options.pop('tempdir')
+        if tempdir:
+            if not os.path.exists(tempdir):
+                self.error('Directory `{0}` does not exists.'.format(tempdir))
+            elif not os.path.isdir(tempdir):
+                self.error('Path `{0}` is not a directory.'.format(tempdir))
+            elif not os.access(tempdir, os.W_OK):
+                self.error('Directory `{0}` is not writeable'.format(tempdir))
 
         # TODO: какая-то нелогичная логика получилась. Надо бы поправить.
         if (src or remote) and Status.objects.count() > 0 and not doit:
@@ -114,7 +128,8 @@ class Command(BaseCommand):
             try:
                 load_complete_data(
                     path=src, data_format=fmt, truncate=truncate,
-                    limit=limit, tables=tables, keep_indexes=keep_indexes
+                    limit=limit, tables=tables, keep_indexes=keep_indexes,
+                    tempdir=tempdir,
                 )
             except TableListLoadingError as e:
                 self.error(str(e))
@@ -122,7 +137,7 @@ class Command(BaseCommand):
         if update:
 
             try:
-                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables)
+                auto_update_data(skip=skip, data_format=fmt, limit=limit, tables=tables, tempdir=tempdir)
             except TableListLoadingError as e:
                 self.error(str(e))
 

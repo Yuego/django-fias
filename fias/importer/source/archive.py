@@ -32,8 +32,8 @@ class LocalArchiveTableList(TableList):
     wrapper_class = RarArchiveWrapper
 
     @staticmethod
-    def unpack(archive):
-        path = tempfile.mkdtemp()
+    def unpack(archive, tempdir=None):
+        path = tempfile.mkdtemp(dir=tempdir)
         archive.extractall(path)
         return path
 
@@ -52,7 +52,7 @@ class LocalArchiveTableList(TableList):
         if table_dbf_re.match(first_name) or table_dbt_re.match(first_name):
             pre_unpack.send(sender=self.__class__, archive=archive)
 
-            path = LocalArchiveTableList.unpack(archive=archive)
+            path = LocalArchiveTableList.unpack(archive=archive, tempdir=self.tempdir)
 
             post_unpack.send(sender=self.__class__, archive=archive, dst=path)
 

@@ -36,7 +36,7 @@ class DBFTable(Table):
 
         def recfactory(items):
             items_dict = dict(items)
-            for key, model in self.related_fields:
+            for key, model in self.related_fields.items():
                 value = items_dict.get(key, None)
                 if value:
                     try:
@@ -48,7 +48,7 @@ class DBFTable(Table):
 
         def fast_recfactory(items):
             items_dict = dict(items)
-            for key, model in self.related_fields:
+            for key, model in self.related_fields.items():
                 value = items_dict.pop(key, None)
                 if value:
                     items_dict['{0}_id'.format(key)] = value

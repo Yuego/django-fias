@@ -17,7 +17,7 @@ from fias.importer.log import log
 from fias.models import Status, Version
 
 
-def get_tablelist(path, version=None, data_format='xml'):
+def get_tablelist(path, version=None, data_format='xml', tempdir=None):
     assert data_format in ['xml', 'dbf'], \
         'Unsupported data format: `{0}`. Available choices: {1}'.format(data_format, ', '.join(['xml', 'dbf']))
 
@@ -25,17 +25,17 @@ def get_tablelist(path, version=None, data_format='xml'):
         latest_version = Version.objects.latest('dumpdate')
         url = getattr(latest_version, 'complete_{0}_url'.format(data_format))
 
-        tablelist = RemoteArchiveTableList(src=url, version=latest_version)
+        tablelist = RemoteArchiveTableList(src=url, version=latest_version, tempdir=tempdir)
 
     else:
         if os.path.isfile(path):
-            tablelist = LocalArchiveTableList(src=path, version=version)
+            tablelist = LocalArchiveTableList(src=path, version=version, tempdir=tempdir)
 
         elif os.path.isdir(path):
-            tablelist = DirectoryTableList(src=path, version=version)
+            tablelist = DirectoryTableList(src=path, version=version, tempdir=tempdir)
 
         elif path.startswith('http://') or path.startswith('https://') or path.startswith('//'):
-            tablelist = RemoteArchiveTableList(src=path, version=version)
+            tablelist = RemoteArchiveTableList(src=path, version=version, tempdir=tempdir)
 
         else:
             raise TableListLoadingError('Path `{0}` is not valid table list source'.format(path))
@@ -52,9 +52,10 @@ def load_complete_data(path=None,
                        truncate=False,
                        limit=10000, tables=None,
                        keep_indexes=False,
+                       tempdir=None,
                        ):
 
-    tablelist = get_tablelist(path=path, data_format=data_format)
+    tablelist = get_tablelist(path=path, data_format=data_format, tempdir=tempdir)
 
     pre_import.send(sender=object.__class__, version=tablelist.version)
 
@@ -99,8 +100,8 @@ def load_complete_data(path=None,
     post_import.send(sender=object.__class__, version=tablelist.version)
 
 
-def update_data(path=None, version=None, skip=False, data_format='xml', limit=1000, tables=None):
-    tablelist = get_tablelist(path=path, version=version, data_format=data_format)
+def update_data(path=None, version=None, skip=False, data_format='xml', limit=1000, tables=None, tempdir=None):
+    tablelist = get_tablelist(path=path, version=version, data_format=data_format, tempdir=tempdir)
 
     for tbl in get_table_names(tables):
         st = Status.objects.get(table=tbl)
@@ -125,7 +126,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         st.save()
 
 
-def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None):
+def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None, tempdir=None):
     min_version = Status.objects.filter(table__in=get_table_names(None)).aggregate(Min('ver'))['ver__min']
     min_ver = Version.objects.get(ver=min_version)
 
@@ -137,7 +138,7 @@ def auto_update_data(skip=False, data_format='xml', limit=1000, tables=None):
             update_data(
                 path=url, version=version, skip=skip,
                 data_format=data_format, limit=limit,
-                tables=tables,
+                tables=tables, tempdir=tempdir,
             )
 
             post_update.send(sender=object.__class__, before=min_ver, after=version)
