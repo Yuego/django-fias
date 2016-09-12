@@ -60,6 +60,10 @@ def load_complete_data(path=None,
     pre_import.send(sender=object.__class__, version=tablelist.version)
 
     for tbl in get_table_names(tables):
+        # Пропускаем таблицы, которых нет в архиве
+        if tbl not in tablelist.tables:
+            continue
+
         try:
             st = Status.objects.get(table=tbl)
             if truncate:
@@ -104,6 +108,10 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
     tablelist = get_tablelist(path=path, version=version, data_format=data_format, tempdir=tempdir)
 
     for tbl in get_table_names(tables):
+        # Пропускаем таблицы, которых нет в архиве
+        if tbl not in tablelist.tables:
+            continue
+        
         st = Status.objects.get(table=tbl)
 
         if st.ver.ver >= tablelist.version.ver:
