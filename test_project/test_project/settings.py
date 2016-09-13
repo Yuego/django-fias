@@ -137,6 +137,18 @@ FIAS_TABLES = [
     'stead',
     'houseint',
 ]
+
+FIAS_TABLE_ROW_FILTERS = {
+    'addrobj': (
+        'fias.importer.filters.example_filter_yaroslavl_region',
+    ),
+    'house': (
+        'fias.importer.filters.example_filter_yaroslavl_region',
+    ),
+    'room': (
+        'fias.importer.filters.example_filter_yaroslavl_region',
+    ),
+}
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
