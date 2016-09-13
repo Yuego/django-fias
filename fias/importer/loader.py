@@ -91,9 +91,12 @@ class TableLoader(object):
     def regressive_create(self, table, objects, bar, depth=1):
         count = len(objects)
         batch_len = count // 3 or 1
+        batch_count = count // batch_len
+        if batch_count * batch_len < count:
+            batch_count += 1
         objects = list(objects)
 
-        for i in range(0, batch_len + 1):
+        for i in range(0, batch_count):
             batch = objects[i * batch_len:(i + 1) * batch_len]
             bar.update(regress_depth=depth, regress_len=batch_len, regress_iteration=i + 1)
             try:
