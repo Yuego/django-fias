@@ -122,6 +122,7 @@ class Command(BaseCommand):
         if not tables.issubset(set(TABLES)):
             diff = ', '.join(tables.difference(TABLES))
             self.error('Tables `{0}` are not listed in the FIAS_TABLES and can not be processed'.format(diff))
+        tables = tuple(x for x in TABLES if x in list(tables))
 
         if src or remote:
 
