@@ -111,7 +111,7 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         # Пропускаем таблицы, которых нет в архиве
         if tbl not in tablelist.tables:
             continue
-        
+
         st = Status.objects.get(table=tbl)
 
         if st.ver.ver >= tablelist.version.ver:
