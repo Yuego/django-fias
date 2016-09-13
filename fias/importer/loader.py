@@ -126,6 +126,7 @@ class TableLoader(object):
 
     def do_load(self, tablelist, table):
         bar = LoadingBar(table=table.name, filename=table.filename)
+        bar.update()
 
         objects = set()
         for item in table.rows(tablelist=tablelist):
@@ -135,6 +136,9 @@ class TableLoader(object):
 
             objects.add(item)
             self.counter += 1
+
+            if self.skip_counter and self.skip_counter % self.limit == 0:
+                bar.update(skipped=self.skip_counter)
 
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects, bar=bar)
