@@ -11,7 +11,6 @@ try:
     from zeep.client import Client
 
 
-
     def fetch_version_info(update_all=False):
         pre_fetch_version.send(object.__class__)
 
@@ -19,29 +18,26 @@ try:
         result = client.service.GetAllDownloadFileInfo()
 
         for item in result.DownloadFileInfo:
-            try:
-                ver = Version.objects.get(ver=item.VersionId)
-            except Version.DoesNotExist:
-                ver = Version(**{
-                    'ver': item.VersionId,
-                    'dumpdate': datetime.datetime.strptime(item.TextVersion[-10:], "%d.%m.%Y").date(),
-                })
-            finally:
-                if not ver.pk or update_all:
-                    setattr(ver, 'complete_xml_url', item.FiasCompleteXmlUrl)
-                    setattr(ver, 'complete_dbf_url', item.FiasCompleteDbfUrl)
+            ver, created = Version.objects.get_or_create(
+                ver=item.VersionId,
+                dumpdate=datetime.datetime.strptime(item.TextVersion[-10:], "%d.%m.%Y").date(),
+            )
 
-                    if hasattr(item, 'FiasDeltaXmlUrl'):
-                        setattr(ver, 'delta_xml_url', item.FiasDeltaXmlUrl)
-                    else:
-                        setattr(ver, 'delta_xml_url', None)
+            if created or update_all:
+                setattr(ver, 'complete_xml_url', item.FiasCompleteXmlUrl)
+                setattr(ver, 'complete_dbf_url', item.FiasCompleteDbfUrl)
 
-                    if hasattr(item, 'FiasDeltaDbfUrl'):
-                        setattr(ver, 'delta_dbf_url', item.FiasDeltaDbfUrl)
-                    else:
-                        setattr(ver, 'delta_dbf_url', None)
+                if hasattr(item, 'FiasDeltaXmlUrl'):
+                    setattr(ver, 'delta_xml_url', item.FiasDeltaXmlUrl)
+                else:
+                    setattr(ver, 'delta_xml_url', None)
 
-                    ver.save()
+                if hasattr(item, 'FiasDeltaDbfUrl'):
+                    setattr(ver, 'delta_dbf_url', item.FiasDeltaDbfUrl)
+                else:
+                    setattr(ver, 'delta_dbf_url', None)
+
+                ver.save()
 
         post_fetch_version.send(object.__class__)
 except ImportError:
@@ -55,28 +51,25 @@ except ImportError:
         result = client.service.GetAllDownloadFileInfo()
 
         for item in result.DownloadFileInfo:
-            try:
-                ver = Version.objects.get(ver=item['VersionId'])
-            except Version.DoesNotExist:
-                ver = Version(**{
-                    'ver': item['VersionId'],
-                    'dumpdate': datetime.datetime.strptime(item['TextVersion'][-10:], "%d.%m.%Y").date(),
-                })
-            finally:
-                if not ver.pk or update_all:
-                    setattr(ver, 'complete_xml_url', item['FiasCompleteXmlUrl'])
-                    setattr(ver, 'complete_dbf_url', item['FiasCompleteDbfUrl'])
+            ver, created = Version.objects.get_or_create(
+                ver=item['VersionId'],
+                dumpdate=datetime.datetime.strptime(item['TextVersion'][-10:], "%d.%m.%Y").date(),
+            )
 
-                    if hasattr(item, 'FiasDeltaXmlUrl'):
-                        setattr(ver, 'delta_xml_url', item['FiasDeltaXmlUrl'])
-                    else:
-                        setattr(ver, 'delta_xml_url', None)
+            if created or update_all:
+                setattr(ver, 'complete_xml_url', item['FiasCompleteXmlUrl'])
+                setattr(ver, 'complete_dbf_url', item['FiasCompleteDbfUrl'])
 
-                    if hasattr(item, 'FiasDeltaDbfUrl'):
-                        setattr(ver, 'delta_dbf_url', item['FiasDeltaDbfUrl'])
-                    else:
-                        setattr(ver, 'delta_dbf_url', None)
+                if hasattr(item, 'FiasDeltaXmlUrl'):
+                    setattr(ver, 'delta_xml_url', item['FiasDeltaXmlUrl'])
+                else:
+                    setattr(ver, 'delta_xml_url', None)
 
-                    ver.save()
+                if hasattr(item, 'FiasDeltaDbfUrl'):
+                    setattr(ver, 'delta_dbf_url', item['FiasDeltaDbfUrl'])
+                else:
+                    setattr(ver, 'delta_dbf_url', None)
+
+                ver.save()
 
         post_fetch_version.send(object.__class__)
