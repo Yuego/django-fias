@@ -135,13 +135,13 @@ class TableLoader(object):
         for item in table.rows(tablelist=tablelist):
             if not self.validate(table, item):
                 self.skip_counter += 1
+
+                if self.skip_counter and self.skip_counter % self.limit == 0:
+                    bar.update(skipped=self.skip_counter)
                 continue
 
             objects.add(item)
             self.counter += 1
-
-            if self.skip_counter and self.skip_counter % self.limit == 0:
-                bar.update(skipped=self.skip_counter)
 
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects, bar=bar)
