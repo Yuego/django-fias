@@ -14,7 +14,7 @@ def load_stats_data(apps, schema_editor):
 
     if AddrObj.objects.count():
         fetch_version_info(update_all=True)
-        load_complete_data(path='/home/ego/Downloads/fias_xml.rar', truncate=True, tables=TABLES_STATS)
+        load_complete_data(path=None, truncate=True, tables=TABLES_STATS)
 
 
 class Migration(migrations.Migration):
