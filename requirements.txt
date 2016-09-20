@@ -4,6 +4,6 @@ rarfile
 six
 lxml
 unrar
-zeep>=0.8.0
+zeep>=0.17.0
 dbfread>=2.0.0
 progress
