@@ -22,8 +22,6 @@ class DBFTable(Table):
     def __init__(self, *args, **kwargs):
         super(DBFTable, self).__init__(*args, **kwargs)
 
-        print(self.name)
-
         self.related_fields = dict({
            (f.name, f.rel.to) for f in self.model._meta.get_fields()
            if f.one_to_one or f.many_to_one
