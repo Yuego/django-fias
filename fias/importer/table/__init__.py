@@ -38,4 +38,4 @@ class TableFactory(object):
         if m is not None:
             return None
 
-        raise BadTableNameError('Wrong tablename `{0}`'.format(filename))
+        return None
