@@ -34,18 +34,6 @@ class DBFTable(Table):
         if self.deleted:
             return []
 
-        def recfactory(items):
-            items_dict = dict(items)
-            for key, model in self.related_fields.items():
-                value = items_dict.get(key, None)
-                if value:
-                    try:
-                        items_dict[key] = model.objects.get(pk=value)
-                    except model.DoesNotExist:
-                        raise ParentLookupException('{0} with key `{1}`'
-                                                    ' not found. Skipping house...'.format(model.__name__, value))
-            return self.model(**items_dict)
-
         def fast_recfactory(items):
             items_dict = dict(items)
             for key, model in self.related_fields.items():
