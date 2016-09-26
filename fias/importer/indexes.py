@@ -12,7 +12,7 @@ def get_simple_field(field):
     params = dict(
         db_index=False,
         primary_key=False,
-        unique=False,
+        unique=field.unique,
         blank=field.blank,
         null=field.null,
     )
