@@ -62,5 +62,5 @@ class TestAddrobjValidator(TestCase):
         self.assertFalse(addrobj_validator(m, today=today))
 
     def test_valid(self):
-        m = AddrObj(startdate=yesterday, enddate=tomorrow)
+        m = AddrObj(startdate=yesterday, enddate=tomorrow, actstatus=True)
         self.assertTrue(addrobj_validator(m, today=today))
