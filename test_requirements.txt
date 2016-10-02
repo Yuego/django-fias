@@ -1,0 +1,5 @@
+pytest
+pytest_django>=2.9.0
+xdist
+pytest_cov
+mock

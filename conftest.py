@@ -34,11 +34,11 @@ def pytest_configure():
         sys.exit(1)
 
     try:
-        import suds  # NOQA
+        import zeep  # NOQA
     except ImportError:
         print("Error: missing test dependency:")
-        print("  suds library is needed to run test suite")
-        print("  you can install it with 'pip install suds'")
+        print("  zeep library is needed to run test suite")
+        print("  you can install it with 'pip install zeep'")
         print("  or use tox to automatically handle test dependencies")
         sys.exit(1)
 
