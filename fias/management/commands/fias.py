@@ -14,7 +14,7 @@ from fias.importer.version import fetch_version_info
 from fias.management.utils.weights import rewrite_weights
 from fias.models import Status
 
-from fias.management.commands import BaseCommandCompatible, DJANGO_VERSION
+from fias.compat import BaseCommandCompatible, DJANGO_VERSION
 
 
 class Command(BaseCommandCompatible):

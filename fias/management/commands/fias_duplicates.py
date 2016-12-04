@@ -6,7 +6,7 @@ import sys
 from fias.config import TABLES
 from fias.importer.commands import get_tablelist
 
-from fias.management.commands import BaseCommandCompatible, DJANGO_VERSION
+from fias.compat import BaseCommandCompatible, DJANGO_VERSION
 
 
 class Command(BaseCommandCompatible):

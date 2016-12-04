@@ -7,7 +7,7 @@ from fias.config import TABLES
 from fias.models import Status, Version
 from fias.importer.version import fetch_version_info
 
-from fias.management.commands import BaseCommandCompatible, DJANGO_VERSION
+from fias.compat import BaseCommandCompatible, DJANGO_VERSION
 
 
 class Command(BaseCommandCompatible):

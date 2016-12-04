@@ -6,7 +6,7 @@ import sys
 
 from .utils import render_sphinx_config
 
-from fias.management.commands import BaseCommandCompatible, DJANGO_VERSION
+from fias.compat import BaseCommandCompatible, DJANGO_VERSION
 
 
 class Command(BaseCommandCompatible):
