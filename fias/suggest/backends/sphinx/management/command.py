@@ -3,23 +3,29 @@ from __future__ import unicode_literals, absolute_import
 
 import os
 import sys
-from optparse import make_option
-
-from django.core.management.base import BaseCommand
 
 from .utils import render_sphinx_config
 
+from fias.management.commands import BaseCommandCompatible, DJANGO_VERSION
 
-class Command(BaseCommand):
+
+class Command(BaseCommandCompatible):
     help = 'Configure Sphinx engine'
     usage_str = 'Usage: ./manage.py fias_suggest --path=PATH [--full]'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--path', action='store', dest='path',
-            help='Path to sphinx index'),
-        make_option('--full', action='store_true', dest='full', default=False,
-            help='Generate full sphinx config'),
-    )
+    arguments_dictionary = {
+        "--path": {
+            "action": "store",
+            "dest": "path",
+            "help": "Path to sphinx index"
+        },
+        "--full": {
+            "action": "store_true",
+            "dest": "full",
+            "default": False,
+            "help": "Generate full sphinx config"
+        }
+    }
 
     def handle(self, *args, **options):
         path = options.pop('path')
@@ -31,7 +37,7 @@ class Command(BaseCommand):
 
         full = options.pop('full')
 
-        print ('\n'.join(render_sphinx_config(path, full)))
+        print('\n'.join(render_sphinx_config(path, full)))
 
     def error(self, message, code=1):
         print(message)

@@ -2,3 +2,6 @@
 test_project/static/*
 
 *.sqlite*
+
+# Intellij Idea
+/.idea/*

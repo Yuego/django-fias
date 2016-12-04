@@ -2,30 +2,36 @@
 from __future__ import unicode_literals, absolute_import
 
 import sys
-from optparse import make_option
-
-from django.core.management.base import BaseCommand
 
 from fias.config import TABLES
 from fias.importer.commands import get_tablelist
 
+from fias.management.commands import BaseCommandCompatible, DJANGO_VERSION
 
-class Command(BaseCommand):
+
+class Command(BaseCommandCompatible):
     help = 'Утилита для поиска дубликатов по первичному ключу'
     usage_str = 'Usage: ./manage.py --key <pk> --src <path> --table <table>'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--key', action='store', dest='pk',
-                    help='List duplicates by PK'),
-
-        make_option('--src', action='store', dest='src',
-                    help='Source directory for duplicates search'),
-
-        make_option('--table', action='store', dest='table', type='choice', choices=TABLES,
-                    help='Table to search for duplicates'),
-
-
-    )
+    arguments_dictionary = {
+        "--key": {
+            "action": "store",
+            "dest": "pk",
+            "help": "List duplicates by PK"
+        },
+        "--src": {
+            "action": "store",
+            "dest": "src",
+            "help": "Source directory for duplicates search"
+        },
+        "--table": {
+            "action": "store",
+            "dest": "table",
+            "type": "choice" if DJANGO_VERSION == 'old' else str,
+            "choices": list(TABLES),
+            "help": "Table to search for duplicates"
+        }
+    }
 
     def handle(self, *args, **options):
         key = options.pop('pk')
