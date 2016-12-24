@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models.fields.related import RelatedField
 
 from fias.config import DATABASE_ALIAS
+from fias.compat import get_all_related_objects, get_all_related_many_to_many_objects
 
 
 def get_simple_field(field):
@@ -40,7 +41,7 @@ def get_indexed_fields(model):
         # Не удаляем индекс у первичных ключей и полей,
         # на которые есть ссылки из других моделей
         if field.primary_key and any(
-            [rel for rel in model._meta.get_all_related_objects() if rel.field_name == field.name]
+            [rel for rel in get_all_related_objects(model._meta) if rel.field_name == field.name]
         ):
             continue
 

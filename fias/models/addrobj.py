@@ -46,6 +46,7 @@ class AddrObj(June2016Update):
     citycode = models.CharField('Код города', max_length=3)
     ctarcode = models.CharField('Код внутригородского района', max_length=3)
     placecode = models.CharField('Код населенного пункта', max_length=3)
+    plancode = models.CharField('Код элемента планировочной структуры', max_length=4)
     streetcode = models.CharField('Код улицы', max_length=4)
     extrcode = models.CharField('Код дополнительного адресообразующего элемента', max_length=4)
     sextcode = models.CharField('Код подчиненного дополнительного адресообразующего элемента', max_length=3)
