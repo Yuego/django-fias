@@ -75,11 +75,18 @@ def render_sphinx_index(path):
 
     return _get_sphinx_template('index').render(Context(ctx))
 
+def render_sphinx_searchd_config():
+    ctx = {
+        'db_type': _get_database_engine(),
+        'db_host': settings.DATABASES[DATABASE_ALIAS]['HOST'],
+        'db_port': settings.DATABASES[DATABASE_ALIAS]['PORT'],
+    }
+
+    return _get_sphinx_template('sphinx').render(Context(ctx))
 
 def render_sphinx_config(path, full=True):
     source = render_sphinx_source()
     index = render_sphinx_index(path)
-
-    config = _get_sphinx_template('sphinx').render(Context({})) if full else ''
+    config = render_sphinx_searchd_config() if full else ''
 
     return source, index, config
