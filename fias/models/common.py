@@ -12,15 +12,15 @@ class Common(models.Model):
     class Meta:
         abstract = True
 
-    ifnsfl = models.PositiveIntegerField('Код ИФНС ФЗ', blank=True, null=True)
-    terrifnsfl = models.PositiveIntegerField('Код территориального участка ИФНС ФЛ', blank=True, null=True)
-    ifnsul = models.PositiveIntegerField('Код ИФНС ЮЛ', blank=True, null=True)
-    terrifnsul = models.PositiveIntegerField('Код территориального участка ИФНС ЮЛ', blank=True, null=True)
+    ifnsfl = models.CharField('Код ИФНС ФЗ', max_length=4, blank=True, null=True)
+    terrifnsfl = models.CharField('Код территориального участка ИФНС ФЛ', max_length=4, blank=True, null=True)
+    ifnsul = models.CharField('Код ИФНС ЮЛ', max_length=4, blank=True, null=True)
+    terrifnsul = models.CharField('Код территориального участка ИФНС ЮЛ', max_length=4, blank=True, null=True)
 
-    okato = models.BigIntegerField('ОКАТО', blank=True, null=True)
-    oktmo = models.BigIntegerField('ОКТМО', blank=True, null=True)
+    okato = models.CharField('ОКАТО', max_length=11, blank=True, null=True)
+    oktmo = models.CharField('ОКТМО', max_length=11, blank=True, null=True)
 
-    postalcode = models.PositiveIntegerField('Почтовый индекс', blank=True, null=True)
+    postalcode = models.CharField('Почтовый индекс', max_length=6, blank=True, null=True)
 
     updatedate = models.DateField('Дата время внесения записи')
     startdate = models.DateField('Начало действия записи')
