@@ -73,6 +73,7 @@ for flt_table, flt_list in row_filters.items():
 SUGGEST_BACKEND = getattr(settings, 'FIAS_SUGGEST_BACKEND', 'fias.suggest.backends.noop')
 SUGGEST_VIEW = getattr(settings, 'FIAS_SUGGEST_VIEW', 'fias:suggest')
 SUGGEST_AREA_VIEW = getattr(settings, 'FIAS_SUGGEST_AREA_VIEW', 'fias:suggest-area')
+AUTOCOMPLETE_VIEW = getattr(settings, 'FIAS_AUTOCOMPLETE_VIEW', 'fias:autocomplete')
 
 # SUDS Proxy Support
 _http_proxy = os.environ.get('http_proxy')

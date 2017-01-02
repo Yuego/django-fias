@@ -9,4 +9,5 @@ from .views import *
 urlpatterns = [
     url(r'^suggest.json$', EmptyResponseListView.as_view(), name='suggest'),
     url(r'^suggest-area.json$', EmptyResponseListView.as_view(), name='suggest-area'),
+    url(r'^autocomplete.json$', EmptyResponseListView.as_view(), name='autocomplete'),
 ]

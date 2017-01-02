@@ -4,6 +4,7 @@ from django.db import models
 
 from fias.fields import AddressField, ChainedAreaField
 from fias.models import AddrObj, FIASAddress, FIASAddressWithArea, FIASHouse
+from fias.fields.free import FreeAddressField
 
 
 class Item(models.Model):
@@ -22,18 +23,9 @@ class ItemWithArea(models.Model):
     area = ChainedAreaField(AddrObj, address_field='location', related_name='+')
 
 
-#class CachedAddress(FIASAddress):
-#    pass
+class FreeAddressItem(models.Model):
 
+    title = models.CharField('title', max_length=100)
 
-#class CachedAddressWithArea(FIASAddressWithArea):
-#    pass
-
-
-#class CachedAddressWithHouse(FIASAddress, FIASHouse):
-#    pass
-
-#class NullableAddressItem(models.Model):
-#    title = models.CharField('title', max_length=100)
-#
-#    location = AddressField(blank=True, null=True)
+    location = FreeAddressField(fk_name='address')
+    address = models.ForeignKey(AddrObj)

@@ -111,3 +111,36 @@ class GetAreasListView(BaseListView):
             return obj
         else:
             return None
+
+
+class AutocompleteView(BaseListView):
+
+    def get(self, request, *args, **kwargs):
+        self.term = kwargs.get('term', request.GET.get('term', ''))
+
+        return JsonResponse({
+            'results': [
+                {
+                    'label': obj['fullname'],
+                    'id': obj['aoguid'],
+                }
+                for obj in self.get_queryset()
+            ],
+        })
+
+    def get_queryset(self):
+
+        try:
+            cur = connections['fias_search'].cursor()
+
+            query = 'SELECT aoguid, fullname FROM {0} WHERE MATCH(%s) ORDER BY item_weight DESC, ' \
+                    'weight() DESC LIMIT 0,50 OPTION field_weights=(' \
+                    'formalname=100, fullname=80' \
+                    ')'.format(SPHINX_ADDROBJ_INDEX)
+
+            cur.execute(query, (self.term + '*',))
+
+            return dict_fetchall(cur)
+        except OperationalError:
+            raise
+            return []
