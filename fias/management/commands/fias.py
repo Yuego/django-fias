@@ -25,8 +25,8 @@ class Command(BaseCommandCompatible):
                 ' [--format <xml|dbf>] [--limit=<N>] [--tables=<{0}>]'\
                 ' [--update-version-info <yes|no>]'\
                 ' [--fill-weights]' \
-                ' [--drop-indexes]' \
-                ' [--tmpdir <path>]' \
+                ' [--keep-indexes]' \
+                ' [--tempdir <path>]' \
                 ''.format(','.join(TABLES))
 
     arguments_dictionary = {
