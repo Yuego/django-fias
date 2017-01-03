@@ -77,8 +77,8 @@ def render_sphinx_index(path):
 
 def render_sphinx_searchd_config():
     ctx = {
-        'sphinx_host': SEARCHD_CONNECTION['host'],
-        'sphinx_port': SEARCHD_CONNECTION['port'],
+        'sphinx_host': SEARCHD_CONNECTION['HOST'],
+        'sphinx_port': SEARCHD_CONNECTION['PORT'],
     }
 
     return _get_sphinx_template('sphinx').render(Context(ctx))
