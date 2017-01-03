@@ -103,6 +103,7 @@ setup(
     install_requires=[
         'django >= 1.8, < 1.10',
         'django_select2>=5.3.0',
+        'mysqlclient != 1.3.8',
         # 'zeep>=0.8.0',
         'rarfile',
         'six',
