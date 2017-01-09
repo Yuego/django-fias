@@ -5,6 +5,7 @@ import datetime
 
 from django.core.exceptions import ImproperlyConfigured
 
+from fias.config import PROXY
 from fias.importer.signals import pre_fetch_version, post_fetch_version
 from fias.models import Version
 
@@ -88,7 +89,7 @@ except ImportError:
         from suds.client import Client
 
         parse_func = parse_item_as_dict
-        client = Client(url=wsdl_source)
+        client = Client(url=wsdl_source, proxy=PROXY or None)
 
     except ImportError:
         raise ImproperlyConfigured('Не найдено подходящей библиотеки для работы с WSDL. Пожалуйста установите zeep или suds!')
