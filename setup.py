@@ -79,17 +79,6 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 
 
-extra_requirements = []
-if PY3:
-    extra_requirements = [
-        'suds-jurko>=0.6',
-    ]
-else:
-    extra_requirements = [
-        'suds>=0.4',
-    ]
-
-
 setup(
     name='django-fias',
     version=__version__,
@@ -113,7 +102,7 @@ setup(
         'unrar',
         'dbfread>=2.0.5',
         'progress',
-    ] + extra_requirements,
+    ],
     packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,
     classifiers=[
