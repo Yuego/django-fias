@@ -60,8 +60,10 @@ if sys.argv[-1] == 'publish':
     check_tag_exists()
 
     tox_out, tox_err = execute(['tox'])
-
-    sys.stdout.write(tox_out)
+    if hasattr(sys.stdout, 'buffer'):
+        sys.stdout.buffer.write(tox_out)
+    else:
+        sys.stdout.write(tox_out)
 
     if 'FAILURES' in str(tox_out):
         print('Не все тесты прошли. Нельзя публиковать!')
@@ -101,7 +103,7 @@ setup(
 
     license='MIT license',
     install_requires=[
-        'django >= 1.8, < 1.10',
+        'django >= 1.8, < 1.11',
         'django_select2>=5.3.0',
         'mysqlclient != 1.3.8',
         'zeep>=0.17.0',
