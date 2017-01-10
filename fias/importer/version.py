@@ -92,7 +92,8 @@ except ImportError:
         client = Client(url=wsdl_source, proxy=PROXY or None)
 
     except ImportError:
-        raise ImproperlyConfigured('Не найдено подходящей библиотеки для работы с WSDL. Пожалуйста установите zeep или suds!')
+        raise ImproperlyConfigured('Не найдено подходящей библиотеки для работы с WSDL.'
+                                   ' Пожалуйста установите zeep или suds!')
 
 
 def fetch_version_info(update_all=False):
