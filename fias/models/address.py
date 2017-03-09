@@ -72,10 +72,10 @@ class FIASHouse(models.Model):
     class Meta:
         abstract = True
 
-    house = models.CharField(_('house number'), null=True, blank=True)
-    corps = models.CharField(_('corps'), max_length=2, blank=True, default='')
-    building = models.CharField(_('building'), null=True, blank=True)
-    apartment = models.CharField(_('apartment'), null=True, blank=True)
+    house = models.CharField(_('house number'), max_length=20, null=True, blank=True)
+    corps = models.CharField(_('corps'), max_length=10, blank=True, default='')
+    building = models.CharField(_('building'), max_length=10, null=True, blank=True)
+    apartment = models.CharField(_('apartment'), max_length=50, null=True, blank=True)
 
 
 class GetAddressMixin(object):
