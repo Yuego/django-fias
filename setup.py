@@ -94,7 +94,6 @@ setup(
     install_requires=[
         'django >= 1.8, < 1.11',
         'django_select2>=5.3.0',
-        'mysqlclient != 1.3.8',
         'zeep>=0.17.0',
         'rarfile',
         'six',
@@ -103,6 +102,11 @@ setup(
         'dbfread>=2.0.5',
         'progress',
     ],
+    extras_require={
+        'MySQL': [
+            'mysqlclient != 1.3.8',
+        ],
+    },
     packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,
     classifiers=[
