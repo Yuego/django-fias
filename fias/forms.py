@@ -21,7 +21,12 @@ class AddressSelect2Widget(ModelSelect2Widget):
 
         return attrs
 
-    def render_options(self, choices, selected_choices):
+    def render_options(self, *args):
+        try:
+            selected_choices, = args
+        except ValueError:
+            choices, selected_choices = args
+
         if '' in selected_choices:
             selected_choices.pop(selected_choices.index(''))
 
