@@ -10,7 +10,7 @@ from django.utils.module_loading import import_module
 from fias.weights import weights
 
 TABLES_STATS = (
-    'flattype',
+    'flattype', 'roomtype',
     'actstat', 'centerst', 'curentst',
     'eststat', 'hststat', 'intvstat',
     'ndoctype', 'operstat', 'strstat'

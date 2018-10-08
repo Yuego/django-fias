@@ -8,11 +8,22 @@ from fias.fields import UUIDField
 from fias.models.house import House
 from fias.models.status import OperStat
 
-__all__ = ['Room', 'FlatType']
+__all__ = ['Room', 'FlatType', 'RoomType']
 
 
 @python_2_unicode_compatible
-class FlatType(models.Model):
+class AbstractType(models.Model):
+    name = models.CharField('Наименование типа', max_length=255)
+    shortname = models.CharField('Краткое наименование типа', max_length=255)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+
+
+class FlatType(AbstractType):
     """
     Классификатор типов помещения или офиса
     """
@@ -22,11 +33,18 @@ class FlatType(models.Model):
         verbose_name_plural = 'Типы помещения или офиса'
 
     fltypeid = models.PositiveIntegerField('Идентификатор типа помещения или офиса', primary_key=True)
-    name = models.CharField('Наименование типа', max_length=255)
-    shortname = models.CharField('Краткое наименование типа', max_length=255)
 
-    def __str__(self):
-        return self.name
+
+class RoomType(AbstractType):
+    """
+    Классификатор типов комнат
+    """
+    class Meta:
+        app_label = 'fias'
+        verbose_name = 'Тип комнаты'
+        verbose_name_plural = 'Типы комнат'
+
+    rmtypeid = models.PositiveIntegerField('Идентификатор типа комнаты', primary_key=True)
 
 
 @python_2_unicode_compatible

@@ -8,7 +8,7 @@ from fias.models import (
     AddrObj,
     House, HouseInt,
     LandMark,
-    Room, FlatType, Stead,
+    Room, FlatType, RoomType, Stead,
     NormDoc, NDocType,
     SocrBase,
 
@@ -37,6 +37,7 @@ table_names = {
     'room': Room,
     'stead': Stead,
     'flattype': FlatType,
+    'roomtype': RoomType,
 }
 
 name_trans = {
