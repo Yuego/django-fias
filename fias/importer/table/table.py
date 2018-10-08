@@ -41,6 +41,7 @@ table_names = {
 name_trans = {
     'nordoc': 'normdoc',
     'housint': 'houseint',
+    'addrob': 'addrobj',
 }
 
 
