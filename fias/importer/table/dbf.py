@@ -21,11 +21,16 @@ class DBFTable(Table):
 
     def __init__(self, *args, **kwargs):
         super(DBFTable, self).__init__(*args, **kwargs)
+        self.write_related_fields()
 
-        self.related_fields = dict({
-           (f.name, f.rel.to) for f in self.model._meta.get_fields()
-           if f.one_to_one or f.many_to_one
-        })
+
+    def write_related_fields(self):
+        self.related_fields = dict()
+        if self.model is not None:
+            self.related_fields = dict({
+                (f.name, f.rel.to) for f in self.model._meta.get_fields()
+                if f.one_to_one or f.many_to_one
+            })
 
     def open(self, tablelist):
         return tablelist.wrapper.get_full_path(self.filename)

@@ -380,6 +380,12 @@ ORM Django при наличии связанных таблиц удалит д
 *NOTE*: в моделях `FIASFullAddress` и `FIASFullAddressWithArea` реализованы методы `_get_full_address` и `_get_short_address`, возвращающие соответственно полную и сокращённую строку адреса, включая номер дома/корпуса/квартиры.
 
 
+Настройка settings.py
+====
+
+FIAS_UNRAR_TOOL - путь до библиотеки UnRAR (по умолчанию unrar - поиск в глобальных переменных)
+
+
 TODO
 ====
 
