@@ -5,8 +5,12 @@ import datetime
 from django.conf import settings
 from django import db
 from django.db import IntegrityError
-from progress.helpers import WritelnMixin
 from sys import stderr
+
+try:
+    from progress.helpers import WritelnMixin as Progress
+except:
+    from progress import Progress
 
 from fias.importer.signals import (
     pre_import_table, post_import_table
@@ -14,7 +18,7 @@ from fias.importer.signals import (
 from fias.importer.validators import validators
 
 
-class LoadingBar(WritelnMixin):
+class LoadingBar(Progress):
     file = stderr
 
     text = 'T: %(table)s.' \
