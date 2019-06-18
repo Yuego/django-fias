@@ -17,7 +17,7 @@ class XMLIterator(TableIterator):
         super(XMLIterator, self).__init__(fd=fd, model=model)
 
         self.related_fields = dict({
-            (f.name, f.rel.to) for f in self.model._meta.get_fields()
+            (f.name, f.remote_field.model) for f in self.model._meta.get_fields()
             if f.one_to_one or f.many_to_one
         })
 

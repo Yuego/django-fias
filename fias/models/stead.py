@@ -33,7 +33,7 @@ class Stead(June2016Update):
     regioncode = models.CharField('Код региона', max_length=2)
 
     operstatus = models.ForeignKey(OperStat, verbose_name='Статус действия над записью – причина появления записи',
-                                   default=0)
+                                   default=0, on_delete=models.CASCADE)
     livestatus = models.BooleanField('Признак действующего адресного объекта', default=False)
     counter = models.IntegerField(null=True)
 

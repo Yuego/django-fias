@@ -21,15 +21,15 @@ class House(June2016Update):
         verbose_name_plural = 'Номера домов'
 
     aoguid = models.ForeignKey(AddrObj, verbose_name='Идентификатор записи родительского объекта',
-                               help_text='(улица, город, населенный пункт и т.п.)')
+                               help_text='(улица, город, населенный пункт и т.п.)', on_delete=models.CASCADE)
     houseguid = UUIDField('Глобальный уникальный идентификатор дома', primary_key=True)
     houseid = UUIDField('Уникальный идентификатор записи дома', unique=True)
 
     housenum = models.CharField('Номер дома', max_length=20, blank=True, null=True)
-    eststatus = models.ForeignKey(EstStat, verbose_name='Признак владения', default=0)
+    eststatus = models.ForeignKey(EstStat, verbose_name='Признак владения', default=0, on_delete=models.CASCADE)
     buildnum = models.CharField('Номер корпуса', max_length=10, blank=True, null=True)
     strucnum = models.CharField('Номер строения', max_length=10, blank=True, null=True)
-    strstatus = models.ForeignKey(StrStat, verbose_name='Признак строения', default=0)
+    strstatus = models.ForeignKey(StrStat, verbose_name='Признак строения', default=0, on_delete=models.CASCADE)
 
     statstatus = models.PositiveSmallIntegerField('Состояние дома')
 
@@ -50,11 +50,11 @@ class HouseInt(Common):
     houseintid = UUIDField('Идентификатор записи интервала домов')
     intguid = UUIDField('Глобальный уникальный идентификатор интервала домов', primary_key=True)
     aoguid = models.ForeignKey(AddrObj, verbose_name='Идентификатор объекта родительского объекта',
-                               help_text='(улица, город, населенный пункт и т.п.)')
+                               help_text='(улица, город, населенный пункт и т.п.)', on_delete=models.CASCADE)
 
     intstart = models.PositiveIntegerField('Значение начала интервала')
     intend = models.PositiveIntegerField('Значение окончания интервала')
 
-    intstatus = models.ForeignKey(IntvStat, verbose_name='Статус интервала', default=0)
+    intstatus = models.ForeignKey(IntvStat, verbose_name='Статус интервала', default=0, on_delete=models.CASCADE)
 
     counter = models.PositiveIntegerField('Счетчик записей домов для КЛАДР 4')
