@@ -19,7 +19,7 @@ class ItemWithArea(models.Model):
 
     location = AddressField()
 
-    area = ChainedAreaField(AddrObj, address_field='location', related_name='+')
+    area = ChainedAreaField(AddrObj, on_delete=models.CASCADE, address_field='location', related_name='+')
 
 
 #class CachedAddress(FIASAddress):

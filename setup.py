@@ -92,8 +92,8 @@ setup(
 
     license='MIT license',
     install_requires=[
-        'django >= 1.8, < 1.11',
-        'django_select2>=5.3.0',
+        'django>=2.0',
+        'django_select2>=7.0.3',
         'zeep>=0.17.0',
         'rarfile',
         'six',

@@ -22,7 +22,7 @@ class LandMark(Common):
     landid = UUIDField('Уникальный идентификатор записи ориентира', unique=True)
     landguid = UUIDField('Глобальный уникальный идентификатор ориентира', primary_key=True)
     aoguid = models.ForeignKey(AddrObj, verbose_name='Идентификатор записи родительского объекта',
-                               help_text='(улица, город, населенный пункт и т.п.)')
+                               help_text='(улица, город, населенный пункт и т.п.)', on_delete=models.CASCADE)
 
     location = models.TextField('Месторасположение ориентира')
 

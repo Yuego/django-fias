@@ -28,7 +28,7 @@ class DBFTable(Table):
         self.related_fields = dict()
         if self.model is not None:
             self.related_fields = dict({
-                (f.name, f.rel.to) for f in self.model._meta.get_fields()
+                (f.name, f.remote_field.model) for f in self.model._meta.get_fields()
                 if f.one_to_one or f.many_to_one
             })
 
