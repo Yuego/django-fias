@@ -4,7 +4,6 @@ from __future__ import unicode_literals, absolute_import
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import connections
-from django.template import Context
 from django.template.loader import select_template
 
 from fias.compat import TemplateDoesNotExist
@@ -60,10 +59,10 @@ def render_sphinx_source():
     re_strip_el = re.compile(r'^\n', re.MULTILINE)
     for query_type in ['_pre', '_post', '']:
         query_name = 'query' + query_type
-        query = _get_sql_template(query_name).render(Context({}))
+        query = _get_sql_template(query_name).render({})
         ctx['db_' + query_name] = re_nl.sub(r'\\\n', re_strip_el.sub('', query)).strip()
 
-    return _get_sphinx_template('source').render(Context(ctx))
+    return _get_sphinx_template('source').render(ctx)
 
 
 def render_sphinx_index(path):
@@ -73,7 +72,7 @@ def render_sphinx_index(path):
         'index_name': SPHINX_ADDROBJ_INDEX,
     }
 
-    return _get_sphinx_template('index').render(Context(ctx))
+    return _get_sphinx_template('index').render(ctx)
 
 def render_sphinx_searchd_config():
     ctx = {
@@ -81,7 +80,7 @@ def render_sphinx_searchd_config():
         'sphinx_port': SEARCHD_CONNECTION['PORT'],
     }
 
-    return _get_sphinx_template('sphinx').render(Context(ctx))
+    return _get_sphinx_template('sphinx').render(ctx)
 
 def render_sphinx_config(path, full=True):
     source = render_sphinx_source()

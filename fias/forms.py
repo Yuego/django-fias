@@ -13,26 +13,20 @@ from fias.config import SUGGEST_AREA_VIEW
 class AddressSelect2Widget(ModelSelect2Widget):
     search_fields = ['parentguid__exact']
 
-    def build_attrs(self, base_attrs, extra_attrs=None):
-        attrs = super(AddressSelect2Widget, self).build_attrs(base_attrs, extra_attrs=None)
+    def build_attrs(self, *args, **kwargs):
+        attrs = super(AddressSelect2Widget, self).build_attrs(*args, **kwargs)
 
         # Вручную задаем длину поля, чтоб текст был читаем
         attrs.setdefault('style', 'min-width: 300px;')
 
         return attrs
 
-    # def optgroups(self, *args):
-    #     try:
-    #         selected_choices, = args
-    #     except ValueError:
-    #         choices, selected_choices = args
-    #
-    #     if '' in selected_choices:
-    #         selected_choices.pop(selected_choices.index(''))
-    #
-    #     choices = ((obj.pk, obj.full_name(5, True)) for obj in self.queryset.filter(pk__in=selected_choices))
-    #
-    #     return super(AddressSelect2Widget, self).optgroups(choices, selected_choices)
+    def optgroups(self, name, value, attrs=None):
+        values = value[0].split(',') if value[0] else []
+        values = [obj.full_name(5, True) for obj in self.queryset.filter(pk__in=values)]
+        selected = {*values}
+        subgroup = [self.create_option(name, v, v, selected, i) for i, v in enumerate(values)]
+        return [(None, subgroup, 0)]
 
 
 class AddressSelect2Field(ModelChoiceField):
@@ -83,9 +77,7 @@ class AreaChainedSelect(widgets.Select):
             'id': attrs['id'],
             }
 
-        output = super(AreaChainedSelect, self).render(name, value, attrs=None, renderer=None)
-        output += js
-        return mark_safe(output)
+        output = super(AreaChainedSelect, self).render(name, value, attrs, renderer)
 
 
 class ChainedAreaField(ModelChoiceField):
