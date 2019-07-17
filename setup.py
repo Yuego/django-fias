@@ -104,7 +104,7 @@ setup(
     ],
     extras_require={
         'MySQL': [
-            'mysqlclient != 1.3.8',
+            'PyMySQL==0.9.3',
         ],
     },
     packages=find_packages(exclude=('tests', 'tests.*')),
