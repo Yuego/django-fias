@@ -23,9 +23,9 @@ class AddressSelect2Widget(ModelSelect2Widget):
 
     def optgroups(self, name, value, attrs=None):
         values = value[0].split(',') if value[0] else []
-        values = [obj.full_name(5, True) for obj in self.queryset.filter(pk__in=values)]
+        values_dict = [{'id': obj.aoguid, 'value': obj.full_name(5, True)} for obj in self.queryset.filter(pk__in=values)]
         selected = {*values}
-        subgroup = [self.create_option(name, v, v, selected, i) for i, v in enumerate(values)]
+        subgroup = [self.create_option(name, v['id'], v['value'], selected, i) for i, v in enumerate(values_dict)]
         return [(None, subgroup, 0)]
 
 
