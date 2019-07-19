@@ -96,8 +96,8 @@
 Если вы используете sphinx с mysql, необходимо установить pymysql и например в настройках
 вашего приложения импортировать pymysql и вызвать метод install_as_MySQLdb()
 
-import pymysql
-pymysql.install_as_MySQLdb()
+    import pymysql
+    pymysql.install_as_MySQLdb()
 
 
 Обновление 1.1.x до 1.2.0
@@ -179,6 +179,8 @@ pymysql.install_as_MySQLdb()
         python manage.py migrate --database=fias
 
 где `fias` - имя БД ФИАС
+
+P.S. Используйте ключ db_constraint=False для полей типа ForeignKey и наследованных от него только в том случае, если данные фиас находятся в другой БД!
 
 5. Выполните::
 
