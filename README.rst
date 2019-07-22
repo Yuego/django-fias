@@ -20,14 +20,14 @@
 Совместимость
 =============
 
-* Django 1.7+ (*Для работы с django 1.7 необходимо доустановить django_extensions*)
-* django_select2 5.3.0+
+* python 3.5+
+* Django 2.0+
+* django_select2 7.0.3+
 
 Внешние зависимости
 ===================
 
 * `django_select2<https://github.com/applegrew/django-select2>`_ модуль интеграции Select2 с Django.
-* `dbfread <https://github.com/olemb/dbfread>`_ Маленькая библиотека для работы с DBF. Для python3.3+ пока что нужно использовать мой `форк<https://github.com/Yuego/dbfread>`_
 
 
 Некоторые особенности
@@ -88,6 +88,18 @@
     Путь к каталогу, где будут размещены временные файлы в процессе импорта.
     Каталог должен существовать и быть доступен для записи.
 
+Версия 2.0.0
+=========================
+
+Эта версия использует python3.5+ и новые версии зависимости, НЕ СОВМЕСТИМЫЕ с django-fias версиями 1.х.х
+Вся настройка аналогична версиям 1.х.х (смотрите ниже)
+Если вы используете sphinx с mysql, необходимо установить pymysql и например в настройках
+вашего приложения импортировать pymysql и вызвать метод install_as_MySQLdb()
+
+    import pymysql
+    pymysql.install_as_MySQLdb()
+
+
 Обновление 1.1.x до 1.2.0
 =========================
 
@@ -139,7 +151,7 @@
         pip install django-fias
 
 2. Добавьте `fias` и `django_select2` в ваш список `INSTALLED_APPS`.
-3. Добавьте `url(r'^fias/', include('fias.urls', namespace='fias')),` в ваш urlpatterns
+3. Добавьте `url(r'^admin/fias/', include(('fias.urls', 'fias'), namespace='fias')),` в ваш urlpatterns
 4. Любым доступным способом подключите к админке приложения, в котором будете использовать поле FiasAddress свежую версию jQuery::
 
     # например так:
@@ -167,6 +179,8 @@
         python manage.py migrate --database=fias
 
 где `fias` - имя БД ФИАС
+
+P.S. Используйте ключ db_constraint=False для полей типа ForeignKey и наследованных от него только в том случае, если данные фиас находятся в другой БД!
 
 5. Выполните::
 

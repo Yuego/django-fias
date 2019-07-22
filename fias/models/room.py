@@ -57,7 +57,7 @@ class Room(models.Model):
         verbose_name = 'Помещение'
         verbose_name_plural = 'Помещения'
 
-    houseguid = models.ForeignKey(House, verbose_name='Идентификатор родительского объекта (дома)')
+    houseguid = models.ForeignKey(House, verbose_name='Идентификатор родительского объекта (дома)', on_delete=models.CASCADE)
     roomguid = UUIDField('Глобальный уникальный идентификатор адресного объекта (помещения)', primary_key=True)
     roomid = UUIDField('Уникальный идентификатор записи.', unique=True)
     previd = UUIDField('Идентификатор записи связывания с предыдушей исторической записью', blank=True, null=True)
@@ -78,7 +78,7 @@ class Room(models.Model):
     normdoc = UUIDField('Внешний ключ на нормативный документ', blank=True, null=True)
 
     operstatus = models.ForeignKey(OperStat, verbose_name='Статус действия над записью – причина появления записи',
-                                   default=0)
+                                   default=0, on_delete=models.CASCADE)
 
     cadnum = models.CharField('Кадастровый номер помещения', max_length=100, blank=True, null=True)
     roomcadnum = models.CharField('Кадастровый номер комнаты в помещении', max_length=100, blank=True, null=True)

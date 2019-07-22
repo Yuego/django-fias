@@ -21,7 +21,8 @@ def get_simple_field(field):
 
     if isinstance(field, models.ForeignKey):
         params.update(dict(
-            to=field.rel.to,
+            to=field.remote_field.model,
+            on_delete=field.remote_field.on_delete
         ))
     elif isinstance(field, models.CharField):
         params.update(dict(
@@ -29,7 +30,6 @@ def get_simple_field(field):
         ))
     elif isinstance(field, RelatedField):
         raise NotImplementedError('Only ForeignKey and OneToOne related fields supported')
-
     simple_field = field.__class__(**params)
     simple_field.column = field.column
     simple_field.model = field.model

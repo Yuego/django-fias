@@ -1,7 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms import widgets
 from django.forms.models import ModelChoiceField
 from django.utils.safestring import mark_safe
@@ -13,26 +13,20 @@ from fias.config import SUGGEST_AREA_VIEW
 class AddressSelect2Widget(ModelSelect2Widget):
     search_fields = ['parentguid__exact']
 
-    def build_attrs(self, extra_attrs=None, **kwargs):
-        attrs = super(AddressSelect2Widget, self).build_attrs(extra_attrs=extra_attrs, **kwargs)
+    def build_attrs(self, *args, **kwargs):
+        attrs = super(AddressSelect2Widget, self).build_attrs(*args, **kwargs)
 
         # Вручную задаем длину поля, чтоб текст был читаем
         attrs.setdefault('style', 'min-width: 300px;')
 
         return attrs
 
-    def render_options(self, *args):
-        try:
-            selected_choices, = args
-        except ValueError:
-            choices, selected_choices = args
-
-        if '' in selected_choices:
-            selected_choices.pop(selected_choices.index(''))
-
-        choices = ((obj.pk, obj.full_name(5, True)) for obj in self.queryset.filter(pk__in=selected_choices))
-
-        return super(AddressSelect2Widget, self).render_options(choices, selected_choices)
+    def optgroups(self, name, value, attrs=None):
+        values = value[0].split(',') if value[0] else []
+        values_dict = [{'id': obj.aoguid, 'value': obj.full_name(5, True)} for obj in self.queryset.filter(pk__in=values)]
+        selected = {*values}
+        subgroup = [self.create_option(name, v['id'], v['value'], selected, i) for i, v in enumerate(values_dict)]
+        return [(None, subgroup, 0)]
 
 
 class AddressSelect2Field(ModelChoiceField):
@@ -54,7 +48,7 @@ class AreaChainedSelect(widgets.Select):
 
         super(AreaChainedSelect, self).__init__(*args, **kwargs)
 
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None, renderer=None):
 
         url = reverse(SUGGEST_AREA_VIEW)
         js = """
@@ -83,7 +77,7 @@ class AreaChainedSelect(widgets.Select):
             'id': attrs['id'],
             }
 
-        output = super(AreaChainedSelect, self).render(name, value, attrs, choices)
+        output = super(AreaChainedSelect, self).render(name, value, attrs, renderer)
         output += js
         return mark_safe(output)
 

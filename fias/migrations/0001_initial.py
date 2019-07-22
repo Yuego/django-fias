@@ -179,7 +179,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='status',
             name='ver',
-            field=models.ForeignKey(to='fias.Version'),
+            field=models.ForeignKey(to='fias.Version', on_delete=models.CASCADE),
         ),
         migrations.AlterIndexTogether(
             name='socrbase',

@@ -44,7 +44,7 @@ class Status(models.Model):
         app_label = 'fias'
 
     table = models.CharField(primary_key=True, max_length=15)
-    ver = models.ForeignKey(Version)
+    ver = models.ForeignKey(Version, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.table
