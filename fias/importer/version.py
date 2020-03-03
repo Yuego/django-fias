@@ -9,7 +9,7 @@ from fias.config import PROXY
 from fias.importer.signals import pre_fetch_version, post_fetch_version
 from fias.models import Version
 
-wsdl_source = "http://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL"
+wsdl_source = "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL"
 
 
 def parse_item_as_dict(item, update_all=False):
