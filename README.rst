@@ -1,3 +1,6 @@
+TODO: delete these lines before merge
+This branch is a WIP for sphinxql database backend integration
+
 Приложение для работы с базой данных ФИАС в Django
 
 Основные возможности
