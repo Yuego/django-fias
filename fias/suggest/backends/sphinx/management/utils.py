@@ -9,7 +9,7 @@ from django.template.loader import select_template
 
 from fias.compat import TemplateDoesNotExist
 from fias.config import DATABASE_ALIAS
-from ..config import SPHINX_ADDROBJ_INDEX
+from ..config import SPHINX_ADDROBJ_INDEX, SEARCHD_CONNECTION
 import re
 
 connection = connections[DATABASE_ALIAS]
@@ -77,9 +77,8 @@ def render_sphinx_index(path):
 
 def render_sphinx_searchd_config():
     ctx = {
-        'db_type': _get_database_engine(),
-        'db_host': settings.DATABASES[DATABASE_ALIAS]['HOST'],
-        'db_port': settings.DATABASES[DATABASE_ALIAS]['PORT'],
+        'sphinx_host': SEARCHD_CONNECTION['HOST'],
+        'sphinx_port': SEARCHD_CONNECTION['PORT'],
     }
 
     return _get_sphinx_template('sphinx').render(Context(ctx))

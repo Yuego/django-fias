@@ -1,6 +1,8 @@
 # coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
+from django.conf import settings
+
 import rarfile
 import tempfile
 from progress.bar import Bar
@@ -17,7 +19,7 @@ from .directory import DirectoryTableList
 from .wrapper import RarArchiveWrapper
 
 # Задаем UNRAR_TOOL глобально
-rarfile.UNRAR_TOOL = 'unrar'
+rarfile.UNRAR_TOOL = getattr(settings, 'FIAS_UNRAR_TOOL', 'unrar')
 
 
 class BadArchiveError(TableListLoadingError):

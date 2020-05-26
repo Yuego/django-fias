@@ -60,8 +60,10 @@ if sys.argv[-1] == 'publish':
     check_tag_exists()
 
     tox_out, tox_err = execute(['tox'])
-
-    sys.stdout.write(tox_out)
+    if hasattr(sys.stdout, 'buffer'):
+        sys.stdout.buffer.write(tox_out)
+    else:
+        sys.stdout.write(tox_out)
 
     if 'FAILURES' in str(tox_out):
         print('Не все тесты прошли. Нельзя публиковать!')
@@ -77,17 +79,6 @@ if sys.argv[-1] == 'publish':
     sys.exit()
 
 
-extra_requirements = []
-if PY3:
-    extra_requirements = [
-        'suds-jurko>=0.6',
-    ]
-else:
-    extra_requirements = [
-        'suds>=0.4',
-    ]
-
-
 setup(
     name='django-fias',
     version=__version__,
@@ -101,16 +92,21 @@ setup(
 
     license='MIT license',
     install_requires=[
-        'django >= 1.8, < 1.10',
+        'django >= 1.8, < 1.11',
         'django_select2>=5.3.0',
-        # 'zeep>=0.8.0',
+        'zeep>=0.17.0',
         'rarfile',
         'six',
         'lxml',
         'unrar',
         'dbfread>=2.0.5',
         'progress',
-    ] + extra_requirements,
+    ],
+    extras_require={
+        'MySQL': [
+            'mysqlclient != 1.3.8',
+        ],
+    },
     packages=find_packages(exclude=('tests', 'tests.*')),
     include_package_data=True,
     classifiers=[

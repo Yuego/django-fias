@@ -4,6 +4,7 @@ from __future__ import unicode_literals, absolute_import
 from django.db import connections
 from django.db import models
 from django.db.models.fields.related import RelatedField
+from django.db.utils import ProgrammingError
 
 from fias.config import DATABASE_ALIAS
 from fias.compat import get_all_related_objects, get_all_related_many_to_many_objects
@@ -52,7 +53,11 @@ def get_indexed_fields(model):
 def change_indexes_for_model(model, field_from, field_to):
     con = connections[DATABASE_ALIAS]
     ed = con.schema_editor()
-    ed.alter_field(model, field_from, field_to)
+
+    try:
+        ed.alter_field(model, field_from, field_to)
+    except ProgrammingError as e:
+        print(str(e))
 
 
 def remove_indexes_from_model(model):
