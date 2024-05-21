@@ -104,7 +104,7 @@ setup(
     ],
     extras_require={
         'MySQL': [
-            'PyMySQL==0.9.3',
+            'PyMySQL==1.1.1',
         ],
     },
     packages=find_packages(exclude=('tests', 'tests.*')),
